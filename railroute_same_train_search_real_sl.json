@@ -1,0 +1,117 @@
+{
+  "success": false,
+  "status": "COMPLETED_NO_COMBINATIONS",
+  "message": "The search completed within its budgets, but no train offers a multi-segment combination in which every segment explicitly reports confirmed availability. Per-train details and skip reasons are included; unverified segments are not treated as unavailable.",
+  "search": {
+    "from_station": "MYS",
+    "to_station": "DWR",
+    "journey_date": "2026-11-26",
+    "travel_class": "SL",
+    "quota": "GN",
+    "ranking_preference": "FEWEST_CHANGES"
+  },
+  "ranked_by": "FEWEST_CHANGES",
+  "results": [],
+  "total_results": 0,
+  "results_truncated": false,
+  "candidates": [
+    {
+      "train_number": "20676",
+      "train_name": "VISHWAMANAV EXP",
+      "processed": false,
+      "skip_reason": "CLASS_NOT_OFFERED",
+      "skip_detail": "Train does not carry class SL (classes: 2S, CC).",
+      "segments_checked": 0,
+      "combinations_found": 0,
+      "combinations_truncated": false,
+      "errors": []
+    },
+    {
+      "train_number": "16210",
+      "train_name": "AJMER EXPRESS",
+      "processed": true,
+      "window_stop_count": 15,
+      "segments_checked": 50,
+      "combinations_found": 0,
+      "combinations_truncated": false,
+      "direct_segment": {
+        "status": "WAITLIST",
+        "provider_status": "WAITLIST",
+        "availability_text": "GNWL186/WL89",
+        "total_fare": 370.0,
+        "checked_at": "2026-11-23T13:49:25.859302+00:00"
+      },
+      "errors": []
+    },
+    {
+      "train_number": "17301",
+      "train_name": "MYS BGM EXP",
+      "processed": true,
+      "window_stop_count": 16,
+      "segments_checked": 75,
+      "combinations_found": 0,
+      "combinations_truncated": false,
+      "direct_segment": {
+        "status": "WAITLIST",
+        "provider_status": "WAITLIST",
+        "availability_text": "GNWL 92/WL 52",
+        "total_fare": 310.0,
+        "checked_at": "2026-11-23T13:49:51.589329+00:00"
+      },
+      "errors": []
+    }
+  ],
+  "search_completeness": {
+    "complete": true,
+    "budget": {
+      "requests_used": 10,
+      "requests_max": 45,
+      "credits_used_estimate": 128,
+      "credits_max": 150,
+      "duration_ms": 59441,
+      "time_budget_ms": 900000,
+      "trains_processed": 2,
+      "trains_total": 3
+    },
+    "segments_checked": 125,
+    "distinct_availability_queries": 125,
+    "deduplicated_queries": 0,
+    "combinations_found": 0,
+    "schedule_cache_hits": 0,
+    "discovery_cache_hits": 0,
+    "incomplete_reasons": []
+  },
+  "api_usage": {
+    "provider": "railcore",
+    "requests_sent": 10,
+    "successful_requests": 10,
+    "failed_requests": 0,
+    "credits_cost": 128,
+    "credits_remaining": 361,
+    "rate_limit_remaining_per_minute": 8,
+    "rate_limit_day_remaining": 80
+  },
+  "availability_checked_at": "2026-11-23T13:49:51.589329+00:00",
+  "errors": [
+    {
+      "code": "NOT_FOUND",
+      "category": "PROVIDER_ITEM",
+      "message": "The provider could not answer this item.",
+      "retryable": true,
+      "details": {
+        "train_number": "16210",
+        "from_station": "SBC",
+        "to_station": "YPR",
+        "journey_date": "2026-11-26"
+      }
+    }
+  ],
+  "notes": [
+    "These results are point-in-time availability checks, not booked tickets. RailRoute AI does not book tickets.",
+    "Every segment of every returned combination explicitly reports confirmed availability (provider status AVAILABLE). RAC, waitlist, regret, unavailable, unknown and provider errors never qualify.",
+    "A combination of separately available segment tickets on one train is NOT an officially confirmed booking permission: Indian Railways ticketing rules for split journeys on the same train must be verified before relying on this.",
+    "Availability figures can be older than the check time (provider-side caching): each segment carries its provider last_updated_at and each combination reports the oldest one.",
+    "A provider error is never interpreted as unavailability; affected possibilities are reported as unverified.",
+    "Segment fares can exceed the direct through-route fare; every result includes a fare comparison when the direct fare is known."
+  ]
+}

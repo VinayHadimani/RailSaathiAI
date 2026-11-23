@@ -1,0 +1,4317 @@
+{
+  "success": true,
+  "status": "PARTIAL_BUDGET_EXHAUSTED",
+  "message": "The search stopped early because a configured budget (trains, API requests or credits) was exhausted. 25 fully confirmed combination(s) were found before the budget ran out; NOT all possibilities were checked.",
+  "search": {
+    "from_station": "MYS",
+    "to_station": "DWR",
+    "journey_date": "2026-11-27",
+    "travel_class": "3A",
+    "quota": "GN",
+    "ranking_preference": "CHEAPEST"
+  },
+  "ranked_by": "CHEAPEST",
+  "results": [
+    {
+      "combination_id": "12781-2026-11-27-MYS-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 835.0,
+          "total_fare": 835.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 2,
+      "seat_changes": 1,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 1400.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 545.0,
+        "difference_percent": 63.7,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-RRB-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "RRB",
+            "name": "Birur Junction",
+            "sequence": 5
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "23:03",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 213.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "RRB",
+            "name": "Birur Junction",
+            "sequence": 5
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "23:05",
+          "departure_day": 1,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 3,
+      "seat_changes": 2,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 1695.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 840.0,
+        "difference_percent": 98.2,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-ASK-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "ASK",
+            "name": "Arsikere Junction",
+            "sequence": 4
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "22:25",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 5,
+          "distance_km_at_to_station": 168.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "ASK",
+            "name": "Arsikere Junction",
+            "sequence": 4
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "22:30",
+          "departure_day": 1,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 620.0,
+          "total_fare": 620.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 3,
+      "seat_changes": 2,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 1750.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 895.0,
+        "difference_percent": 104.7,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-DVG-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "DVG",
+            "name": "Davangere",
+            "sequence": 6
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "00:28",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 328.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 650.0,
+          "total_fare": 650.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "DVG",
+            "name": "Davangere",
+            "sequence": 6
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "00:30",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 3,
+      "seat_changes": 2,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 1780.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 925.0,
+        "difference_percent": 108.2,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HRR-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HRR",
+            "name": "Harihar",
+            "sequence": 7
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "00:45",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 341.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 675.0,
+          "total_fare": 675.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HRR",
+            "name": "Harihar",
+            "sequence": 7
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "00:47",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 3,
+      "seat_changes": 2,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 1805.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 950.0,
+        "difference_percent": 111.1,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HAS-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "21:33",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 121.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "21:35",
+          "departure_day": 1,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 685.0,
+          "total_fare": 685.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 3,
+      "seat_changes": 2,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 1815.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 960.0,
+        "difference_percent": 112.3,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-RNR-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "RNR",
+            "name": "Ranibennur",
+            "sequence": 8
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "01:08",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 364.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 695.0,
+          "total_fare": 695.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "RNR",
+            "name": "Ranibennur",
+            "sequence": 8
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "01:10",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 3,
+      "seat_changes": 2,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 1825.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 970.0,
+        "difference_percent": 113.5,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HLN-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "20:59",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 1,
+          "distance_km_at_to_station": 89.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "21:00",
+          "departure_day": 1,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 720.0,
+          "total_fare": 720.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 3,
+      "seat_changes": 2,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 1850.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 995.0,
+        "difference_percent": 116.4,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HVR-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HVR",
+            "name": "Mmailara Haveri",
+            "sequence": 9
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "01:39",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 1,
+          "distance_km_at_to_station": 396.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 735.0,
+          "total_fare": 735.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HVR",
+            "name": "Mmailara Haveri",
+            "sequence": 9
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "01:40",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 3,
+      "seat_changes": 2,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 1865.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1010.0,
+        "difference_percent": 118.1,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-ASK-DVG-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "ASK",
+            "name": "Arsikere Junction",
+            "sequence": 4
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "22:25",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 5,
+          "distance_km_at_to_station": 168.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "ASK",
+            "name": "Arsikere Junction",
+            "sequence": 4
+          },
+          "to_station": {
+            "code": "DVG",
+            "name": "Davangere",
+            "sequence": 6
+          },
+          "departure_time": "22:30",
+          "departure_day": 1,
+          "arrival_time": "00:28",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 328.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "DVG",
+            "name": "Davangere",
+            "sequence": 6
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "00:30",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2260.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1405.0,
+        "difference_percent": 164.3,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-ASK-HRR-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "ASK",
+            "name": "Arsikere Junction",
+            "sequence": 4
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "22:25",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 5,
+          "distance_km_at_to_station": 168.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "ASK",
+            "name": "Arsikere Junction",
+            "sequence": 4
+          },
+          "to_station": {
+            "code": "HRR",
+            "name": "Harihar",
+            "sequence": 7
+          },
+          "departure_time": "22:30",
+          "departure_day": 1,
+          "arrival_time": "00:45",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 341.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HRR",
+            "name": "Harihar",
+            "sequence": 7
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "00:47",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2260.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1405.0,
+        "difference_percent": 164.3,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-ASK-RRB-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "ASK",
+            "name": "Arsikere Junction",
+            "sequence": 4
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "22:25",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 5,
+          "distance_km_at_to_station": 168.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "ASK",
+            "name": "Arsikere Junction",
+            "sequence": 4
+          },
+          "to_station": {
+            "code": "RRB",
+            "name": "Birur Junction",
+            "sequence": 5
+          },
+          "departure_time": "22:30",
+          "departure_day": 1,
+          "arrival_time": "23:03",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 213.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "RRB",
+            "name": "Birur Junction",
+            "sequence": 5
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "23:05",
+          "departure_day": 1,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2260.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1405.0,
+        "difference_percent": 164.3,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HAS-DVG-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "21:33",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 121.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "to_station": {
+            "code": "DVG",
+            "name": "Davangere",
+            "sequence": 6
+          },
+          "departure_time": "21:35",
+          "departure_day": 1,
+          "arrival_time": "00:28",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 328.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "DVG",
+            "name": "Davangere",
+            "sequence": 6
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "00:30",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2260.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1405.0,
+        "difference_percent": 164.3,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HAS-HRR-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "21:33",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 121.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "to_station": {
+            "code": "HRR",
+            "name": "Harihar",
+            "sequence": 7
+          },
+          "departure_time": "21:35",
+          "departure_day": 1,
+          "arrival_time": "00:45",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 341.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HRR",
+            "name": "Harihar",
+            "sequence": 7
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "00:47",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2260.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1405.0,
+        "difference_percent": 164.3,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HAS-HVR-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "21:33",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 121.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "to_station": {
+            "code": "HVR",
+            "name": "Mmailara Haveri",
+            "sequence": 9
+          },
+          "departure_time": "21:35",
+          "departure_day": 1,
+          "arrival_time": "01:39",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 1,
+          "distance_km_at_to_station": 396.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HVR",
+            "name": "Mmailara Haveri",
+            "sequence": 9
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "01:40",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2260.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1405.0,
+        "difference_percent": 164.3,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HAS-RNR-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "21:33",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 121.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "to_station": {
+            "code": "RNR",
+            "name": "Ranibennur",
+            "sequence": 8
+          },
+          "departure_time": "21:35",
+          "departure_day": 1,
+          "arrival_time": "01:08",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 364.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "RNR",
+            "name": "Ranibennur",
+            "sequence": 8
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "01:10",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2260.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1405.0,
+        "difference_percent": 164.3,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HAS-RRB-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "21:33",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 121.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "to_station": {
+            "code": "RRB",
+            "name": "Birur Junction",
+            "sequence": 5
+          },
+          "departure_time": "21:35",
+          "departure_day": 1,
+          "arrival_time": "23:03",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 213.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "RRB",
+            "name": "Birur Junction",
+            "sequence": 5
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "23:05",
+          "departure_day": 1,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2260.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1405.0,
+        "difference_percent": 164.3,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HLN-DVG-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "20:59",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 1,
+          "distance_km_at_to_station": 89.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "to_station": {
+            "code": "DVG",
+            "name": "Davangere",
+            "sequence": 6
+          },
+          "departure_time": "21:00",
+          "departure_day": 1,
+          "arrival_time": "00:28",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 328.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "DVG",
+            "name": "Davangere",
+            "sequence": 6
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "00:30",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2260.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1405.0,
+        "difference_percent": 164.3,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HLN-HRR-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "20:59",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 1,
+          "distance_km_at_to_station": 89.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "to_station": {
+            "code": "HRR",
+            "name": "Harihar",
+            "sequence": 7
+          },
+          "departure_time": "21:00",
+          "departure_day": 1,
+          "arrival_time": "00:45",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 341.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HRR",
+            "name": "Harihar",
+            "sequence": 7
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "00:47",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2260.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1405.0,
+        "difference_percent": 164.3,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HLN-RNR-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "20:59",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 1,
+          "distance_km_at_to_station": 89.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "to_station": {
+            "code": "RNR",
+            "name": "Ranibennur",
+            "sequence": 8
+          },
+          "departure_time": "21:00",
+          "departure_day": 1,
+          "arrival_time": "01:08",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 364.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "RNR",
+            "name": "Ranibennur",
+            "sequence": 8
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "01:10",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2260.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1405.0,
+        "difference_percent": 164.3,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HLN-RRB-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "20:59",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 1,
+          "distance_km_at_to_station": 89.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "to_station": {
+            "code": "RRB",
+            "name": "Birur Junction",
+            "sequence": 5
+          },
+          "departure_time": "21:00",
+          "departure_day": 1,
+          "arrival_time": "23:03",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 213.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "RRB",
+            "name": "Birur Junction",
+            "sequence": 5
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "23:05",
+          "departure_day": 1,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2260.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1405.0,
+        "difference_percent": 164.3,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HAS-ASK-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "21:33",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 121.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "to_station": {
+            "code": "ASK",
+            "name": "Arsikere Junction",
+            "sequence": 4
+          },
+          "departure_time": "21:35",
+          "departure_day": 1,
+          "arrival_time": "22:25",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 5,
+          "distance_km_at_to_station": 168.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "ASK",
+            "name": "Arsikere Junction",
+            "sequence": 4
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "22:30",
+          "departure_day": 1,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 620.0,
+          "total_fare": 620.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2315.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1460.0,
+        "difference_percent": 170.8,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HLN-ASK-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "20:59",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 1,
+          "distance_km_at_to_station": 89.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "to_station": {
+            "code": "ASK",
+            "name": "Arsikere Junction",
+            "sequence": 4
+          },
+          "departure_time": "21:00",
+          "departure_day": 1,
+          "arrival_time": "22:25",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 5,
+          "distance_km_at_to_station": 168.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "ASK",
+            "name": "Arsikere Junction",
+            "sequence": 4
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "22:30",
+          "departure_day": 1,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 620.0,
+          "total_fare": 620.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2315.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1460.0,
+        "difference_percent": 170.8,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HLN-HVR-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "20:59",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 1,
+          "distance_km_at_to_station": 89.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "to_station": {
+            "code": "HVR",
+            "name": "Mmailara Haveri",
+            "sequence": 9
+          },
+          "departure_time": "21:00",
+          "departure_day": 1,
+          "arrival_time": "01:39",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 1,
+          "distance_km_at_to_station": 396.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 620.0,
+          "total_fare": 620.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HVR",
+            "name": "Mmailara Haveri",
+            "sequence": 9
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "01:40",
+          "departure_day": 2,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2315.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1460.0,
+        "difference_percent": 170.8,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    },
+    {
+      "combination_id": "12781-2026-11-27-MYS-HLN-HAS-UBL-DWR",
+      "journey_type": "SAME_TRAIN_SEGMENTS",
+      "train_number": "12781",
+      "train_name": "Hazrat Nizamuddin Swarna Jayanti SF Express",
+      "journey_date": "2026-11-27",
+      "train_run_origin_departure_date": "2026-11-27",
+      "segments": [
+        {
+          "segment_number": 1,
+          "train_number": "12781",
+          "from_station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "to_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "departure_time": "19:30",
+          "departure_day": 1,
+          "arrival_time": "20:59",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 1,
+          "distance_km_at_to_station": 89.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:17+05:30",
+          "checked_at": "2026-11-23T13:56:53.479024+00:00",
+          "request_id": "req_01M84B40B9N8Y6GZRJPHG5BF13"
+        },
+        {
+          "segment_number": 2,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HLN",
+            "name": "Hole Narsipur",
+            "sequence": 2
+          },
+          "to_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "departure_time": "21:00",
+          "departure_day": 1,
+          "arrival_time": "21:33",
+          "arrival_day": 1,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 121.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0078",
+          "available_count": 78,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 3,
+          "train_number": "12781",
+          "from_station": {
+            "code": "HAS",
+            "name": "Hassan",
+            "sequence": 3
+          },
+          "to_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "departure_time": "21:35",
+          "departure_day": 1,
+          "arrival_time": "03:30",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 10,
+          "distance_km_at_to_station": 472.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-27",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0059",
+          "available_count": 59,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 685.0,
+          "total_fare": 685.0,
+          "last_updated_at": "2026-11-23T19:23:23+05:30",
+          "checked_at": "2026-11-23T13:57:00.118466+00:00",
+          "request_id": "req_01M84B46RR4E6W0ECQVZNMB9G9"
+        },
+        {
+          "segment_number": 4,
+          "train_number": "12781",
+          "from_station": {
+            "code": "UBL",
+            "name": "SSS Hubballi Junction",
+            "sequence": 10
+          },
+          "to_station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 11
+          },
+          "departure_time": "03:40",
+          "departure_day": 2,
+          "arrival_time": "04:03",
+          "arrival_day": 2,
+          "halt_minutes_at_to_station": 2,
+          "distance_km_at_to_station": 492.0,
+          "travel_class": "3A",
+          "quota": "GN",
+          "boarding_query_date": "2026-11-28",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-0023",
+          "available_count": 23,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 565.0,
+          "total_fare": 565.0,
+          "last_updated_at": "2026-11-23T19:23:30+05:30",
+          "checked_at": "2026-11-23T13:57:06.538677+00:00",
+          "request_id": "req_01M84B4D3N93PPWT5H33065XW7"
+        }
+      ],
+      "segment_count": 4,
+      "seat_changes": 3,
+      "departure": {
+        "station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "time": "19:30",
+        "day": 1
+      },
+      "arrival": {
+        "station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 11
+        },
+        "time": "04:03",
+        "day": 2
+      },
+      "overnight": true,
+      "total_duration_minutes": 513,
+      "total_fare": 2380.0,
+      "fares_complete": true,
+      "segments_missing_fare": [],
+      "fare_comparison": {
+        "direct_total_fare": 855.0,
+        "direct_segment_status": "WAITLIST",
+        "direct_availability_text": "GNWL88/WL57",
+        "difference": 1525.0,
+        "difference_percent": 178.4,
+        "note": "The segmented tickets cost more than the direct through-route ticket."
+      },
+      "all_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T13:57:06.538677+00:00",
+      "oldest_availability_update_at": "2026-11-23T19:23:17+05:30"
+    }
+  ],
+  "total_results": 25,
+  "results_truncated": true,
+  "candidates": [
+    {
+      "train_number": "20676",
+      "train_name": "VISHWAMANAV EXP",
+      "processed": false,
+      "skip_reason": "CLASS_NOT_OFFERED",
+      "skip_detail": "Train does not carry class 3A (classes: 2S, CC).",
+      "segments_checked": 0,
+      "combinations_found": 0,
+      "combinations_truncated": false,
+      "errors": []
+    },
+    {
+      "train_number": "12781",
+      "train_name": "SWARNA JAYANTHI",
+      "processed": true,
+      "window_stop_count": 11,
+      "segments_checked": 55,
+      "combinations_found": 25,
+      "combinations_truncated": true,
+      "direct_segment": {
+        "status": "WAITLIST",
+        "provider_status": "WAITLIST",
+        "availability_text": "GNWL88/WL57",
+        "total_fare": 855.0,
+        "checked_at": "2026-11-23T13:56:53.479024+00:00"
+      },
+      "errors": []
+    },
+    {
+      "train_number": "17301",
+      "train_name": "MYS BGM EXP",
+      "processed": true,
+      "window_stop_count": 16,
+      "segments_checked": 22,
+      "combinations_found": 0,
+      "combinations_truncated": false,
+      "direct_segment": {
+        "status": "CONFIRMED_AVAILABLE",
+        "provider_status": "AVAILABLE",
+        "availability_text": "AVAILABLE-110",
+        "total_fare": 810.0,
+        "checked_at": "2026-11-23T13:57:19.328533+00:00"
+      },
+      "errors": []
+    }
+  ],
+  "search_completeness": {
+    "complete": false,
+    "budget": {
+      "requests_used": 8,
+      "requests_max": 45,
+      "credits_used_estimate": 80,
+      "credits_max": 80,
+      "duration_ms": 46035,
+      "time_budget_ms": 900000,
+      "trains_processed": 2,
+      "trains_total": 3
+    },
+    "segments_checked": 77,
+    "distinct_availability_queries": 175,
+    "deduplicated_queries": 98,
+    "combinations_found": 25,
+    "schedule_cache_hits": 0,
+    "discovery_cache_hits": 0,
+    "incomplete_reasons": [
+      "BUDGET_CREDITS_EXHAUSTED"
+    ]
+  },
+  "api_usage": {
+    "provider": "railcore",
+    "requests_sent": 8,
+    "successful_requests": 8,
+    "failed_requests": 0,
+    "credits_cost": 80,
+    "credits_remaining": 4,
+    "rate_limit_remaining_per_minute": 6,
+    "rate_limit_day_remaining": 52
+  },
+  "availability_checked_at": "2026-11-23T13:57:19.328533+00:00",
+  "errors": [],
+  "notes": [
+    "These results are point-in-time availability checks, not booked tickets. RailRoute AI does not book tickets.",
+    "Every segment of every returned combination explicitly reports confirmed availability (provider status AVAILABLE). RAC, waitlist, regret, unavailable, unknown and provider errors never qualify.",
+    "A combination of separately available segment tickets on one train is NOT an officially confirmed booking permission: Indian Railways ticketing rules for split journeys on the same train must be verified before relying on this.",
+    "Availability figures can be older than the check time (provider-side caching): each segment carries its provider last_updated_at and each combination reports the oldest one.",
+    "A provider error is never interpreted as unavailability; affected possibilities are reported as unverified.",
+    "Segment fares can exceed the direct through-route fare; every result includes a fare comparison when the direct fare is known."
+  ]
+}

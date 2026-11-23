@@ -1,0 +1,2009 @@
+{
+  "title": "RailRoute AI - RailCore API feasibility test results (real API)",
+  "date_of_tests": "2026-11-23",
+  "credentials": "redacted (API key stored only in backend/.env, never in results)",
+  "summary": {
+    "provider": "RailCore (https://railcore.tech)",
+    "base_url": "https://ir.railcore.tech/v1",
+    "plan_observed": "developer_free (500 requests/month, 10/min, 100/day)",
+    "credits_remaining_after_tests": 489,
+    "credits_consumed_by_tests": 11,
+    "conclusions": [
+      "RailCore provides real, complete train schedules with sequences, arrival/departure times, halt minutes and day offsets (overnight support).",
+      "It supports arbitrary station-to-station availability checks on any scheduled stop pair of a train.",
+      "Two segments of the same train are checked independently: on train 17301 (2026-11-24, GN quota) MYS->ASK was AVAILABLE-8 (SL) while ASK->DWR was NOT AVAILABLE (SL) - full-route SL showed RAC, so the segment pools genuinely differ.",
+      "With class 3A both same-train segments were independently confirmed available (AVAILABLE-69 and CURR_AVBL-27), proving the central RailRoute AI same-train seat-change concept.",
+      "The batch endpoint (up to 25 items, 1 credit per distinct class per item) works and returns the same per-segment data in one request.",
+      "Fare data per segment is included, enabling correct segmented-journey fare calculation (note: segment fares MYS->ASK + ASK->DWR in 3A, 520 + 600 = 1120 INR, exceed the through-route fare of ~810 INR)."
+    ]
+  },
+  "tests": {
+    "endpoint_test_sl_class": {
+      "success": false,
+      "status": "COMPLETED_NOT_CONFIRMED",
+      "message": "The check completed, but at least one segment does not have explicitly confirmed availability (RAC/waitlist/unavailable/unknown), so the combination is not reported as confirmed.",
+      "search": {
+        "train_number": "17301",
+        "from_station_1": "MYS",
+        "to_station_1": "ASK",
+        "from_station_2": "ASK",
+        "to_station_2": "DWR",
+        "journey_date": "2026-11-24",
+        "travel_class": "SL",
+        "quota": "GN"
+      },
+      "train": {
+        "number": "17301",
+        "name": "Mysuru - Belagavi Express",
+        "source": "MYS",
+        "destination": "BGM",
+        "running_days": [
+          "MON",
+          "TUE",
+          "WED",
+          "THU",
+          "FRI",
+          "SAT",
+          "SUN"
+        ],
+        "classes": [
+          "2A",
+          "3A",
+          "SL",
+          "GS"
+        ],
+        "total_stops": 20
+      },
+      "schedule_validation": {
+        "same_train": true,
+        "stations_on_route": true,
+        "missing_stations": [],
+        "first_segment_valid": true,
+        "second_segment_valid": true,
+        "first_segment_precedes_second": true,
+        "segments_contiguous": true,
+        "first_segment_sequence": {
+          "from_sequence": 1,
+          "to_sequence": 5
+        },
+        "second_segment_sequence": {
+          "from_sequence": 5,
+          "to_sequence": 16
+        },
+        "message": "Both segments are valid consecutive sections of the same train."
+      },
+      "schedule": [
+        {
+          "sequence": 1,
+          "station_code": "MYS",
+          "station_name": "Mysuru Junction",
+          "stop_type": "ORIGIN",
+          "departure_time": "22:45",
+          "halt_minutes": 0,
+          "day": 1,
+          "distance_km": 0.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 2,
+          "station_code": "KRNR",
+          "station_name": "Krishnarajanagar",
+          "stop_type": "HALT",
+          "arrival_time": "23:15",
+          "departure_time": "23:16",
+          "halt_minutes": 1,
+          "day": 1,
+          "distance_km": 35.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 3,
+          "station_code": "HLN",
+          "station_name": "Hole Narsipur",
+          "stop_type": "HALT",
+          "arrival_time": "00:04",
+          "departure_time": "00:05",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 89.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 4,
+          "station_code": "HAS",
+          "station_name": "Hassan",
+          "stop_type": "HALT",
+          "arrival_time": "00:35",
+          "departure_time": "00:37",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 121.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 5,
+          "station_code": "ASK",
+          "station_name": "Arsikere Junction",
+          "stop_type": "HALT",
+          "arrival_time": "01:25",
+          "departure_time": "01:27",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 168.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 6,
+          "station_code": "DRU",
+          "station_name": "Kadur",
+          "stop_type": "HALT",
+          "arrival_time": "01:59",
+          "departure_time": "02:01",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 207.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 7,
+          "station_code": "RRB",
+          "station_name": "Birur Junction",
+          "stop_type": "HALT",
+          "arrival_time": "02:09",
+          "departure_time": "02:11",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 213.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 8,
+          "station_code": "JRU",
+          "station_name": "Chikjajur Junction",
+          "stop_type": "HALT",
+          "arrival_time": "02:56",
+          "departure_time": "03:01",
+          "halt_minutes": 5,
+          "day": 2,
+          "distance_km": 281.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 9,
+          "station_code": "DVG",
+          "station_name": "Davangere",
+          "stop_type": "HALT",
+          "arrival_time": "03:31",
+          "departure_time": "03:33",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 328.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 10,
+          "station_code": "HRR",
+          "station_name": "Harihar",
+          "stop_type": "HALT",
+          "arrival_time": "03:44",
+          "departure_time": "03:46",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 340.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 11,
+          "station_code": "RNR",
+          "station_name": "Ranibennur",
+          "stop_type": "HALT",
+          "arrival_time": "04:02",
+          "departure_time": "04:04",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 364.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 12,
+          "station_code": "BYD",
+          "station_name": "Byadgi",
+          "stop_type": "HALT",
+          "arrival_time": "04:19",
+          "departure_time": "04:20",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 382.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 13,
+          "station_code": "HVR",
+          "station_name": "Mmailara Haveri",
+          "stop_type": "HALT",
+          "arrival_time": "04:33",
+          "departure_time": "04:35",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 396.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 14,
+          "station_code": "YLG",
+          "station_name": "Yalvigi",
+          "stop_type": "HALT",
+          "arrival_time": "05:04",
+          "departure_time": "05:05",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 425.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 15,
+          "station_code": "UBL",
+          "station_name": "SSS Hubballi Junction",
+          "stop_type": "HALT",
+          "arrival_time": "06:10",
+          "departure_time": "06:20",
+          "halt_minutes": 10,
+          "day": 2,
+          "distance_km": 472.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 16,
+          "station_code": "DWR",
+          "station_name": "Dharwad",
+          "stop_type": "HALT",
+          "arrival_time": "06:43",
+          "departure_time": "06:45",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 492.0,
+          "platform_number": "3",
+          "is_stop": true
+        },
+        {
+          "sequence": 17,
+          "station_code": "LWR",
+          "station_name": "Alnavar Junction",
+          "stop_type": "HALT",
+          "arrival_time": "07:19",
+          "departure_time": "07:20",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 529.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 18,
+          "station_code": "LD",
+          "station_name": "Londa Junction",
+          "stop_type": "HALT",
+          "arrival_time": "08:08",
+          "departure_time": "08:10",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 562.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 19,
+          "station_code": "KNP",
+          "station_name": "Khanapur",
+          "stop_type": "HALT",
+          "arrival_time": "08:34",
+          "departure_time": "08:35",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 588.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 20,
+          "station_code": "BGM",
+          "station_name": "Belagavi",
+          "stop_type": "DESTINATION",
+          "arrival_time": "09:55",
+          "halt_minutes": 0,
+          "day": 2,
+          "distance_km": 614.0,
+          "platform_number": "2",
+          "is_stop": true
+        }
+      ],
+      "segments": [
+        {
+          "segment": "segment_1",
+          "train_number": "17301",
+          "from_station": "MYS",
+          "to_station": "ASK",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-8",
+          "available_count": 8,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 150.0,
+          "total_fare": 150.0,
+          "last_updated_at": "2026-11-23T17:46:36.733+05:30",
+          "checked_at": "2026-11-23T12:16:36.208794+00:00",
+          "provider": "railcore",
+          "request_id": "req_01M845CCDX76PMN83G9V2FEG0K",
+          "provider_raw": {
+            "success": true,
+            "data": {
+              "train_number": "17301",
+              "from_station_code": "MYS",
+              "to_station_code": "ASK",
+              "journey_date": "2026-11-24",
+              "quota": "GN",
+              "classes": [
+                {
+                  "class_code": "SL",
+                  "status": "AVAILABLE",
+                  "availability_text": "AVAILABLE-8",
+                  "available_count": 8,
+                  "waitlist_count": 0,
+                  "rac_count": 0,
+                  "fare": 150,
+                  "catering_charge": 0,
+                  "total_fare": 150,
+                  "fare_breakdown": {
+                    "base_fare": 130,
+                    "reservation_charge": 20,
+                    "superfast_charge": 0,
+                    "tatkal_charge": 0,
+                    "dynamic_fare": 0,
+                    "fuel_charge": 0,
+                    "other_charge": 0,
+                    "gst": 0,
+                    "catering_charge": 0,
+                    "concession": 0,
+                    "rounding": 0
+                  },
+                  "confirmation_probability": {
+                    "percentage": 100,
+                    "label": "HIGH",
+                    "text": "Available"
+                  },
+                  "last_updated_at": "2026-11-23T17:46:36.733+05:30"
+                }
+              ]
+            },
+            "meta": {
+              "api_version": "v1",
+              "request_id": "req_01M845CCDX76PMN83G9V2FEG0K",
+              "trace_id": "trc_01M845CCDXJBCR517DYYN3VGBD",
+              "timestamp": "2026-11-23T17:46:37.171+05:30",
+              "freshness": {
+                "mode": "live",
+                "retrieved_at": "2026-11-23T12:16:37.171Z"
+              }
+            }
+          }
+        },
+        {
+          "segment": "segment_2",
+          "train_number": "17301",
+          "from_station": "ASK",
+          "to_station": "DWR",
+          "status": "NOT_AVAILABLE",
+          "provider_status": "NOT_AVAILABLE",
+          "availability_text": "NOT AVAILABLE",
+          "available_count": 0,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 230.0,
+          "total_fare": 230.0,
+          "last_updated_at": "2026-11-23T17:46:37.747+05:30",
+          "checked_at": "2026-11-23T12:16:37.221744+00:00",
+          "provider": "railcore",
+          "request_id": "req_01M845CDDEKDAG42T2Y4Q3EW7D",
+          "provider_raw": {
+            "success": true,
+            "data": {
+              "train_number": "17301",
+              "from_station_code": "ASK",
+              "to_station_code": "DWR",
+              "journey_date": "2026-11-24",
+              "quota": "GN",
+              "classes": [
+                {
+                  "class_code": "SL",
+                  "status": "NOT_AVAILABLE",
+                  "availability_text": "NOT AVAILABLE",
+                  "available_count": 0,
+                  "waitlist_count": 0,
+                  "rac_count": 0,
+                  "fare": 230,
+                  "catering_charge": 0,
+                  "total_fare": 230,
+                  "fare_breakdown": {
+                    "base_fare": 206,
+                    "reservation_charge": 20,
+                    "superfast_charge": 0,
+                    "tatkal_charge": 0,
+                    "dynamic_fare": 0,
+                    "fuel_charge": 0,
+                    "other_charge": 0,
+                    "gst": 0,
+                    "catering_charge": 0,
+                    "concession": 0,
+                    "rounding": 4
+                  },
+                  "confirmation_probability": {
+                    "percentage": 0,
+                    "label": "LOW",
+                    "text": "Not available"
+                  },
+                  "last_updated_at": "2026-11-23T17:46:37.747+05:30"
+                }
+              ]
+            },
+            "meta": {
+              "api_version": "v1",
+              "request_id": "req_01M845CDDEKDAG42T2Y4Q3EW7D",
+              "trace_id": "trc_01M845CDDFG2PDFX6PMNC3R7KQ",
+              "timestamp": "2026-11-23T17:46:38.167+05:30",
+              "freshness": {
+                "mode": "live",
+                "retrieved_at": "2026-11-23T12:16:38.167Z"
+              }
+            }
+          }
+        }
+      ],
+      "both_segments_confirmed_available": false,
+      "availability_checked_at": "2026-11-23T12:16:37.221744+00:00",
+      "duration_ms": 2383,
+      "api_usage": {
+        "provider": "railcore",
+        "requests_sent": 3,
+        "successful_requests": 3,
+        "failed_requests": 0,
+        "credits_cost": 3,
+        "credits_remaining": 495,
+        "rate_limit_remaining_per_minute": 7,
+        "rate_limit_day_remaining": 95
+      },
+      "errors": [],
+      "notes": [
+        "This result is a point-in-time availability check, not a booked ticket. RailRoute AI does not book tickets.",
+        "Two independently available segments do not by themselves guarantee that Indian Railways permits combining separate tickets on the same train; ticketing rules must be verified before booking.",
+        "A provider error is never interpreted as unavailability (or availability)."
+      ]
+    },
+    "endpoint_test_3a_class": {
+      "success": true,
+      "status": "COMPLETED_BOTH_CONFIRMED",
+      "message": "Both segments of the same train explicitly report confirmed availability for the requested class and quota.",
+      "search": {
+        "train_number": "17301",
+        "from_station_1": "MYS",
+        "to_station_1": "ASK",
+        "from_station_2": "ASK",
+        "to_station_2": "DWR",
+        "journey_date": "2026-11-24",
+        "travel_class": "3A",
+        "quota": "GN"
+      },
+      "train": {
+        "number": "17301",
+        "name": "Mysuru - Belagavi Express",
+        "source": "MYS",
+        "destination": "BGM",
+        "running_days": [
+          "MON",
+          "TUE",
+          "WED",
+          "THU",
+          "FRI",
+          "SAT",
+          "SUN"
+        ],
+        "classes": [
+          "2A",
+          "3A",
+          "SL",
+          "GS"
+        ],
+        "total_stops": 20
+      },
+      "schedule_validation": {
+        "same_train": true,
+        "stations_on_route": true,
+        "missing_stations": [],
+        "first_segment_valid": true,
+        "second_segment_valid": true,
+        "first_segment_precedes_second": true,
+        "segments_contiguous": true,
+        "first_segment_sequence": {
+          "from_sequence": 1,
+          "to_sequence": 5
+        },
+        "second_segment_sequence": {
+          "from_sequence": 5,
+          "to_sequence": 16
+        },
+        "message": "Both segments are valid consecutive sections of the same train."
+      },
+      "schedule": [
+        {
+          "sequence": 1,
+          "station_code": "MYS",
+          "station_name": "Mysuru Junction",
+          "stop_type": "ORIGIN",
+          "departure_time": "22:45",
+          "halt_minutes": 0,
+          "day": 1,
+          "distance_km": 0.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 2,
+          "station_code": "KRNR",
+          "station_name": "Krishnarajanagar",
+          "stop_type": "HALT",
+          "arrival_time": "23:15",
+          "departure_time": "23:16",
+          "halt_minutes": 1,
+          "day": 1,
+          "distance_km": 35.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 3,
+          "station_code": "HLN",
+          "station_name": "Hole Narsipur",
+          "stop_type": "HALT",
+          "arrival_time": "00:04",
+          "departure_time": "00:05",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 89.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 4,
+          "station_code": "HAS",
+          "station_name": "Hassan",
+          "stop_type": "HALT",
+          "arrival_time": "00:35",
+          "departure_time": "00:37",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 121.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 5,
+          "station_code": "ASK",
+          "station_name": "Arsikere Junction",
+          "stop_type": "HALT",
+          "arrival_time": "01:25",
+          "departure_time": "01:27",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 168.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 6,
+          "station_code": "DRU",
+          "station_name": "Kadur",
+          "stop_type": "HALT",
+          "arrival_time": "01:59",
+          "departure_time": "02:01",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 207.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 7,
+          "station_code": "RRB",
+          "station_name": "Birur Junction",
+          "stop_type": "HALT",
+          "arrival_time": "02:09",
+          "departure_time": "02:11",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 213.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 8,
+          "station_code": "JRU",
+          "station_name": "Chikjajur Junction",
+          "stop_type": "HALT",
+          "arrival_time": "02:56",
+          "departure_time": "03:01",
+          "halt_minutes": 5,
+          "day": 2,
+          "distance_km": 281.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 9,
+          "station_code": "DVG",
+          "station_name": "Davangere",
+          "stop_type": "HALT",
+          "arrival_time": "03:31",
+          "departure_time": "03:33",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 328.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 10,
+          "station_code": "HRR",
+          "station_name": "Harihar",
+          "stop_type": "HALT",
+          "arrival_time": "03:44",
+          "departure_time": "03:46",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 340.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 11,
+          "station_code": "RNR",
+          "station_name": "Ranibennur",
+          "stop_type": "HALT",
+          "arrival_time": "04:02",
+          "departure_time": "04:04",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 364.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 12,
+          "station_code": "BYD",
+          "station_name": "Byadgi",
+          "stop_type": "HALT",
+          "arrival_time": "04:19",
+          "departure_time": "04:20",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 382.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 13,
+          "station_code": "HVR",
+          "station_name": "Mmailara Haveri",
+          "stop_type": "HALT",
+          "arrival_time": "04:33",
+          "departure_time": "04:35",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 396.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 14,
+          "station_code": "YLG",
+          "station_name": "Yalvigi",
+          "stop_type": "HALT",
+          "arrival_time": "05:04",
+          "departure_time": "05:05",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 425.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 15,
+          "station_code": "UBL",
+          "station_name": "SSS Hubballi Junction",
+          "stop_type": "HALT",
+          "arrival_time": "06:10",
+          "departure_time": "06:20",
+          "halt_minutes": 10,
+          "day": 2,
+          "distance_km": 472.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 16,
+          "station_code": "DWR",
+          "station_name": "Dharwad",
+          "stop_type": "HALT",
+          "arrival_time": "06:43",
+          "departure_time": "06:45",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 492.0,
+          "platform_number": "3",
+          "is_stop": true
+        },
+        {
+          "sequence": 17,
+          "station_code": "LWR",
+          "station_name": "Alnavar Junction",
+          "stop_type": "HALT",
+          "arrival_time": "07:19",
+          "departure_time": "07:20",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 529.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 18,
+          "station_code": "LD",
+          "station_name": "Londa Junction",
+          "stop_type": "HALT",
+          "arrival_time": "08:08",
+          "departure_time": "08:10",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 562.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 19,
+          "station_code": "KNP",
+          "station_name": "Khanapur",
+          "stop_type": "HALT",
+          "arrival_time": "08:34",
+          "departure_time": "08:35",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 588.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 20,
+          "station_code": "BGM",
+          "station_name": "Belagavi",
+          "stop_type": "DESTINATION",
+          "arrival_time": "09:55",
+          "halt_minutes": 0,
+          "day": 2,
+          "distance_km": 614.0,
+          "platform_number": "2",
+          "is_stop": true
+        }
+      ],
+      "segments": [
+        {
+          "segment": "segment_1",
+          "train_number": "17301",
+          "from_station": "MYS",
+          "to_station": "ASK",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "AVAILABLE-69",
+          "available_count": 69,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 520.0,
+          "total_fare": 520.0,
+          "last_updated_at": "2026-11-23T17:46:55.02+05:30",
+          "checked_at": "2026-11-23T12:16:54.817897+00:00",
+          "provider": "railcore",
+          "request_id": "req_01M845CYKP75ZTT5Z0BGVVN1R4",
+          "provider_raw": {
+            "success": true,
+            "data": {
+              "train_number": "17301",
+              "from_station_code": "MYS",
+              "to_station_code": "ASK",
+              "journey_date": "2026-11-24",
+              "quota": "GN",
+              "classes": [
+                {
+                  "class_code": "3A",
+                  "status": "AVAILABLE",
+                  "availability_text": "AVAILABLE-69",
+                  "available_count": 69,
+                  "waitlist_count": 0,
+                  "rac_count": 0,
+                  "fare": 520,
+                  "catering_charge": 0,
+                  "total_fare": 520,
+                  "fare_breakdown": {
+                    "base_fare": 452,
+                    "reservation_charge": 40,
+                    "superfast_charge": 0,
+                    "tatkal_charge": 0,
+                    "dynamic_fare": 0,
+                    "fuel_charge": 0,
+                    "other_charge": 0,
+                    "gst": 25,
+                    "catering_charge": 0,
+                    "concession": 0,
+                    "rounding": 3
+                  },
+                  "confirmation_probability": {
+                    "percentage": 100,
+                    "label": "HIGH",
+                    "text": "Available"
+                  },
+                  "last_updated_at": "2026-11-23T17:46:55.02+05:30"
+                }
+              ]
+            },
+            "meta": {
+              "api_version": "v1",
+              "request_id": "req_01M845CYKP75ZTT5Z0BGVVN1R4",
+              "trace_id": "trc_01M845CYKPP0X3BFCA87CVJTKP",
+              "timestamp": "2026-11-23T17:46:55.449+05:30",
+              "freshness": {
+                "mode": "live",
+                "retrieved_at": "2026-11-23T12:16:55.449Z"
+              }
+            }
+          }
+        },
+        {
+          "segment": "segment_2",
+          "train_number": "17301",
+          "from_station": "ASK",
+          "to_station": "DWR",
+          "status": "CONFIRMED_AVAILABLE",
+          "provider_status": "AVAILABLE",
+          "availability_text": "CURR_AVBL-27",
+          "available_count": 27,
+          "waitlist_count": 0,
+          "rac_count": 0,
+          "fare": 600.0,
+          "total_fare": 600.0,
+          "last_updated_at": "2026-11-23T17:46:55.654+05:30",
+          "checked_at": "2026-11-23T12:16:55.500813+00:00",
+          "provider": "railcore",
+          "request_id": "req_01M845CZ8DAJZ1TMAQN3WR8A71",
+          "provider_raw": {
+            "success": true,
+            "data": {
+              "train_number": "17301",
+              "from_station_code": "ASK",
+              "to_station_code": "DWR",
+              "journey_date": "2026-11-24",
+              "quota": "GN",
+              "classes": [
+                {
+                  "class_code": "3A",
+                  "status": "AVAILABLE",
+                  "availability_text": "CURR_AVBL-27",
+                  "available_count": 27,
+                  "waitlist_count": 0,
+                  "rac_count": 0,
+                  "fare": 600,
+                  "catering_charge": 0,
+                  "total_fare": 600,
+                  "fare_breakdown": {
+                    "base_fare": 530,
+                    "reservation_charge": 40,
+                    "superfast_charge": 0,
+                    "tatkal_charge": 0,
+                    "dynamic_fare": 0,
+                    "fuel_charge": 0,
+                    "other_charge": 0,
+                    "gst": 29,
+                    "catering_charge": 0,
+                    "concession": 0,
+                    "rounding": 1
+                  },
+                  "confirmation_probability": {
+                    "percentage": 100,
+                    "label": "HIGH",
+                    "text": "Available"
+                  },
+                  "last_updated_at": "2026-11-23T17:46:55.654+05:30"
+                }
+              ]
+            },
+            "meta": {
+              "api_version": "v1",
+              "request_id": "req_01M845CZ8DAJZ1TMAQN3WR8A71",
+              "trace_id": "trc_01M845CZ8D5ZPA33B1MBMJ0K96",
+              "timestamp": "2026-11-23T17:46:56.061+05:30",
+              "freshness": {
+                "mode": "live",
+                "retrieved_at": "2026-11-23T12:16:56.061Z"
+              }
+            }
+          }
+        }
+      ],
+      "both_segments_confirmed_available": true,
+      "availability_checked_at": "2026-11-23T12:16:55.500813+00:00",
+      "duration_ms": 1686,
+      "api_usage": {
+        "provider": "railcore",
+        "requests_sent": 3,
+        "successful_requests": 3,
+        "failed_requests": 0,
+        "credits_cost": 3,
+        "credits_remaining": 492,
+        "rate_limit_remaining_per_minute": 4,
+        "rate_limit_day_remaining": 92
+      },
+      "errors": [],
+      "notes": [
+        "This result is a point-in-time availability check, not a booked ticket. RailRoute AI does not book tickets.",
+        "Two independently available segments do not by themselves guarantee that Indian Railways permits combining separate tickets on the same train; ticketing rules must be verified before booking.",
+        "A provider error is never interpreted as unavailability (or availability)."
+      ]
+    },
+    "batch_availability_test": {
+      "provider": "railcore",
+      "endpoint": "POST /v1/availability/seats/batch",
+      "request_id": "req_01M845K4GGQQG6BGYMHGEYPESY",
+      "http_status": 200,
+      "checked_at": "2026-11-23T12:20:17.781059+00:00",
+      "items": [
+        {
+          "train_number": "17301",
+          "from_station": "MYS",
+          "to_station": "ASK",
+          "journey_date": "2026-11-24",
+          "travel_class": "SL",
+          "quota": "GN",
+          "status": "CONFIRMED_AVAILABLE",
+          "requested_class": {
+            "class_code": "SL",
+            "provider_status": "AVAILABLE",
+            "status": "CONFIRMED_AVAILABLE",
+            "availability_text": "AVAILABLE-8",
+            "available_count": 8,
+            "waitlist_count": 0,
+            "rac_count": 0,
+            "fare": 150.0,
+            "total_fare": 150.0,
+            "catering_charge": 0.0,
+            "last_updated_at": "2026-11-23T17:46:36+05:30",
+            "confirmation_probability": {
+              "percentage": 100.0,
+              "label": "HIGH",
+              "text": "Available"
+            }
+          },
+          "class_not_offered": false,
+          "all_classes": [
+            {
+              "class_code": "SL",
+              "provider_status": "AVAILABLE",
+              "status": "CONFIRMED_AVAILABLE",
+              "availability_text": "AVAILABLE-8",
+              "available_count": 8,
+              "waitlist_count": 0,
+              "rac_count": 0,
+              "fare": 150.0,
+              "total_fare": 150.0,
+              "catering_charge": 0.0,
+              "last_updated_at": "2026-11-23T17:46:36+05:30",
+              "confirmation_probability": {
+                "percentage": 100.0,
+                "label": "HIGH",
+                "text": "Available"
+              }
+            }
+          ],
+          "provider": "railcore",
+          "request_id": "req_01M845K4GGQQG6BGYMHGEYPESY"
+        },
+        {
+          "train_number": "17301",
+          "from_station": "ASK",
+          "to_station": "DWR",
+          "journey_date": "2026-11-24",
+          "travel_class": "SL",
+          "quota": "GN",
+          "status": "NOT_AVAILABLE",
+          "requested_class": {
+            "class_code": "SL",
+            "provider_status": "NOT_AVAILABLE",
+            "status": "NOT_AVAILABLE",
+            "availability_text": "NOT AVAILABLE",
+            "available_count": 0,
+            "waitlist_count": 0,
+            "rac_count": 0,
+            "fare": 230.0,
+            "total_fare": 230.0,
+            "catering_charge": 0.0,
+            "last_updated_at": "2026-11-23T17:46:37+05:30",
+            "confirmation_probability": {
+              "percentage": 0.0,
+              "label": "LOW",
+              "text": "0% Chance"
+            }
+          },
+          "class_not_offered": false,
+          "all_classes": [
+            {
+              "class_code": "SL",
+              "provider_status": "NOT_AVAILABLE",
+              "status": "NOT_AVAILABLE",
+              "availability_text": "NOT AVAILABLE",
+              "available_count": 0,
+              "waitlist_count": 0,
+              "rac_count": 0,
+              "fare": 230.0,
+              "total_fare": 230.0,
+              "catering_charge": 0.0,
+              "last_updated_at": "2026-11-23T17:46:37+05:30",
+              "confirmation_probability": {
+                "percentage": 0.0,
+                "label": "LOW",
+                "text": "0% Chance"
+              }
+            }
+          ],
+          "provider": "railcore",
+          "request_id": "req_01M845K4GGQQG6BGYMHGEYPESY"
+        }
+      ],
+      "failed_items": [],
+      "usage": {
+        "requests_sent": 1,
+        "successful_requests": 1,
+        "credits_cost": 2,
+        "credits_remaining": 490,
+        "rate_limit_remaining_per_minute": 9,
+        "rate_limit_day_remaining": 91
+      }
+    },
+    "invalid_sequence_test": {
+      "success": false,
+      "status": "SCHEDULE_INVALID",
+      "message": "Schedule validation failed: the requested segments are not valid on this train. Availability checks were skipped to conserve API credits.",
+      "search": {
+        "train_number": "17301",
+        "from_station_1": "DWR",
+        "to_station_1": "MYS",
+        "from_station_2": "MYS",
+        "to_station_2": "ASK",
+        "journey_date": "2026-11-24",
+        "travel_class": "SL",
+        "quota": "GN"
+      },
+      "train": {
+        "number": "17301",
+        "name": "Mysuru - Belagavi Express",
+        "source": "MYS",
+        "destination": "BGM",
+        "running_days": [
+          "MON",
+          "TUE",
+          "WED",
+          "THU",
+          "FRI",
+          "SAT",
+          "SUN"
+        ],
+        "classes": [
+          "2A",
+          "3A",
+          "SL",
+          "GS"
+        ],
+        "total_stops": 20
+      },
+      "schedule_validation": {
+        "same_train": true,
+        "stations_on_route": true,
+        "missing_stations": [],
+        "first_segment_valid": false,
+        "second_segment_valid": true,
+        "first_segment_precedes_second": true,
+        "segments_contiguous": true,
+        "first_segment_sequence": {
+          "from_sequence": 16,
+          "to_sequence": 1
+        },
+        "second_segment_sequence": {
+          "from_sequence": 1,
+          "to_sequence": 5
+        },
+        "message": "segment 1 (DWR->MYS) is not in forward route order"
+      },
+      "schedule": [
+        {
+          "sequence": 1,
+          "station_code": "MYS",
+          "station_name": "Mysuru Junction",
+          "stop_type": "ORIGIN",
+          "departure_time": "22:45",
+          "halt_minutes": 0,
+          "day": 1,
+          "distance_km": 0.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 2,
+          "station_code": "KRNR",
+          "station_name": "Krishnarajanagar",
+          "stop_type": "HALT",
+          "arrival_time": "23:15",
+          "departure_time": "23:16",
+          "halt_minutes": 1,
+          "day": 1,
+          "distance_km": 35.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 3,
+          "station_code": "HLN",
+          "station_name": "Hole Narsipur",
+          "stop_type": "HALT",
+          "arrival_time": "00:04",
+          "departure_time": "00:05",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 89.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 4,
+          "station_code": "HAS",
+          "station_name": "Hassan",
+          "stop_type": "HALT",
+          "arrival_time": "00:35",
+          "departure_time": "00:37",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 121.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 5,
+          "station_code": "ASK",
+          "station_name": "Arsikere Junction",
+          "stop_type": "HALT",
+          "arrival_time": "01:25",
+          "departure_time": "01:27",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 168.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 6,
+          "station_code": "DRU",
+          "station_name": "Kadur",
+          "stop_type": "HALT",
+          "arrival_time": "01:59",
+          "departure_time": "02:01",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 207.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 7,
+          "station_code": "RRB",
+          "station_name": "Birur Junction",
+          "stop_type": "HALT",
+          "arrival_time": "02:09",
+          "departure_time": "02:11",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 213.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 8,
+          "station_code": "JRU",
+          "station_name": "Chikjajur Junction",
+          "stop_type": "HALT",
+          "arrival_time": "02:56",
+          "departure_time": "03:01",
+          "halt_minutes": 5,
+          "day": 2,
+          "distance_km": 281.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 9,
+          "station_code": "DVG",
+          "station_name": "Davangere",
+          "stop_type": "HALT",
+          "arrival_time": "03:31",
+          "departure_time": "03:33",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 328.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 10,
+          "station_code": "HRR",
+          "station_name": "Harihar",
+          "stop_type": "HALT",
+          "arrival_time": "03:44",
+          "departure_time": "03:46",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 340.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 11,
+          "station_code": "RNR",
+          "station_name": "Ranibennur",
+          "stop_type": "HALT",
+          "arrival_time": "04:02",
+          "departure_time": "04:04",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 364.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 12,
+          "station_code": "BYD",
+          "station_name": "Byadgi",
+          "stop_type": "HALT",
+          "arrival_time": "04:19",
+          "departure_time": "04:20",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 382.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 13,
+          "station_code": "HVR",
+          "station_name": "Mmailara Haveri",
+          "stop_type": "HALT",
+          "arrival_time": "04:33",
+          "departure_time": "04:35",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 396.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 14,
+          "station_code": "YLG",
+          "station_name": "Yalvigi",
+          "stop_type": "HALT",
+          "arrival_time": "05:04",
+          "departure_time": "05:05",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 425.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 15,
+          "station_code": "UBL",
+          "station_name": "SSS Hubballi Junction",
+          "stop_type": "HALT",
+          "arrival_time": "06:10",
+          "departure_time": "06:20",
+          "halt_minutes": 10,
+          "day": 2,
+          "distance_km": 472.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 16,
+          "station_code": "DWR",
+          "station_name": "Dharwad",
+          "stop_type": "HALT",
+          "arrival_time": "06:43",
+          "departure_time": "06:45",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 492.0,
+          "platform_number": "3",
+          "is_stop": true
+        },
+        {
+          "sequence": 17,
+          "station_code": "LWR",
+          "station_name": "Alnavar Junction",
+          "stop_type": "HALT",
+          "arrival_time": "07:19",
+          "departure_time": "07:20",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 529.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 18,
+          "station_code": "LD",
+          "station_name": "Londa Junction",
+          "stop_type": "HALT",
+          "arrival_time": "08:08",
+          "departure_time": "08:10",
+          "halt_minutes": 2,
+          "day": 2,
+          "distance_km": 562.0,
+          "platform_number": "1",
+          "is_stop": true
+        },
+        {
+          "sequence": 19,
+          "station_code": "KNP",
+          "station_name": "Khanapur",
+          "stop_type": "HALT",
+          "arrival_time": "08:34",
+          "departure_time": "08:35",
+          "halt_minutes": 1,
+          "day": 2,
+          "distance_km": 588.0,
+          "platform_number": "2",
+          "is_stop": true
+        },
+        {
+          "sequence": 20,
+          "station_code": "BGM",
+          "station_name": "Belagavi",
+          "stop_type": "DESTINATION",
+          "arrival_time": "09:55",
+          "halt_minutes": 0,
+          "day": 2,
+          "distance_km": 614.0,
+          "platform_number": "2",
+          "is_stop": true
+        }
+      ],
+      "segments": [],
+      "both_segments_confirmed_available": false,
+      "duration_ms": 419,
+      "api_usage": {
+        "provider": "railcore",
+        "requests_sent": 1,
+        "successful_requests": 1,
+        "failed_requests": 0,
+        "credits_cost": 1,
+        "credits_remaining": 489,
+        "rate_limit_remaining_per_minute": 8,
+        "rate_limit_day_remaining": 90
+      },
+      "errors": [
+        {
+          "code": "SCHEDULE_VALIDATION_FAILED",
+          "category": "VALIDATION",
+          "message": "segment 1 (DWR->MYS) is not in forward route order",
+          "retryable": false,
+          "details": {
+            "missing_stations": []
+          }
+        }
+      ],
+      "notes": [
+        "This result is a point-in-time availability check, not a booked ticket. RailRoute AI does not book tickets.",
+        "Two independently available segments do not by themselves guarantee that Indian Railways permits combining separate tickets on the same train; ticketing rules must be verified before booking.",
+        "A provider error is never interpreted as unavailability (or availability)."
+      ]
+    },
+    "train_discovery_mys_dwr": {
+      "success": true,
+      "data": {
+        "from_station_code": "MYS",
+        "to_station_code": "DWR",
+        "journey_date": "2026-11-24",
+        "quota": "GN",
+        "trains": [
+          {
+            "train_number": "20676",
+            "from_station_code": "MYS",
+            "from_station_name": "Mysore Junction",
+            "to_station_code": "DWR",
+            "to_station_name": "Dharwar",
+            "train_name": "VISHWAMANAV EXP",
+            "extended_train_name": "Vishwamanava SF Express",
+            "departure_time": "07:00",
+            "arrival_time": "17:43",
+            "duration_minutes": 643,
+            "distance_km": 628,
+            "train_type": "MAIL_EXPRESS",
+            "classes": [
+              "2S",
+              "CC"
+            ],
+            "running_days": [
+              "MON",
+              "TUE",
+              "WED",
+              "THU",
+              "FRI",
+              "SAT",
+              "SUN"
+            ],
+            "has_pantry": false,
+            "availability_summary": [
+              {
+                "class_code": "CC",
+                "status": "AVAILABLE",
+                "text": "AVAILABLE-0016",
+                "fare": 845,
+                "confidence": "medium",
+                "last_updated_at": "2026-11-23T08:37:21.001+05:30"
+              },
+              {
+                "class_code": "2S",
+                "status": "AVAILABLE",
+                "text": "AVAILABLE-0304",
+                "fare": 245,
+                "confidence": "low",
+                "last_updated_at": "2026-11-22T03:04:35.001+05:30"
+              }
+            ]
+          },
+          {
+            "train_number": "06211",
+            "from_station_code": "MYS",
+            "from_station_name": "Mysore Junction",
+            "to_station_code": "DWR",
+            "to_station_name": "Dharwar",
+            "train_name": "MYS DBG SPECIAL",
+            "extended_train_name": "Darbhanga Special Fare Festival Special",
+            "departure_time": "20:05",
+            "arrival_time": "07:53",
+            "duration_minutes": 708,
+            "distance_km": 628,
+            "train_type": "MAIL_EXPRESS",
+            "classes": [
+              "SL",
+              "3A",
+              "2A",
+              "1A"
+            ],
+            "running_days": [
+              "TUE"
+            ],
+            "has_pantry": false,
+            "availability_summary": [
+              {
+                "class_code": "2A",
+                "status": "WAITLIST",
+                "text": "GNWL21/WL8",
+                "fare": 1795,
+                "confidence": "low",
+                "last_updated_at": "2026-11-20T12:38:00.001+05:30"
+              },
+              {
+                "class_code": "3A",
+                "status": "WAITLIST",
+                "text": "GNWL62/WL14",
+                "fare": 1270,
+                "confidence": "low",
+                "last_updated_at": "2026-11-22T17:58:25.001+05:30"
+              },
+              {
+                "class_code": "SL",
+                "status": "WAITLIST",
+                "text": "GNWL257/WL30",
+                "fare": 475,
+                "confidence": "low",
+                "last_updated_at": "2026-11-22T17:58:26.001+05:30"
+              }
+            ]
+          },
+          {
+            "train_number": "16210",
+            "from_station_code": "MYS",
+            "from_station_name": "Mysore Junction",
+            "to_station_code": "DWR",
+            "to_station_name": "Dharwar",
+            "train_name": "AJMER EXPRESS",
+            "extended_train_name": "Mysuru - Ajmer Express",
+            "departure_time": "20:30",
+            "arrival_time": "06:53",
+            "duration_minutes": 623,
+            "distance_km": 628,
+            "train_type": "MAIL_EXPRESS",
+            "classes": [
+              "SL",
+              "CC",
+              "3A",
+              "2A",
+              "1A"
+            ],
+            "running_days": [
+              "TUE",
+              "THU"
+            ],
+            "has_pantry": true,
+            "availability_summary": [
+              {
+                "class_code": "1A",
+                "status": "WAITLIST",
+                "text": "GNWL8/WL6",
+                "fare": 2310,
+                "confidence": "medium",
+                "last_updated_at": "2026-11-23T08:38:05.001+05:30"
+              },
+              {
+                "class_code": "2A",
+                "status": "WAITLIST",
+                "text": "GNWL46/WL23",
+                "fare": 1395,
+                "confidence": "low",
+                "last_updated_at": "2026-11-19T15:43:09.001+05:30"
+              },
+              {
+                "class_code": "3A",
+                "status": "WAITLIST",
+                "text": "GNWL121/WL85",
+                "fare": 985,
+                "confidence": "low",
+                "last_updated_at": "2026-11-19T15:43:35.001+05:30"
+              },
+              {
+                "class_code": "CC",
+                "status": "UNKNOWN",
+                "text": "CLASS NOT EXIST",
+                "fare": 800,
+                "confidence": "low",
+                "last_updated_at": "2026-11-19T15:43:30.001+05:30"
+              },
+              {
+                "class_code": "SL",
+                "status": "WAITLIST",
+                "text": "GNWL158/WL95",
+                "fare": 370,
+                "confidence": "low",
+                "last_updated_at": "2026-11-20T19:01:16.001+05:30"
+              }
+            ]
+          },
+          {
+            "train_number": "17301",
+            "from_station_code": "MYS",
+            "from_station_name": "Mysore Junction",
+            "to_station_code": "DWR",
+            "to_station_name": "Dharwar",
+            "train_name": "MYS BGM EXP",
+            "extended_train_name": "Mysuru - Belagavi Express",
+            "departure_time": "22:45",
+            "arrival_time": "06:43",
+            "duration_minutes": 478,
+            "distance_km": 491,
+            "train_type": "MAIL_EXPRESS",
+            "classes": [
+              "SL",
+              "3A",
+              "2A",
+              "1A"
+            ],
+            "running_days": [
+              "MON",
+              "TUE",
+              "WED",
+              "THU",
+              "FRI",
+              "SAT",
+              "SUN"
+            ],
+            "has_pantry": false,
+            "availability_summary": [
+              {
+                "class_code": "1A",
+                "status": "NOT_AVAILABLE",
+                "text": "NOT AVAILABLE",
+                "fare": 1905,
+                "confidence": "low",
+                "last_updated_at": "2026-11-22T11:59:46.001+05:30"
+              },
+              {
+                "class_code": "2A",
+                "status": "AVAILABLE",
+                "text": "AVAILABLE-21",
+                "fare": 1145,
+                "confidence": "low",
+                "last_updated_at": "2026-11-22T13:40:35.001+05:30"
+              },
+              {
+                "class_code": "3A",
+                "status": "AVAILABLE",
+                "text": "AVAILABLE-53",
+                "fare": 810,
+                "confidence": "high",
+                "last_updated_at": "2026-11-23T15:59:42.001+05:30"
+              },
+              {
+                "class_code": "SL",
+                "status": "RAC",
+                "text": "RAC 25/RAC 24",
+                "fare": 310,
+                "confidence": "high",
+                "last_updated_at": "2026-11-23T15:34:21.001+05:30"
+              }
+            ]
+          }
+        ],
+        "matched_by": "station"
+      },
+      "meta": {
+        "api_version": "v1",
+        "request_id": "req_01M844RZHXFCT1KV1QKJV6BJ42",
+        "trace_id": "trc_01M844RZHYP5321VE3JHPYH2Q1",
+        "timestamp": "2026-11-23T17:36:00.684+05:30",
+        "freshness": {
+          "mode": "live",
+          "retrieved_at": "2026-11-23T12:06:00.684Z"
+        }
+      }
+    },
+    "train_17301_schedule": {
+      "success": true,
+      "data": {
+        "train_number": "17301",
+        "train_name": "Mysuru - Belagavi Express",
+        "source_station_code": "MYS",
+        "destination_station_code": "BGM",
+        "running_days": [
+          "MON",
+          "TUE",
+          "WED",
+          "THU",
+          "FRI",
+          "SAT",
+          "SUN"
+        ],
+        "classes": [
+          "2A",
+          "3A",
+          "SL",
+          "GS"
+        ],
+        "total_duration_minutes": 670,
+        "distance_km": 614,
+        "stops": [
+          {
+            "sequence": 1,
+            "station_code": "MYS",
+            "station_name": "Mysuru Junction",
+            "departure_time": "22:45",
+            "halt_minutes": 0,
+            "day": 1,
+            "distance_km": 0,
+            "latitude": 12.318946,
+            "longitude": 76.646013,
+            "is_stop": true,
+            "notes": {
+              "arrival": "Starts at Mysuru Junction: departs only, no arrival"
+            },
+            "stop_type": "ORIGIN"
+          },
+          {
+            "sequence": 2,
+            "station_code": "KRNR",
+            "station_name": "Krishnarajanagar",
+            "arrival_time": "23:15",
+            "departure_time": "23:16",
+            "halt_minutes": 1,
+            "day": 1,
+            "distance_km": 35,
+            "latitude": 12.4454105,
+            "longitude": 76.3886269,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 3,
+            "station_code": "HLN",
+            "station_name": "Hole Narsipur",
+            "arrival_time": "00:04",
+            "departure_time": "00:05",
+            "halt_minutes": 1,
+            "day": 2,
+            "distance_km": 89,
+            "latitude": 12.786495,
+            "longitude": 76.24646,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 4,
+            "station_code": "HAS",
+            "station_name": "Hassan",
+            "arrival_time": "00:35",
+            "departure_time": "00:37",
+            "halt_minutes": 2,
+            "day": 2,
+            "distance_km": 121,
+            "latitude": 13.003182,
+            "longitude": 76.117359,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 5,
+            "station_code": "ASK",
+            "station_name": "Arsikere Junction",
+            "arrival_time": "01:25",
+            "departure_time": "01:27",
+            "halt_minutes": 2,
+            "day": 2,
+            "distance_km": 168,
+            "latitude": 13.314425,
+            "longitude": 76.2520848,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 6,
+            "station_code": "DRU",
+            "station_name": "Kadur",
+            "arrival_time": "01:59",
+            "departure_time": "02:01",
+            "halt_minutes": 2,
+            "day": 2,
+            "distance_km": 207,
+            "latitude": 13.5503,
+            "longitude": 76.0086,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 7,
+            "station_code": "RRB",
+            "station_name": "Birur Junction",
+            "arrival_time": "02:09",
+            "departure_time": "02:11",
+            "halt_minutes": 2,
+            "day": 2,
+            "distance_km": 213,
+            "latitude": 13.591101,
+            "longitude": 75.974749,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 8,
+            "station_code": "JRU",
+            "station_name": "Chikjajur Junction",
+            "arrival_time": "02:56",
+            "departure_time": "03:01",
+            "halt_minutes": 5,
+            "day": 2,
+            "distance_km": 281,
+            "latitude": 14.126112,
+            "longitude": 76.138705,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 9,
+            "station_code": "DVG",
+            "station_name": "Davangere",
+            "arrival_time": "03:31",
+            "departure_time": "03:33",
+            "halt_minutes": 2,
+            "day": 2,
+            "distance_km": 328,
+            "latitude": 14.468,
+            "longitude": 75.9196,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 10,
+            "station_code": "HRR",
+            "station_name": "Harihar",
+            "arrival_time": "03:44",
+            "departure_time": "03:46",
+            "halt_minutes": 2,
+            "day": 2,
+            "distance_km": 340,
+            "latitude": 14.515431,
+            "longitude": 75.812314,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 11,
+            "station_code": "RNR",
+            "station_name": "Ranibennur",
+            "arrival_time": "04:02",
+            "departure_time": "04:04",
+            "halt_minutes": 2,
+            "day": 2,
+            "distance_km": 364,
+            "latitude": 14.625461,
+            "longitude": 75.635054,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 12,
+            "station_code": "BYD",
+            "station_name": "Byadgi",
+            "arrival_time": "04:19",
+            "departure_time": "04:20",
+            "halt_minutes": 1,
+            "day": 2,
+            "distance_km": 382,
+            "latitude": 14.699723001,
+            "longitude": 75.490095467,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 13,
+            "station_code": "HVR",
+            "station_name": "Mmailara Haveri",
+            "arrival_time": "04:33",
+            "departure_time": "04:35",
+            "halt_minutes": 2,
+            "day": 2,
+            "distance_km": 396,
+            "latitude": 14.7943,
+            "longitude": 75.410686,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 14,
+            "station_code": "YLG",
+            "station_name": "Yalvigi",
+            "arrival_time": "05:04",
+            "departure_time": "05:05",
+            "halt_minutes": 1,
+            "day": 2,
+            "distance_km": 425,
+            "latitude": 15.034253586,
+            "longitude": 75.409401265,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 15,
+            "station_code": "UBL",
+            "station_name": "SSS Hubballi Junction",
+            "arrival_time": "06:10",
+            "departure_time": "06:20",
+            "halt_minutes": 10,
+            "day": 2,
+            "distance_km": 472,
+            "latitude": 15.350302,
+            "longitude": 75.148104,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 16,
+            "station_code": "DWR",
+            "station_name": "Dharwad",
+            "arrival_time": "06:43",
+            "departure_time": "06:45",
+            "halt_minutes": 2,
+            "day": 2,
+            "distance_km": 492,
+            "latitude": 15.440386,
+            "longitude": 75.004552,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 17,
+            "station_code": "LWR",
+            "station_name": "Alnavar Junction",
+            "arrival_time": "07:19",
+            "departure_time": "07:20",
+            "halt_minutes": 1,
+            "day": 2,
+            "distance_km": 529,
+            "latitude": 15.424244,
+            "longitude": 74.738116,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 18,
+            "station_code": "LD",
+            "station_name": "Londa Junction",
+            "arrival_time": "08:08",
+            "departure_time": "08:10",
+            "halt_minutes": 2,
+            "day": 2,
+            "distance_km": 562,
+            "latitude": 15.450273,
+            "longitude": 74.496982,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 19,
+            "station_code": "KNP",
+            "station_name": "Khanapur",
+            "arrival_time": "08:34",
+            "departure_time": "08:35",
+            "halt_minutes": 1,
+            "day": 2,
+            "distance_km": 588,
+            "latitude": 15.637934407,
+            "longitude": 74.499756814,
+            "is_stop": true,
+            "stop_type": "HALT"
+          },
+          {
+            "sequence": 20,
+            "station_code": "BGM",
+            "station_name": "Belagavi",
+            "arrival_time": "09:55",
+            "halt_minutes": 0,
+            "day": 2,
+            "distance_km": 614,
+            "latitude": 15.8492433,
+            "longitude": 74.5095639,
+            "is_stop": true,
+            "notes": {
+              "departure": "Ends at Belagavi: arrives only, no departure"
+            },
+            "stop_type": "DESTINATION"
+          }
+        ],
+        "valid_from": "2026-01-01"
+      },
+      "meta": {
+        "api_version": "v1",
+        "request_id": "req_01M844SK83BBNAMBVX66KXJ8J2",
+        "trace_id": "trc_01M844SK83ZTYE451BGGYW1AZS",
+        "timestamp": "2026-11-23T17:36:20.898+05:30",
+        "freshness": {
+          "mode": "live",
+          "retrieved_at": "2026-11-23T12:06:20.898Z"
+        }
+      }
+    }
+  }
+}
