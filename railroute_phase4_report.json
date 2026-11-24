@@ -1,0 +1,161 @@
+{
+  "title": "RailRoute AI Phase 4 - mixed journey combination engine: delivery report",
+  "date": "2026-11-24",
+  "route_scenario": "MYS -> DWR (the product scenario, used for the synthetic test network)",
+  "provider_plan": "RailCore developer_free",
+  "api_credits_used_during_phase_4_development": 0,
+  "api_credits_remaining_before_phase_4": 4,
+  "api_credits_remaining_after_phase_4": 4,
+  "live_api_calls_made": 0,
+  "live_api_test_policy": "tests/test_live_mixed.py is skipped by default (pytest marker live_api); runs only with RUN_LIVE_API_TESTS=1 and a configured RAILCORE_API_KEY, with a <=6-request budget. The normal suite never touches the real provider.",
+  "development_verification": "Entirely against httpx.MockTransport with synthetic 997xx trains; the production search flow contains no mock data; the provider integration (phase 1 RailCoreClient/normalizer) is untouched.",
+  "endpoint": {
+    "method_path": "POST /api/v1/journeys/mixed/search",
+    "request_example": {
+      "from_station": "MYS",
+      "to_station": "DWR",
+      "journey_date": "2026-11-25",
+      "travel_class": "SL",
+      "quota": "GN",
+      "ranking_preference": "FASTEST"
+    },
+    "response_documented_in_swagger": true,
+    "sample_response_file": "download/railroute_mixed_search_sample.json",
+    "sample_result_shape": {
+      "journey_type": "MIXED",
+      "journey_status": "AVAILABLE_COMBINATION",
+      "segment_count": 4,
+      "train_changes": 1,
+      "seat_changes": 2,
+      "distinct_trains": [
+        "99701",
+        "99702"
+      ],
+      "total_fare": 280.0,
+      "total_duration_minutes": 630,
+      "total_transfer_wait_minutes": 65,
+      "segment_types": [
+        "FIRST_SEGMENT",
+        "SAME_TRAIN_SEGMENT",
+        "SAME_TRAIN_SEGMENT",
+        "TRAIN_CHANGE"
+      ],
+      "transition_types": [
+        "SAME_TRAIN_SEAT_CHANGE",
+        "SAME_TRAIN_SEAT_CHANGE",
+        "TRAIN_CHANGE"
+      ]
+    }
+  },
+  "architecture_and_algorithm": {
+    "approach": "Additional orchestration layer, not a rewrite: MixedJourneyCombinationService SUBCLASSES the phase 3 TrainChangeConnectionService and inherits its discovery, corridor learning, schedule pool, class filtering, leg generation with transfer-window/horizon/cycle validation, first-leg seeding and budget-aware deduplicated batched availability querying verbatim. The two complete search endpoints are never called and concatenated.",
+    "new_edge_type": "Same-run continuation legs: after alighting at station X on train T (run R), the passenger may keep riding the SAME run R onward from X - a SAME-TRAIN SEAT CHANGE (phase 2 semantics: the passenger stays onboard through the halt while the ticket boundary changes; no transfer buffer or max-wait applies). The run is anchored by the previous leg's actual arrival datetime, so overnight day offsets and per-segment IRCTC boarding dates stay correct and the continuation always belongs to the run being ridden. Boarding a different run of the same train number is excluded.",
+    "search": "Time-dependent earliest-arrival (connection-scan style) chronological expansion over individual ticket segments: a priority queue of arrival events is popped in arrival order; expanding an arrival generates schedule-validated train-change legs (transfer window, running days, day offsets, horizon, no station revisits, consecutive trains differ) plus same-run continuation legs, checks availability through the shared SegmentQueryPlanner, and pushes one new event per confirmed leg.",
+    "journey_model": "A journey is a chronological sequence of individual ticket segments; consecutive segments on the same train run form seat-change groups; transitions to different trains are validated train changes. A single-segment source->destination journey is a direct train: excluded from results, listed in direct_trains without availability claims.",
+    "limits": "No fixed maximum number of seat changes or train changes: depth is bounded only by cycle prevention (no station revisits), the horizon and REPORTED computational budgets. No dominance pruning by design (merging states that share station+arrival-time would discard valid alternative journeys whose earlier segments differ). Duplicate journeys are detected by physical segment signature (train, stop sequences, boarding dates) and recorded once.",
+    "ranking": "CHEAPEST / FASTEST / FEWEST_TRAIN_CHANGES / FEWEST_SEAT_CHANGES with deterministic tie-breaks (fare -> duration -> changes -> seats -> segment count -> journey id). Totals: fare (never estimated; unknown fares leave the total null and are listed per segment), door-to-door duration, transfer waiting time (train-change waits only), segment count, train changes, seat changes, distinct trains."
+  },
+  "how_phase_2_and_phase_3_are_reused": {
+    "phase_3_reuse": "Subclassing: _seed_discovery, _seed_pair_pass, _discover_pair, _ensure_station_discovery, _discovery_targets, _fetch_schedules, _learn_schedule, _register_discovered_train, _generate_legs, _push_first_legs, _query_legs and _RunState are inherited UNMODIFIED (the phase 3 engine file was not edited). Only _explore (adds continuation legs + journey signature dedup), assembly, ranking and the response builder are overridden.",
+    "phase_2_reuse": "The phase 2 semantics live in the shared components the mixed engine reuses: per-segment IRCTC boarding dates with overnight day offsets (phase 2 _boarding_date semantics, applied to continuation legs), explicit-only availability qualification and the same SegmentQueryPlanner (dedup memo, 25-item batches, budgets enforced before requests, process-wide schedule/discovery caches, per-search availability freshness). Cross-engine consistency is proven by a test running phases 2, 3 and 4 against the SAME mocked network: the mixed engine's same-train-only journeys equal phase 2's combinations and superset phase 3's connections.",
+    "shared_infrastructure": "SegmentQueryPlanner (dedup + batching + budgets + caches), InternalAvailabilityStatus normalization, RailCoreClient, budget patterns (MixedJourneyBudgets subclasses TrainChangeBudgets; with_overrides per-request transfer windows) and the ranking conventions. No availability logic is duplicated; no live API call is made by either engine's tests."
+  },
+  "tests": {
+    "total_passed": 169,
+    "phase_4_new": 43,
+    "phase_1": 55,
+    "phase_2": 34,
+    "phase_3": 37,
+    "phase_1_2_and_3_still_pass": true,
+    "skipped_live_opt_in": 2
+  },
+  "required_scenarios_covered": [
+    "1 same-train segments followed by one train change",
+    "2 train change followed by same-train segments",
+    "3 two same-train groups connected by a train change",
+    "4 multiple train changes and seat changes in one journey",
+    "5 journey containing only same-train segments",
+    "6 journey containing only train changes",
+    "7 invalid station sequence (reverse-direction train never queried)",
+    "8 invalid interchange station (pass-through stop never queried)",
+    "9 insufficient transfer buffer (reject + per-request override)",
+    "10 excessive transfer wait (reject + per-request override)",
+    "11 overnight same-train segments (boarding dates d/d/d+1)",
+    "12 overnight train change (transfer window crossing midnight)",
+    "13 confirmed availability across every segment",
+    "14 one WAITLIST segment (dead branch)",
+    "15 one RAC segment (dead branch)",
+    "16 one UNKNOWN segment (unverified candidates)",
+    "17 provider error on one segment (error payload surfaced)",
+    "18 duplicate candidate journeys (provider duplicates + unique signatures)",
+    "19 cycle prevention (circular train, no station revisits)",
+    "20 more than two train changes (three changes, via-stations bootstrap)",
+    "21 more than two seat changes (four seat changes)",
+    "22 missing fare data (never estimated)",
+    "23 cheapest ranking",
+    "24 fastest ranking",
+    "25 fewest train changes ranking",
+    "26 fewest seat changes ranking",
+    "27 search budget exhaustion (requests AND credits, before any availability call)",
+    "28 search horizon exhaustion (reject-before-query + honest truncation)",
+    "29 query deduplication (double-expanded station, single provider item)",
+    "30 unverified journey never labelled fully available"
+  ],
+  "status_values_used": [
+    "AVAILABLE_COMBINATION",
+    "PARTIALLY_VERIFIED",
+    "NO_COMPLETE_JOURNEY",
+    "SEARCH_LIMIT_REACHED",
+    "NO_CANDIDATE_TRAINS",
+    "PROVIDER_ERROR",
+    "CONFIG_ERROR"
+  ],
+  "booking_status_never_used": "BOOKING_CONFIRMED (the system does not book tickets)",
+  "segment_and_transition_types": {
+    "segment_types": [
+      "FIRST_SEGMENT",
+      "SAME_TRAIN_SEGMENT",
+      "TRAIN_CHANGE"
+    ],
+    "transition_types": [
+      "SAME_TRAIN_SEAT_CHANGE",
+      "TRAIN_CHANGE"
+    ],
+    "seat_change_never_labelled_transfer": true
+  },
+  "files_created": [
+    "backend/app/schemas/mixed_search.py",
+    "backend/app/services/mixed_journey_service.py",
+    "backend/tests/test_mixed_journey_engine.py",
+    "backend/tests/test_live_mixed.py",
+    "download/railroute_phase4_report.json",
+    "download/railroute_mixed_search_sample.json"
+  ],
+  "files_modified": [
+    "backend/app/api/routes.py (mixed endpoint + Swagger docs)",
+    "backend/app/core/config.py (mixed_* settings, version 0.4.0)",
+    "backend/app/services/search_budgets.py (MixedJourneyBudgets subclass)",
+    "backend/app/main.py (docstring + app description)",
+    "backend/.env.example (mixed_* settings documented)",
+    "backend/README.md (Phase 4 section: architecture, algorithm, rules, budgets, ranking, sample, limitations, tests)"
+  ],
+  "phase_2_and_phase_3_untouched": {
+    "engines_unmodified": "same_train_combination_service.py and train_change_connection_service.py were not edited; their endpoints, schemas, semantics and all 126 pre-existing tests pass unchanged.",
+    "endpoints_still_work": true
+  },
+  "git_commit": "d0c9bea (backend repo, main branch)",
+  "known_limitations": [
+    "Same-run continuations only: journeys that alight from train T and later re-board a DIFFERENT run of the same train number are not generated (deliberate, keeps seat changes unambiguous).",
+    "No station revisits (inherited from phase 3): journeys riding a circular service a full lap are out of scope.",
+    "Discovery is schedule-anchored (inherited): branch stations no fetched schedule reveals need via_stations hints; routes with no through train return an honest NO_CANDIDATE_TRAINS without hints.",
+    "Availability freshness is provider-side; per-segment checked_at and oldest last_updated_at are reported but no strict freshness policy is enforced yet.",
+    "Seat-change halts are reported per transition (onboard_halt_minutes) but not summed into total waiting time.",
+    "Single travel class and quota per search; missing fares leave the total null (never estimated).",
+    "Combinatorial growth is bounded by the reported budgets (states, journeys, requests, credits, time, horizon); SEARCH_LIMIT_REACHED says so honestly.",
+    "No persistence, no booking, no AI agent (out of scope for this phase)."
+  ],
+  "ready_for_phase_5": {
+    "ready": true,
+    "notes": "All three engines emit self-contained, composable journey objects with explicit journey_type (SAME_TRAIN_SEGMENTS / TRAIN_CHANGE / MIXED), per-segment statuses/fares/boarding dates and explicit segment + transition typing, so the station manager, persistence layer (PostgreSQL/Alembic when genuinely required) and the AI agent can consume them directly. No database was introduced in this phase."
+  }
+}

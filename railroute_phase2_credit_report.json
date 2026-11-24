@@ -1,0 +1,70 @@
+{
+  "title": "RailRoute AI Phase 2 - real API credit usage report (all searches)",
+  "date_of_tests": "2026-11-23",
+  "route_tested": "MYS -> DWR (the product scenario)",
+  "provider_plan": "RailCore developer_free: 500 requests/month, 10/minute, 100/day",
+  "phase_1_credits_used_same_month": 11,
+  "phase_2_searches": [
+    {
+      "search": "MYS->DWR 2026-11-26 SL GN (FEWEST_CHANGES)",
+      "status": "COMPLETED_NO_COMBINATIONS",
+      "outcome": "Exhaustive search, nothing fully available on this date: direct 17301 SL waitlisted (GNWL 92/WL 52), direct 16210 SL waitlisted (GNWL186/WL89); no complete multi-segment path either. An honest negative result.",
+      "requests_sent": 10,
+      "credits_cost": 128,
+      "segments_checked": 125,
+      "output_file": "railroute_same_train_search_real_2026-11-26_sl.json"
+    },
+    {
+      "search": "MYS->DWR 2026-11-26 3A GN (CHEAPEST)",
+      "status": "COMPLETED_NO_COMBINATIONS",
+      "outcome": "Exhaustive search, no fully confirmed combination on this date (direct 17301 3A RAC, 16210 3A waitlisted).",
+      "requests_sent": 7,
+      "credits_cost": 125,
+      "segments_checked": 125,
+      "output_file": "railroute_same_train_search_real_2026-11-26_3a.json"
+    },
+    {
+      "search": "Date probe: train 17301 3A, MYS->ASK (date D) + ASK->DWR (date D+1)",
+      "status": "probe",
+      "outcome": "Found 2026-11-27 with both segments AVAILABLE-110, selected as the demonstration date.",
+      "requests_sent": 2,
+      "credits_cost": 2
+    },
+    {
+      "search": "MYS->DWR 2026-11-27 3A GN (CHEAPEST) - run A (initial enumeration order)",
+      "status": "PARTIAL_BUDGET_EXHAUSTED",
+      "outcome": "50 combinations found across trains 12781 and 17301 (up to 5 segments). Revealed that DFS enumeration order let the per-train cap cut off simpler combinations; enumeration was then improved to iterative deepening (fewest segments first).",
+      "requests_sent": 11,
+      "credits_cost": 150,
+      "segments_checked": 147,
+      "deduplicated_queries": 28
+    },
+    {
+      "search": "MYS->DWR 2026-11-27 3A GN (CHEAPEST) - run B (final, improved enumeration)",
+      "status": "PARTIAL_BUDGET_EXHAUSTED",
+      "outcome": "25 combinations, best first: train 12781 MYS->UBL->DWR, 2 segments, both CONFIRMED_AVAILABLE, 1400 INR total, while the 12781 direct ticket is WAITLISTED (GNWL88/WL57, 855 INR) - the core RailRoute AI value proposition demonstrated on live data. Second segment boarded 2026-11-28 (overnight day-offset handling verified on the real API).",
+      "requests_sent": 8,
+      "credits_cost": 80,
+      "segments_checked": 77,
+      "distinct_queries_planned": 175,
+      "deduplicated_queries": 98,
+      "output_file": "railroute_same_train_search_real_2026-11-27_3a.json"
+    }
+  ],
+  "phase_2_totals": {
+    "requests_sent": 38,
+    "credits_used": 485,
+    "credits_used_with_phase_1": 496,
+    "credits_remaining": 4,
+    "note": "Monthly free-plan quota effectively exhausted; real-API work for this phase is complete."
+  },
+  "key_learnings": [
+    "Availability varies sharply by date: 2026-11-26 had no fully confirmed same-train combination in SL or 3A, while 2026-11-27 3A had many.",
+    "The per-segment boarding-date semantics (day offsets) are essential and work on the live API: overnight segments must be queried with the next calendar date.",
+    "Batch endpoint + deduplication saved 98 of 175 planned queries in the final run (56% saved).",
+    "Same-train segmentation is confirmed real: a waitlisted direct ticket (12781 GNWL88/WL57) coexists with fully available MYS->UBL and UBL->DWR segments on the same train run.",
+    "Segmented fares exceed direct fares on real data: 1400 vs 855 INR (+63.7%) on 12781 3A.",
+    "A full two-train exploration costs roughly 150 credits on this route (16-stop window); budgets matter on the free plan."
+  ],
+  "credentials": "redacted (API key stored only in backend/.env, never in results; every output file scanned for 'rk_live_' before saving)"
+}

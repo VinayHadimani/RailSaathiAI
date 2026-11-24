@@ -1,0 +1,2371 @@
+{
+  "_note": "Genuine engine output against a fully synthetic mocked provider (trains 997xx do not exist; generated for documentation - the production flow contains no mock data). The result shown is the spec's example shape: two same-train seat-change segments, then a train change.",
+  "request": {
+    "from_station": "MYS",
+    "to_station": "DWR",
+    "journey_date": "2026-11-25",
+    "travel_class": "SL",
+    "quota": "GN",
+    "ranking_preference": "FASTEST"
+  },
+  "response": {
+    "success": true,
+    "status": "AVAILABLE_COMBINATION",
+    "message": "8 mixed journey(s) with fully confirmed availability found (same-train seat changes and/or train changes).",
+    "search": {
+      "from_station": "MYS",
+      "to_station": "DWR",
+      "journey_date": "2026-11-25",
+      "travel_class": "SL",
+      "quota": "GN",
+      "ranking_preference": "FASTEST",
+      "via_stations": []
+    },
+    "ranked_by": "FASTEST",
+    "results": [
+      {
+        "journey_id": "2026-11-25-99701@MYS-99701@KRNR-99701@ASK-99701@SBC-99701@UBL-DWR",
+        "journey_type": "SAME_TRAIN_SEGMENTS",
+        "journey_status": "AVAILABLE_COMBINATION",
+        "from_station": "MYS",
+        "to_station": "DWR",
+        "journey_date": "2026-11-25",
+        "departure": {
+          "station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "time": "08:00",
+          "day": 1
+        },
+        "arrival": {
+          "station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 6
+          },
+          "time": "17:30",
+          "day": 1
+        },
+        "departure_datetime": "2026-11-25T08:00:00+05:30",
+        "arrival_datetime": "2026-11-25T17:30:00+05:30",
+        "overnight": false,
+        "total_duration_minutes": 570,
+        "total_fare": 415.0,
+        "fares_complete": true,
+        "segments_missing_fare": [],
+        "segment_count": 5,
+        "train_changes": 0,
+        "seat_changes": 4,
+        "total_transfer_wait_minutes": 0,
+        "distinct_train_count": 1,
+        "distinct_trains": [
+          "99701"
+        ],
+        "transitions": [
+          {
+            "transition_number": 1,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "KRNR",
+              "name": "Krishnarajanagar",
+              "sequence": 2
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T09:10:00+05:30",
+            "departure_datetime": "2026-11-25T09:15:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 2,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "departure_datetime": "2026-11-25T10:35:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 3,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T12:30:00+05:30",
+            "departure_datetime": "2026-11-25T12:35:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 4,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "UBL",
+              "name": "Hubballi Junction",
+              "sequence": 5
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T15:00:00+05:30",
+            "departure_datetime": "2026-11-25T15:05:00+05:30",
+            "onboard_halt_minutes": 5
+          }
+        ],
+        "segments": [
+          {
+            "segment_number": 1,
+            "segment_type": "FIRST_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "MYS",
+              "name": "Mysuru Junction",
+              "sequence": 1
+            },
+            "to_station": {
+              "code": "KRNR",
+              "name": "Krishnarajanagar",
+              "sequence": 2
+            },
+            "departure_time": "08:00",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T08:00:00+05:30",
+            "arrival_time": "09:10",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T09:10:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 35.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 60.0,
+            "total_fare": 60.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.227568+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 2,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "KRNR",
+              "name": "Krishnarajanagar",
+              "sequence": 2
+            },
+            "to_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "departure_time": "09:15",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T09:15:00+05:30",
+            "arrival_time": "10:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 160.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 55.0,
+            "total_fare": 55.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.229115+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 3,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "to_station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "departure_time": "10:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T10:35:00+05:30",
+            "arrival_time": "12:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T12:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 320.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 45.0,
+            "total_fare": 45.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.230707+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 4,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "to_station": {
+              "code": "UBL",
+              "name": "Hubballi Junction",
+              "sequence": 5
+            },
+            "departure_time": "12:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T12:35:00+05:30",
+            "arrival_time": "15:00",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T15:00:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 410.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 180.0,
+            "total_fare": 180.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.233045+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 5,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "UBL",
+              "name": "Hubballi Junction",
+              "sequence": 5
+            },
+            "to_station": {
+              "code": "DWR",
+              "name": "Dharwad",
+              "sequence": 6
+            },
+            "departure_time": "15:05",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T15:05:00+05:30",
+            "arrival_time": "17:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T17:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 440.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 75.0,
+            "total_fare": 75.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.234651+00:00",
+            "request_id": "req_test_batch"
+          }
+        ],
+        "all_segments_confirmed_available": true,
+        "unverified_segment_numbers": [],
+        "availability_checked_at": "2026-11-24T05:49:15.234651+00:00",
+        "oldest_availability_update_at": "2026-11-23T08:15:46.547+05:30"
+      },
+      {
+        "journey_id": "2026-11-25-99701@MYS-99701@ASK-99701@SBC-99701@UBL-DWR",
+        "journey_type": "SAME_TRAIN_SEGMENTS",
+        "journey_status": "AVAILABLE_COMBINATION",
+        "from_station": "MYS",
+        "to_station": "DWR",
+        "journey_date": "2026-11-25",
+        "departure": {
+          "station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "time": "08:00",
+          "day": 1
+        },
+        "arrival": {
+          "station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 6
+          },
+          "time": "17:30",
+          "day": 1
+        },
+        "departure_datetime": "2026-11-25T08:00:00+05:30",
+        "arrival_datetime": "2026-11-25T17:30:00+05:30",
+        "overnight": false,
+        "total_duration_minutes": 570,
+        "total_fare": 465.0,
+        "fares_complete": true,
+        "segments_missing_fare": [],
+        "segment_count": 4,
+        "train_changes": 0,
+        "seat_changes": 3,
+        "total_transfer_wait_minutes": 0,
+        "distinct_train_count": 1,
+        "distinct_trains": [
+          "99701"
+        ],
+        "transitions": [
+          {
+            "transition_number": 1,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "departure_datetime": "2026-11-25T10:35:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 2,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T12:30:00+05:30",
+            "departure_datetime": "2026-11-25T12:35:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 3,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "UBL",
+              "name": "Hubballi Junction",
+              "sequence": 5
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T15:00:00+05:30",
+            "departure_datetime": "2026-11-25T15:05:00+05:30",
+            "onboard_halt_minutes": 5
+          }
+        ],
+        "segments": [
+          {
+            "segment_number": 1,
+            "segment_type": "FIRST_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "MYS",
+              "name": "Mysuru Junction",
+              "sequence": 1
+            },
+            "to_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "departure_time": "08:00",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T08:00:00+05:30",
+            "arrival_time": "10:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 160.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 165.0,
+            "total_fare": 165.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.227568+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 2,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "to_station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "departure_time": "10:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T10:35:00+05:30",
+            "arrival_time": "12:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T12:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 320.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 45.0,
+            "total_fare": 45.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.230707+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 3,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "to_station": {
+              "code": "UBL",
+              "name": "Hubballi Junction",
+              "sequence": 5
+            },
+            "departure_time": "12:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T12:35:00+05:30",
+            "arrival_time": "15:00",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T15:00:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 410.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 180.0,
+            "total_fare": 180.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.233045+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 4,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "UBL",
+              "name": "Hubballi Junction",
+              "sequence": 5
+            },
+            "to_station": {
+              "code": "DWR",
+              "name": "Dharwad",
+              "sequence": 6
+            },
+            "departure_time": "15:05",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T15:05:00+05:30",
+            "arrival_time": "17:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T17:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 440.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 75.0,
+            "total_fare": 75.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.234651+00:00",
+            "request_id": "req_test_batch"
+          }
+        ],
+        "all_segments_confirmed_available": true,
+        "unverified_segment_numbers": [],
+        "availability_checked_at": "2026-11-24T05:49:15.234651+00:00",
+        "oldest_availability_update_at": "2026-11-23T08:15:46.547+05:30"
+      },
+      {
+        "journey_id": "2026-11-25-99701@MYS-99701@KRNR-99701@ASK-99702@SBC-DWR",
+        "journey_type": "MIXED",
+        "journey_status": "AVAILABLE_COMBINATION",
+        "from_station": "MYS",
+        "to_station": "DWR",
+        "journey_date": "2026-11-25",
+        "departure": {
+          "station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "time": "08:00",
+          "day": 1
+        },
+        "arrival": {
+          "station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 4
+          },
+          "time": "18:30",
+          "day": 1
+        },
+        "departure_datetime": "2026-11-25T08:00:00+05:30",
+        "arrival_datetime": "2026-11-25T18:30:00+05:30",
+        "overnight": false,
+        "total_duration_minutes": 630,
+        "total_fare": 280.0,
+        "fares_complete": true,
+        "segments_missing_fare": [],
+        "segment_count": 4,
+        "train_changes": 1,
+        "seat_changes": 2,
+        "total_transfer_wait_minutes": 65,
+        "distinct_train_count": 2,
+        "distinct_trains": [
+          "99701",
+          "99702"
+        ],
+        "transitions": [
+          {
+            "transition_number": 1,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "KRNR",
+              "name": "Krishnarajanagar",
+              "sequence": 2
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T09:10:00+05:30",
+            "departure_datetime": "2026-11-25T09:15:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 2,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "departure_datetime": "2026-11-25T10:35:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 3,
+            "transition_type": "TRAIN_CHANGE",
+            "is_train_change": true,
+            "station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "from_train": "99701",
+            "to_train": "99702",
+            "arrival_datetime": "2026-11-25T12:30:00+05:30",
+            "departure_datetime": "2026-11-25T13:35:00+05:30",
+            "wait_minutes": 65,
+            "within_min_buffer": true,
+            "within_max_wait": true
+          }
+        ],
+        "segments": [
+          {
+            "segment_number": 1,
+            "segment_type": "FIRST_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "MYS",
+              "name": "Mysuru Junction",
+              "sequence": 1
+            },
+            "to_station": {
+              "code": "KRNR",
+              "name": "Krishnarajanagar",
+              "sequence": 2
+            },
+            "departure_time": "08:00",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T08:00:00+05:30",
+            "arrival_time": "09:10",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T09:10:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 35.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 60.0,
+            "total_fare": 60.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.227568+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 2,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "KRNR",
+              "name": "Krishnarajanagar",
+              "sequence": 2
+            },
+            "to_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "departure_time": "09:15",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T09:15:00+05:30",
+            "arrival_time": "10:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 160.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 55.0,
+            "total_fare": 55.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.229115+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 3,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "to_station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "departure_time": "10:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T10:35:00+05:30",
+            "arrival_time": "12:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T12:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 320.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 45.0,
+            "total_fare": 45.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.230707+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 4,
+            "segment_type": "TRAIN_CHANGE",
+            "train_number": "99702",
+            "train_name": "MOCK 99702 EXPRESS",
+            "from_station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 2
+            },
+            "to_station": {
+              "code": "DWR",
+              "name": "Dharwad",
+              "sequence": 4
+            },
+            "departure_time": "13:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T13:35:00+05:30",
+            "arrival_time": "18:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T18:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 280.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 120.0,
+            "total_fare": 120.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.233327+00:00",
+            "request_id": "req_test_batch"
+          }
+        ],
+        "all_segments_confirmed_available": true,
+        "unverified_segment_numbers": [],
+        "availability_checked_at": "2026-11-24T05:49:15.233327+00:00",
+        "oldest_availability_update_at": "2026-11-23T08:15:46.547+05:30"
+      },
+      {
+        "journey_id": "2026-11-25-99701@MYS-99701@KRNR-99702@ASK-DWR",
+        "journey_type": "MIXED",
+        "journey_status": "AVAILABLE_COMBINATION",
+        "from_station": "MYS",
+        "to_station": "DWR",
+        "journey_date": "2026-11-25",
+        "departure": {
+          "station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "time": "08:00",
+          "day": 1
+        },
+        "arrival": {
+          "station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 4
+          },
+          "time": "18:30",
+          "day": 1
+        },
+        "departure_datetime": "2026-11-25T08:00:00+05:30",
+        "arrival_datetime": "2026-11-25T18:30:00+05:30",
+        "overnight": false,
+        "total_duration_minutes": 630,
+        "total_fare": 325.0,
+        "fares_complete": true,
+        "segments_missing_fare": [],
+        "segment_count": 3,
+        "train_changes": 1,
+        "seat_changes": 1,
+        "total_transfer_wait_minutes": 65,
+        "distinct_train_count": 2,
+        "distinct_trains": [
+          "99701",
+          "99702"
+        ],
+        "transitions": [
+          {
+            "transition_number": 1,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "KRNR",
+              "name": "Krishnarajanagar",
+              "sequence": 2
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T09:10:00+05:30",
+            "departure_datetime": "2026-11-25T09:15:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 2,
+            "transition_type": "TRAIN_CHANGE",
+            "is_train_change": true,
+            "station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "from_train": "99701",
+            "to_train": "99702",
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "departure_datetime": "2026-11-25T11:35:00+05:30",
+            "wait_minutes": 65,
+            "within_min_buffer": true,
+            "within_max_wait": true
+          }
+        ],
+        "segments": [
+          {
+            "segment_number": 1,
+            "segment_type": "FIRST_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "MYS",
+              "name": "Mysuru Junction",
+              "sequence": 1
+            },
+            "to_station": {
+              "code": "KRNR",
+              "name": "Krishnarajanagar",
+              "sequence": 2
+            },
+            "departure_time": "08:00",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T08:00:00+05:30",
+            "arrival_time": "09:10",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T09:10:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 35.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 60.0,
+            "total_fare": 60.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.227568+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 2,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "KRNR",
+              "name": "Krishnarajanagar",
+              "sequence": 2
+            },
+            "to_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "departure_time": "09:15",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T09:15:00+05:30",
+            "arrival_time": "10:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 160.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 55.0,
+            "total_fare": 55.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.229115+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 3,
+            "segment_type": "TRAIN_CHANGE",
+            "train_number": "99702",
+            "train_name": "MOCK 99702 EXPRESS",
+            "from_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 1
+            },
+            "to_station": {
+              "code": "DWR",
+              "name": "Dharwad",
+              "sequence": 4
+            },
+            "departure_time": "11:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T11:35:00+05:30",
+            "arrival_time": "18:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T18:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 280.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 210.0,
+            "total_fare": 210.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.231017+00:00",
+            "request_id": "req_test_batch"
+          }
+        ],
+        "all_segments_confirmed_available": true,
+        "unverified_segment_numbers": [],
+        "availability_checked_at": "2026-11-24T05:49:15.231017+00:00",
+        "oldest_availability_update_at": "2026-11-23T08:15:46.547+05:30"
+      },
+      {
+        "journey_id": "2026-11-25-99701@MYS-99701@ASK-99702@SBC-DWR",
+        "journey_type": "MIXED",
+        "journey_status": "AVAILABLE_COMBINATION",
+        "from_station": "MYS",
+        "to_station": "DWR",
+        "journey_date": "2026-11-25",
+        "departure": {
+          "station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "time": "08:00",
+          "day": 1
+        },
+        "arrival": {
+          "station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 4
+          },
+          "time": "18:30",
+          "day": 1
+        },
+        "departure_datetime": "2026-11-25T08:00:00+05:30",
+        "arrival_datetime": "2026-11-25T18:30:00+05:30",
+        "overnight": false,
+        "total_duration_minutes": 630,
+        "total_fare": 330.0,
+        "fares_complete": true,
+        "segments_missing_fare": [],
+        "segment_count": 3,
+        "train_changes": 1,
+        "seat_changes": 1,
+        "total_transfer_wait_minutes": 65,
+        "distinct_train_count": 2,
+        "distinct_trains": [
+          "99701",
+          "99702"
+        ],
+        "transitions": [
+          {
+            "transition_number": 1,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "departure_datetime": "2026-11-25T10:35:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 2,
+            "transition_type": "TRAIN_CHANGE",
+            "is_train_change": true,
+            "station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "from_train": "99701",
+            "to_train": "99702",
+            "arrival_datetime": "2026-11-25T12:30:00+05:30",
+            "departure_datetime": "2026-11-25T13:35:00+05:30",
+            "wait_minutes": 65,
+            "within_min_buffer": true,
+            "within_max_wait": true
+          }
+        ],
+        "segments": [
+          {
+            "segment_number": 1,
+            "segment_type": "FIRST_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "MYS",
+              "name": "Mysuru Junction",
+              "sequence": 1
+            },
+            "to_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "departure_time": "08:00",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T08:00:00+05:30",
+            "arrival_time": "10:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 160.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 165.0,
+            "total_fare": 165.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.227568+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 2,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "to_station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "departure_time": "10:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T10:35:00+05:30",
+            "arrival_time": "12:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T12:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 320.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 45.0,
+            "total_fare": 45.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.230707+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 3,
+            "segment_type": "TRAIN_CHANGE",
+            "train_number": "99702",
+            "train_name": "MOCK 99702 EXPRESS",
+            "from_station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 2
+            },
+            "to_station": {
+              "code": "DWR",
+              "name": "Dharwad",
+              "sequence": 4
+            },
+            "departure_time": "13:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T13:35:00+05:30",
+            "arrival_time": "18:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T18:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 280.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 120.0,
+            "total_fare": 120.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.233327+00:00",
+            "request_id": "req_test_batch"
+          }
+        ],
+        "all_segments_confirmed_available": true,
+        "unverified_segment_numbers": [],
+        "availability_checked_at": "2026-11-24T05:49:15.233327+00:00",
+        "oldest_availability_update_at": "2026-11-23T08:15:46.547+05:30"
+      },
+      {
+        "journey_id": "2026-11-25-99701@MYS-99702@ASK-DWR",
+        "journey_type": "TRAIN_CHANGE",
+        "journey_status": "AVAILABLE_COMBINATION",
+        "from_station": "MYS",
+        "to_station": "DWR",
+        "journey_date": "2026-11-25",
+        "departure": {
+          "station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "time": "08:00",
+          "day": 1
+        },
+        "arrival": {
+          "station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 4
+          },
+          "time": "18:30",
+          "day": 1
+        },
+        "departure_datetime": "2026-11-25T08:00:00+05:30",
+        "arrival_datetime": "2026-11-25T18:30:00+05:30",
+        "overnight": false,
+        "total_duration_minutes": 630,
+        "total_fare": 375.0,
+        "fares_complete": true,
+        "segments_missing_fare": [],
+        "segment_count": 2,
+        "train_changes": 1,
+        "seat_changes": 0,
+        "total_transfer_wait_minutes": 65,
+        "distinct_train_count": 2,
+        "distinct_trains": [
+          "99701",
+          "99702"
+        ],
+        "transitions": [
+          {
+            "transition_number": 1,
+            "transition_type": "TRAIN_CHANGE",
+            "is_train_change": true,
+            "station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "from_train": "99701",
+            "to_train": "99702",
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "departure_datetime": "2026-11-25T11:35:00+05:30",
+            "wait_minutes": 65,
+            "within_min_buffer": true,
+            "within_max_wait": true
+          }
+        ],
+        "segments": [
+          {
+            "segment_number": 1,
+            "segment_type": "FIRST_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "MYS",
+              "name": "Mysuru Junction",
+              "sequence": 1
+            },
+            "to_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "departure_time": "08:00",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T08:00:00+05:30",
+            "arrival_time": "10:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 160.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 165.0,
+            "total_fare": 165.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.227568+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 2,
+            "segment_type": "TRAIN_CHANGE",
+            "train_number": "99702",
+            "train_name": "MOCK 99702 EXPRESS",
+            "from_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 1
+            },
+            "to_station": {
+              "code": "DWR",
+              "name": "Dharwad",
+              "sequence": 4
+            },
+            "departure_time": "11:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T11:35:00+05:30",
+            "arrival_time": "18:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T18:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 280.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 210.0,
+            "total_fare": 210.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.231017+00:00",
+            "request_id": "req_test_batch"
+          }
+        ],
+        "all_segments_confirmed_available": true,
+        "unverified_segment_numbers": [],
+        "availability_checked_at": "2026-11-24T05:49:15.231017+00:00",
+        "oldest_availability_update_at": "2026-11-23T08:15:46.547+05:30"
+      },
+      {
+        "journey_id": "2026-11-25-99701@MYS-99701@KRNR-99701@ASK-99701@SBC-99703@UBL-DWR",
+        "journey_type": "MIXED",
+        "journey_status": "AVAILABLE_COMBINATION",
+        "from_station": "MYS",
+        "to_station": "DWR",
+        "journey_date": "2026-11-25",
+        "departure": {
+          "station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "time": "08:00",
+          "day": 1
+        },
+        "arrival": {
+          "station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 3
+          },
+          "time": "19:00",
+          "day": 1
+        },
+        "departure_datetime": "2026-11-25T08:00:00+05:30",
+        "arrival_datetime": "2026-11-25T19:00:00+05:30",
+        "overnight": false,
+        "total_duration_minutes": 660,
+        "total_fare": 430.0,
+        "fares_complete": true,
+        "segments_missing_fare": [],
+        "segment_count": 5,
+        "train_changes": 1,
+        "seat_changes": 3,
+        "total_transfer_wait_minutes": 95,
+        "distinct_train_count": 2,
+        "distinct_trains": [
+          "99701",
+          "99703"
+        ],
+        "transitions": [
+          {
+            "transition_number": 1,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "KRNR",
+              "name": "Krishnarajanagar",
+              "sequence": 2
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T09:10:00+05:30",
+            "departure_datetime": "2026-11-25T09:15:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 2,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "departure_datetime": "2026-11-25T10:35:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 3,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T12:30:00+05:30",
+            "departure_datetime": "2026-11-25T12:35:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 4,
+            "transition_type": "TRAIN_CHANGE",
+            "is_train_change": true,
+            "station": {
+              "code": "UBL",
+              "name": "Hubballi Junction",
+              "sequence": 5
+            },
+            "from_train": "99701",
+            "to_train": "99703",
+            "arrival_datetime": "2026-11-25T15:00:00+05:30",
+            "departure_datetime": "2026-11-25T16:35:00+05:30",
+            "wait_minutes": 95,
+            "within_min_buffer": true,
+            "within_max_wait": true
+          }
+        ],
+        "segments": [
+          {
+            "segment_number": 1,
+            "segment_type": "FIRST_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "MYS",
+              "name": "Mysuru Junction",
+              "sequence": 1
+            },
+            "to_station": {
+              "code": "KRNR",
+              "name": "Krishnarajanagar",
+              "sequence": 2
+            },
+            "departure_time": "08:00",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T08:00:00+05:30",
+            "arrival_time": "09:10",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T09:10:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 35.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 60.0,
+            "total_fare": 60.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.227568+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 2,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "KRNR",
+              "name": "Krishnarajanagar",
+              "sequence": 2
+            },
+            "to_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "departure_time": "09:15",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T09:15:00+05:30",
+            "arrival_time": "10:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 160.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 55.0,
+            "total_fare": 55.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.229115+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 3,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "to_station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "departure_time": "10:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T10:35:00+05:30",
+            "arrival_time": "12:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T12:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 320.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 45.0,
+            "total_fare": 45.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.230707+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 4,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "to_station": {
+              "code": "UBL",
+              "name": "Hubballi Junction",
+              "sequence": 5
+            },
+            "departure_time": "12:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T12:35:00+05:30",
+            "arrival_time": "15:00",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T15:00:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 410.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 180.0,
+            "total_fare": 180.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.233045+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 5,
+            "segment_type": "TRAIN_CHANGE",
+            "train_number": "99703",
+            "train_name": "MOCK 99703 EXPRESS",
+            "from_station": {
+              "code": "UBL",
+              "name": "Hubballi Junction",
+              "sequence": 2
+            },
+            "to_station": {
+              "code": "DWR",
+              "name": "Dharwad",
+              "sequence": 3
+            },
+            "departure_time": "16:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T16:35:00+05:30",
+            "arrival_time": "19:00",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T19:00:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 120.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 90.0,
+            "total_fare": 90.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.235148+00:00",
+            "request_id": "req_test_batch"
+          }
+        ],
+        "all_segments_confirmed_available": true,
+        "unverified_segment_numbers": [],
+        "availability_checked_at": "2026-11-24T05:49:15.235148+00:00",
+        "oldest_availability_update_at": "2026-11-23T08:15:46.547+05:30"
+      },
+      {
+        "journey_id": "2026-11-25-99701@MYS-99701@ASK-99701@SBC-99703@UBL-DWR",
+        "journey_type": "MIXED",
+        "journey_status": "AVAILABLE_COMBINATION",
+        "from_station": "MYS",
+        "to_station": "DWR",
+        "journey_date": "2026-11-25",
+        "departure": {
+          "station": {
+            "code": "MYS",
+            "name": "Mysuru Junction",
+            "sequence": 1
+          },
+          "time": "08:00",
+          "day": 1
+        },
+        "arrival": {
+          "station": {
+            "code": "DWR",
+            "name": "Dharwad",
+            "sequence": 3
+          },
+          "time": "19:00",
+          "day": 1
+        },
+        "departure_datetime": "2026-11-25T08:00:00+05:30",
+        "arrival_datetime": "2026-11-25T19:00:00+05:30",
+        "overnight": false,
+        "total_duration_minutes": 660,
+        "total_fare": 480.0,
+        "fares_complete": true,
+        "segments_missing_fare": [],
+        "segment_count": 4,
+        "train_changes": 1,
+        "seat_changes": 2,
+        "total_transfer_wait_minutes": 95,
+        "distinct_train_count": 2,
+        "distinct_trains": [
+          "99701",
+          "99703"
+        ],
+        "transitions": [
+          {
+            "transition_number": 1,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "departure_datetime": "2026-11-25T10:35:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 2,
+            "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+            "is_train_change": false,
+            "station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "from_train": "99701",
+            "to_train": "99701",
+            "arrival_datetime": "2026-11-25T12:30:00+05:30",
+            "departure_datetime": "2026-11-25T12:35:00+05:30",
+            "onboard_halt_minutes": 5
+          },
+          {
+            "transition_number": 3,
+            "transition_type": "TRAIN_CHANGE",
+            "is_train_change": true,
+            "station": {
+              "code": "UBL",
+              "name": "Hubballi Junction",
+              "sequence": 5
+            },
+            "from_train": "99701",
+            "to_train": "99703",
+            "arrival_datetime": "2026-11-25T15:00:00+05:30",
+            "departure_datetime": "2026-11-25T16:35:00+05:30",
+            "wait_minutes": 95,
+            "within_min_buffer": true,
+            "within_max_wait": true
+          }
+        ],
+        "segments": [
+          {
+            "segment_number": 1,
+            "segment_type": "FIRST_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "MYS",
+              "name": "Mysuru Junction",
+              "sequence": 1
+            },
+            "to_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "departure_time": "08:00",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T08:00:00+05:30",
+            "arrival_time": "10:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T10:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 160.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 165.0,
+            "total_fare": 165.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.227568+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 2,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "ASK",
+              "name": "Arsikere Junction",
+              "sequence": 3
+            },
+            "to_station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "departure_time": "10:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T10:35:00+05:30",
+            "arrival_time": "12:30",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T12:30:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 320.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 45.0,
+            "total_fare": 45.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.230707+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 3,
+            "segment_type": "SAME_TRAIN_SEGMENT",
+            "train_number": "99701",
+            "train_name": "MOCK 99701 EXPRESS",
+            "from_station": {
+              "code": "SBC",
+              "name": "Bengaluru",
+              "sequence": 4
+            },
+            "to_station": {
+              "code": "UBL",
+              "name": "Hubballi Junction",
+              "sequence": 5
+            },
+            "departure_time": "12:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T12:35:00+05:30",
+            "arrival_time": "15:00",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T15:00:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 410.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 180.0,
+            "total_fare": 180.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.233045+00:00",
+            "request_id": "req_test_batch"
+          },
+          {
+            "segment_number": 4,
+            "segment_type": "TRAIN_CHANGE",
+            "train_number": "99703",
+            "train_name": "MOCK 99703 EXPRESS",
+            "from_station": {
+              "code": "UBL",
+              "name": "Hubballi Junction",
+              "sequence": 2
+            },
+            "to_station": {
+              "code": "DWR",
+              "name": "Dharwad",
+              "sequence": 3
+            },
+            "departure_time": "16:35",
+            "departure_day": 1,
+            "departure_datetime": "2026-11-25T16:35:00+05:30",
+            "arrival_time": "19:00",
+            "arrival_day": 1,
+            "arrival_datetime": "2026-11-25T19:00:00+05:30",
+            "boarding_query_date": "2026-11-25",
+            "halt_minutes_at_to_station": 2,
+            "distance_km_at_to_station": 120.0,
+            "travel_class": "SL",
+            "quota": "GN",
+            "status": "CONFIRMED_AVAILABLE",
+            "provider_status": "AVAILABLE",
+            "availability_text": "AVAILABLE-0040",
+            "available_count": 40,
+            "fare": 90.0,
+            "total_fare": 90.0,
+            "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+            "checked_at": "2026-11-24T05:49:15.235148+00:00",
+            "request_id": "req_test_batch"
+          }
+        ],
+        "all_segments_confirmed_available": true,
+        "unverified_segment_numbers": [],
+        "availability_checked_at": "2026-11-24T05:49:15.235148+00:00",
+        "oldest_availability_update_at": "2026-11-23T08:15:46.547+05:30"
+      }
+    ],
+    "total_results": 8,
+    "results_truncated": false,
+    "unverified_candidates": [],
+    "total_unverified_candidates": 0,
+    "direct_trains": [
+      {
+        "train_number": "99701",
+        "train_name": "MOCK 99701 EXPRESS",
+        "from_station_code": "MYS",
+        "to_station_code": "DWR",
+        "departure_time": "08:00",
+        "arrival_time": "17:30",
+        "classes": [
+          "SL",
+          "3A"
+        ],
+        "availability_checked": false
+      }
+    ],
+    "stations": [
+      {
+        "station_code": "MYS",
+        "events_expanded": 0,
+        "pairs": [
+          {
+            "from_station": "MYS",
+            "to_station": "DWR",
+            "journey_date": "2026-11-25",
+            "trains_found": 1,
+            "cache_hit": false,
+            "no_trains_found": false
+          },
+          {
+            "from_station": "MYS",
+            "to_station": "KRNR",
+            "journey_date": "2026-11-25",
+            "trains_found": 1,
+            "cache_hit": false,
+            "no_trains_found": false
+          },
+          {
+            "from_station": "MYS",
+            "to_station": "ASK",
+            "journey_date": "2026-11-25",
+            "trains_found": 1,
+            "cache_hit": false,
+            "no_trains_found": false
+          },
+          {
+            "from_station": "MYS",
+            "to_station": "SBC",
+            "journey_date": "2026-11-25",
+            "trains_found": 1,
+            "cache_hit": false,
+            "no_trains_found": false
+          },
+          {
+            "from_station": "MYS",
+            "to_station": "UBL",
+            "journey_date": "2026-11-25",
+            "trains_found": 1,
+            "cache_hit": false,
+            "no_trains_found": false
+          }
+        ],
+        "legs_evaluated": 4,
+        "legs_confirmed": 2,
+        "legs_rejected": 2,
+        "legs_unverified": 0
+      },
+      {
+        "station_code": "KRNR",
+        "station_name": "Krishnarajanagar",
+        "events_expanded": 1,
+        "first_arrival_datetime": "2026-11-25T09:10:00+05:30",
+        "pairs": [
+          {
+            "from_station": "KRNR",
+            "to_station": "DWR",
+            "journey_date": "2026-11-25",
+            "trains_found": 1,
+            "cache_hit": false,
+            "no_trains_found": false
+          },
+          {
+            "from_station": "KRNR",
+            "to_station": "ASK",
+            "journey_date": "2026-11-25",
+            "trains_found": 1,
+            "cache_hit": false,
+            "no_trains_found": false
+          },
+          {
+            "from_station": "KRNR",
+            "to_station": "SBC",
+            "journey_date": "2026-11-25",
+            "trains_found": 1,
+            "cache_hit": false,
+            "no_trains_found": false
+          },
+          {
+            "from_station": "KRNR",
+            "to_station": "UBL",
+            "journey_date": "2026-11-25",
+            "trains_found": 1,
+            "cache_hit": false,
+            "no_trains_found": false
+          }
+        ],
+        "legs_evaluated": 4,
+        "legs_confirmed": 1,
+        "legs_rejected": 3,
+        "legs_unverified": 0
+      },
+      {
+        "station_code": "ASK",
+        "station_name": "Arsikere Junction",
+        "events_expanded": 2,
+        "first_arrival_datetime": "2026-11-25T10:30:00+05:30",
+        "pairs": [
+          {
+            "from_station": "ASK",
+            "to_station": "DWR",
+            "journey_date": "2026-11-25",
+            "trains_found": 2,
+            "cache_hit": false,
+            "no_trains_found": false
+          },
+          {
+            "from_station": "ASK",
+            "to_station": "SBC",
+            "journey_date": "2026-11-25",
+            "trains_found": 2,
+            "cache_hit": false,
+            "no_trains_found": false
+          },
+          {
+            "from_station": "ASK",
+            "to_station": "UBL",
+            "journey_date": "2026-11-25",
+            "trains_found": 2,
+            "cache_hit": false,
+            "no_trains_found": false
+          }
+        ],
+        "legs_evaluated": 12,
+        "legs_confirmed": 4,
+        "legs_rejected": 8,
+        "legs_unverified": 0
+      },
+      {
+        "station_code": "SBC",
+        "station_name": "Bengaluru",
+        "events_expanded": 2,
+        "first_arrival_datetime": "2026-11-25T12:30:00+05:30",
+        "pairs": [
+          {
+            "from_station": "SBC",
+            "to_station": "DWR",
+            "journey_date": "2026-11-25",
+            "trains_found": 3,
+            "cache_hit": false,
+            "no_trains_found": false
+          },
+          {
+            "from_station": "SBC",
+            "to_station": "UBL",
+            "journey_date": "2026-11-25",
+            "trains_found": 3,
+            "cache_hit": false,
+            "no_trains_found": false
+          },
+          {
+            "from_station": "SBC",
+            "to_station": "DWR",
+            "journey_date": "2026-11-26",
+            "trains_found": 3,
+            "cache_hit": false,
+            "no_trains_found": false
+          },
+          {
+            "from_station": "SBC",
+            "to_station": "UBL",
+            "journey_date": "2026-11-26",
+            "trains_found": 3,
+            "cache_hit": false,
+            "no_trains_found": false
+          }
+        ],
+        "legs_evaluated": 12,
+        "legs_confirmed": 4,
+        "legs_rejected": 8,
+        "legs_unverified": 0
+      },
+      {
+        "station_code": "UBL",
+        "station_name": "Hubballi Junction",
+        "events_expanded": 2,
+        "first_arrival_datetime": "2026-11-25T15:00:00+05:30",
+        "pairs": [
+          {
+            "from_station": "UBL",
+            "to_station": "DWR",
+            "journey_date": "2026-11-25",
+            "trains_found": 3,
+            "cache_hit": false,
+            "no_trains_found": false
+          },
+          {
+            "from_station": "UBL",
+            "to_station": "DWR",
+            "journey_date": "2026-11-26",
+            "trains_found": 3,
+            "cache_hit": false,
+            "no_trains_found": false
+          }
+        ],
+        "legs_evaluated": 6,
+        "legs_confirmed": 4,
+        "legs_rejected": 2,
+        "legs_unverified": 0
+      }
+    ],
+    "skipped_trains": [],
+    "search_completeness": {
+      "complete": true,
+      "budget": {
+        "requests_used": 31,
+        "requests_max": 200,
+        "credits_used_estimate": 44,
+        "credits_max": 400,
+        "duration_ms": 11,
+        "time_budget_ms": 30000,
+        "discovery_pairs_used": 18,
+        "discovery_pairs_max": 60,
+        "trains_processed": 3,
+        "trains_total": 3,
+        "states_expanded": 7,
+        "states_max": 500,
+        "journeys_found": 8,
+        "journeys_max": 100
+      },
+      "segments_checked": 23,
+      "distinct_availability_queries": 23,
+      "deduplicated_queries": 0,
+      "schedule_cache_hits": 0,
+      "discovery_cache_hits": 0,
+      "incomplete_reasons": [],
+      "search_scope": {
+        "engine": "mixed",
+        "min_transfer_buffer_minutes": 30,
+        "max_transfer_wait_minutes": 720,
+        "search_horizon_days": 2,
+        "horizon_end_date": "2026-11-27",
+        "boarding_date_at_source": "2026-11-25",
+        "via_stations": [],
+        "seat_change_semantics": "Same-train seat changes are ticket boundaries while staying onboard one train run (no transfer window applies); train changes are validated transfers between different trains."
+      }
+    },
+    "api_usage": {
+      "provider": "railcore",
+      "requests_sent": 31,
+      "successful_requests": 31,
+      "failed_requests": 0,
+      "credits_cost": 13,
+      "credits_remaining": 498,
+      "rate_limit_remaining_per_minute": 9,
+      "rate_limit_day_remaining": 97
+    },
+    "availability_checked_at": "2026-11-24T05:49:15.235148+00:00",
+    "errors": [],
+    "notes": [
+      "These results are point-in-time availability checks, not booked tickets. RailRoute AI does not book tickets.",
+      "Every segment of every confirmed result explicitly reports confirmed availability (provider status AVAILABLE). RAC, waitlist, regret, unavailable, unknown and provider errors never qualify.",
+      "Journeys whose availability could not be fully verified are returned separately as unverified candidates (journey_status PARTIALLY_VERIFIED) and are never labelled confirmed. A provider error is never interpreted as an unavailable seat.",
+      "A same-train seat change means consecutive ticket segments on ONE train run while the passenger stays onboard: it is NOT a train transfer and no transfer buffer applies. Indian Railways ticketing rules for split journeys on the same train must be verified before relying on them.",
+      "Each train change happens at one interchange station with the exact same station code on both trains, inside the configurable minimum transfer buffer and maximum transfer wait.",
+      "Availability figures can be older than the check time (provider-side caching): each segment carries its provider last_updated_at and each journey reports the oldest one.",
+      "Fares are summed per segment and never estimated; when any segment fare is unknown the total fare is null and the affected segments are listed. Total waiting time counts train-change waits only (seat-change halts do not count).",
+      "Direct through trains are listed for reference only: their availability is NOT checked by this engine.",
+      "A mixed journey involves separate tickets on one or more trains; connection validity depends on the trains running to time. Verify railway rules and leave realistic buffers before relying on a connection."
+    ]
+  },
+  "response_result_example": {
+    "journey_id": "2026-11-25-99701@MYS-99701@KRNR-99701@ASK-99702@SBC-DWR",
+    "journey_type": "MIXED",
+    "journey_status": "AVAILABLE_COMBINATION",
+    "from_station": "MYS",
+    "to_station": "DWR",
+    "journey_date": "2026-11-25",
+    "departure": {
+      "station": {
+        "code": "MYS",
+        "name": "Mysuru Junction",
+        "sequence": 1
+      },
+      "time": "08:00",
+      "day": 1
+    },
+    "arrival": {
+      "station": {
+        "code": "DWR",
+        "name": "Dharwad",
+        "sequence": 4
+      },
+      "time": "18:30",
+      "day": 1
+    },
+    "departure_datetime": "2026-11-25T08:00:00+05:30",
+    "arrival_datetime": "2026-11-25T18:30:00+05:30",
+    "overnight": false,
+    "total_duration_minutes": 630,
+    "total_fare": 280.0,
+    "fares_complete": true,
+    "segments_missing_fare": [],
+    "segment_count": 4,
+    "train_changes": 1,
+    "seat_changes": 2,
+    "total_transfer_wait_minutes": 65,
+    "distinct_train_count": 2,
+    "distinct_trains": [
+      "99701",
+      "99702"
+    ],
+    "transitions": [
+      {
+        "transition_number": 1,
+        "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+        "is_train_change": false,
+        "station": {
+          "code": "KRNR",
+          "name": "Krishnarajanagar",
+          "sequence": 2
+        },
+        "from_train": "99701",
+        "to_train": "99701",
+        "arrival_datetime": "2026-11-25T09:10:00+05:30",
+        "departure_datetime": "2026-11-25T09:15:00+05:30",
+        "onboard_halt_minutes": 5
+      },
+      {
+        "transition_number": 2,
+        "transition_type": "SAME_TRAIN_SEAT_CHANGE",
+        "is_train_change": false,
+        "station": {
+          "code": "ASK",
+          "name": "Arsikere Junction",
+          "sequence": 3
+        },
+        "from_train": "99701",
+        "to_train": "99701",
+        "arrival_datetime": "2026-11-25T10:30:00+05:30",
+        "departure_datetime": "2026-11-25T10:35:00+05:30",
+        "onboard_halt_minutes": 5
+      },
+      {
+        "transition_number": 3,
+        "transition_type": "TRAIN_CHANGE",
+        "is_train_change": true,
+        "station": {
+          "code": "SBC",
+          "name": "Bengaluru",
+          "sequence": 4
+        },
+        "from_train": "99701",
+        "to_train": "99702",
+        "arrival_datetime": "2026-11-25T12:30:00+05:30",
+        "departure_datetime": "2026-11-25T13:35:00+05:30",
+        "wait_minutes": 65,
+        "within_min_buffer": true,
+        "within_max_wait": true
+      }
+    ],
+    "segments": [
+      {
+        "segment_number": 1,
+        "segment_type": "FIRST_SEGMENT",
+        "train_number": "99701",
+        "train_name": "MOCK 99701 EXPRESS",
+        "from_station": {
+          "code": "MYS",
+          "name": "Mysuru Junction",
+          "sequence": 1
+        },
+        "to_station": {
+          "code": "KRNR",
+          "name": "Krishnarajanagar",
+          "sequence": 2
+        },
+        "departure_time": "08:00",
+        "departure_day": 1,
+        "departure_datetime": "2026-11-25T08:00:00+05:30",
+        "arrival_time": "09:10",
+        "arrival_day": 1,
+        "arrival_datetime": "2026-11-25T09:10:00+05:30",
+        "boarding_query_date": "2026-11-25",
+        "halt_minutes_at_to_station": 2,
+        "distance_km_at_to_station": 35.0,
+        "travel_class": "SL",
+        "quota": "GN",
+        "status": "CONFIRMED_AVAILABLE",
+        "provider_status": "AVAILABLE",
+        "availability_text": "AVAILABLE-0040",
+        "available_count": 40,
+        "fare": 60.0,
+        "total_fare": 60.0,
+        "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+        "checked_at": "2026-11-24T05:49:15.227568+00:00",
+        "request_id": "req_test_batch"
+      },
+      {
+        "segment_number": 2,
+        "segment_type": "SAME_TRAIN_SEGMENT",
+        "train_number": "99701",
+        "train_name": "MOCK 99701 EXPRESS",
+        "from_station": {
+          "code": "KRNR",
+          "name": "Krishnarajanagar",
+          "sequence": 2
+        },
+        "to_station": {
+          "code": "ASK",
+          "name": "Arsikere Junction",
+          "sequence": 3
+        },
+        "departure_time": "09:15",
+        "departure_day": 1,
+        "departure_datetime": "2026-11-25T09:15:00+05:30",
+        "arrival_time": "10:30",
+        "arrival_day": 1,
+        "arrival_datetime": "2026-11-25T10:30:00+05:30",
+        "boarding_query_date": "2026-11-25",
+        "halt_minutes_at_to_station": 2,
+        "distance_km_at_to_station": 160.0,
+        "travel_class": "SL",
+        "quota": "GN",
+        "status": "CONFIRMED_AVAILABLE",
+        "provider_status": "AVAILABLE",
+        "availability_text": "AVAILABLE-0040",
+        "available_count": 40,
+        "fare": 55.0,
+        "total_fare": 55.0,
+        "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+        "checked_at": "2026-11-24T05:49:15.229115+00:00",
+        "request_id": "req_test_batch"
+      },
+      {
+        "segment_number": 3,
+        "segment_type": "SAME_TRAIN_SEGMENT",
+        "train_number": "99701",
+        "train_name": "MOCK 99701 EXPRESS",
+        "from_station": {
+          "code": "ASK",
+          "name": "Arsikere Junction",
+          "sequence": 3
+        },
+        "to_station": {
+          "code": "SBC",
+          "name": "Bengaluru",
+          "sequence": 4
+        },
+        "departure_time": "10:35",
+        "departure_day": 1,
+        "departure_datetime": "2026-11-25T10:35:00+05:30",
+        "arrival_time": "12:30",
+        "arrival_day": 1,
+        "arrival_datetime": "2026-11-25T12:30:00+05:30",
+        "boarding_query_date": "2026-11-25",
+        "halt_minutes_at_to_station": 2,
+        "distance_km_at_to_station": 320.0,
+        "travel_class": "SL",
+        "quota": "GN",
+        "status": "CONFIRMED_AVAILABLE",
+        "provider_status": "AVAILABLE",
+        "availability_text": "AVAILABLE-0040",
+        "available_count": 40,
+        "fare": 45.0,
+        "total_fare": 45.0,
+        "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+        "checked_at": "2026-11-24T05:49:15.230707+00:00",
+        "request_id": "req_test_batch"
+      },
+      {
+        "segment_number": 4,
+        "segment_type": "TRAIN_CHANGE",
+        "train_number": "99702",
+        "train_name": "MOCK 99702 EXPRESS",
+        "from_station": {
+          "code": "SBC",
+          "name": "Bengaluru",
+          "sequence": 2
+        },
+        "to_station": {
+          "code": "DWR",
+          "name": "Dharwad",
+          "sequence": 4
+        },
+        "departure_time": "13:35",
+        "departure_day": 1,
+        "departure_datetime": "2026-11-25T13:35:00+05:30",
+        "arrival_time": "18:30",
+        "arrival_day": 1,
+        "arrival_datetime": "2026-11-25T18:30:00+05:30",
+        "boarding_query_date": "2026-11-25",
+        "halt_minutes_at_to_station": 2,
+        "distance_km_at_to_station": 280.0,
+        "travel_class": "SL",
+        "quota": "GN",
+        "status": "CONFIRMED_AVAILABLE",
+        "provider_status": "AVAILABLE",
+        "availability_text": "AVAILABLE-0040",
+        "available_count": 40,
+        "fare": 120.0,
+        "total_fare": 120.0,
+        "last_updated_at": "2026-11-23T08:15:46.547+05:30",
+        "checked_at": "2026-11-24T05:49:15.233327+00:00",
+        "request_id": "req_test_batch"
+      }
+    ],
+    "all_segments_confirmed_available": true,
+    "unverified_segment_numbers": [],
+    "availability_checked_at": "2026-11-24T05:49:15.233327+00:00",
+    "oldest_availability_update_at": "2026-11-23T08:15:46.547+05:30"
+  }
+}

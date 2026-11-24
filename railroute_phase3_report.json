@@ -1,0 +1,62 @@
+{
+  "title": "RailRoute AI Phase 3 - train-change connection engine: delivery report",
+  "date": "2026-11-23",
+  "route_scenario": "MYS -> DWR (the product scenario, used for the synthetic test network)",
+  "provider_plan": "RailCore developer_free",
+  "api_credits_used_during_phase_3_development": 0,
+  "api_credits_remaining_before_phase_3": 4,
+  "api_credits_remaining_after_phase_3": 4,
+  "live_api_calls_made": 0,
+  "live_api_test_policy": "tests/test_live_train_change.py is skipped by default (pytest marker live_api); runs only with RUN_LIVE_API_TESTS=1 and a configured RAILCORE_API_KEY, with a <=6-request budget",
+  "development_verification": "entirely against httpx.MockTransport with synthetic 998xx trains; production flow contains no mock data; provider integration untouched",
+  "endpoint": "POST /api/v1/journeys/train-change/search",
+  "algorithm": "time-dependent earliest-arrival (connection-scan style) BFS over a schedule-derived leg graph; chronological event heap; no fixed maximum number of train changes; cycle prevention via station visited-sets; no dominance pruning (no valid journey discarded for having more changes); lazy, budget-capped, schedule-anchored station-pair discovery (no blind pair enumeration)",
+  "tests": {
+    "total_passed": 126,
+    "phase_3_new": 37,
+    "phase_1": 55,
+    "phase_2": 34,
+    "phase_1_and_2_still_pass": true,
+    "skipped_live_opt_in": 1
+  },
+  "required_scenarios_covered": [
+    "1 one train change", "2 two train changes", "3 several valid connections",
+    "4 minimum transfer buffer (reject + per-request override)",
+    "5 maximum transfer wait (reject + per-request override)",
+    "6 second train not stopping at the interchange",
+    "7 overnight connection crossing midnight (per-segment boarding dates)",
+    "8 confirmed availability", "9 WAITLIST segment", "10 RAC segment",
+    "11 UNKNOWN segment", "12 provider error during verification",
+    "13 duplicate candidate trains", "14 cycle / repeated station path (circular train)",
+    "15 query-budget exhaustion before any availability request (requests + credits)",
+    "16 search-timeout and search-horizon exhaustion",
+    "17 cheapest / fastest / fewest-changes ranking",
+    "18 missing fare data (never estimated)",
+    "19 more than two train changes (three changes)",
+    "20 unverified segment never recommended as fully available"
+  ],
+  "status_values_used": [
+    "AVAILABLE_COMBINATION", "PARTIALLY_VERIFIED", "NO_COMPLETE_JOURNEY",
+    "SEARCH_LIMIT_REACHED", "NO_CANDIDATE_TRAINS", "PROVIDER_ERROR", "CONFIG_ERROR"
+  ],
+  "booking_status_never_used": "BOOKING_CONFIRMED (the system does not book tickets)",
+  "files_created": [
+    "backend/app/schemas/train_change_search.py",
+    "backend/app/services/train_change_connection_service.py",
+    "backend/tests/test_train_change_engine.py",
+    "backend/tests/test_live_train_change.py"
+  ],
+  "files_modified": [
+    "backend/app/api/routes.py (new endpoint + docs)",
+    "backend/app/core/config.py (phase 3 settings)",
+    "backend/app/main.py (description, version 0.3.0)",
+    "backend/app/services/search_budgets.py (TrainChangeBudgets)",
+    "backend/tests/conftest.py (additive fixture primitives + batch_responder hook)",
+    "backend/pytest.ini (live_api marker)",
+    "backend/.env.example (phase 3 variables)",
+    "backend/README.md (phase 3 documentation)"
+  ],
+  "phase_2_api_contract_unchanged": true,
+  "ready_for_phase_4": true,
+  "phase_4_notes": "Both engines emit self-contained journey objects (journey_type SAME_TRAIN_SEGMENTS vs TRAIN_CHANGE, per-segment statuses/fares/timestamps, explicit TRAIN_CHANGE transfer blocks) designed for the phase 4 mixed-journey combiner"
+}
