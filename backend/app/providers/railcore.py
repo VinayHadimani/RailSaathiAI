@@ -46,6 +46,7 @@ import httpx
 from ..models.availability import SegmentAvailability
 from ..models.route_search import RouteTrainsResult
 from ..models.schedule import TrainSchedule
+from ..core.key_pool import APIKeyPool, mask_key
 from .base import (
     ProviderAuthError,
     ProviderClientError,
@@ -130,7 +131,8 @@ class RailCoreClient:
     def __init__(
         self,
         *,
-        api_key: str | None,
+        api_key: str | None = None,
+        api_keys: Sequence[str] | None = None,
         base_url: str = "https://ir.railcore.tech/v1",
         timeout_seconds: float = 15.0,
         connect_timeout_seconds: float = 5.0,
@@ -139,7 +141,13 @@ class RailCoreClient:
         hmac_secret: str | None = None,
         http_client: httpx.Client | None = None,
     ) -> None:
-        self._api_key = (api_key or "").strip() or None
+        raw_keys: list[str] = []
+        if api_keys:
+            raw_keys.extend(api_keys)
+        if api_key:
+            raw_keys.append(api_key)
+        self._key_pool = APIKeyPool(raw_keys, name="RailCore")
+        self._api_key = self._key_pool.keys[0] if self._key_pool.keys else None
         self._base_url = (base_url or "https://ir.railcore.tech/v1").rstrip("/")
         self._timeout = httpx.Timeout(timeout_seconds, connect=connect_timeout_seconds)
         self._max_retries = max(0, int(max_retries))
@@ -159,6 +167,10 @@ class RailCoreClient:
         self.credits_remaining: int | None = None
         self.rate_limit_remaining: int | None = None
         self.rate_limit_day_remaining: int | None = None
+
+    @property
+    def key_pool(self) -> APIKeyPool:
+        return self._key_pool
 
     # ------------------------------------------------------------------ API
 
@@ -342,93 +354,126 @@ class RailCoreClient:
         params: dict[str, Any] | None,
         json_body: dict[str, Any] | None = None,
     ) -> _RawCall:
-        if not self._api_key:
+        if not self._key_pool.is_configured:
             raise ProviderNotConfiguredError(
                 "RailCore API key is not configured. Copy backend/.env.example "
                 "to backend/.env and set RAILCORE_API_KEY, then restart the server."
             )
+        candidates = self._key_pool.get_candidates()
+        if not candidates:
+            raise ProviderNotConfiguredError("RailCore API key is not configured.")
+
         query = urlencode({k: v for k, v in (params or {}).items() if v is not None})
         url = f"{self._base_url}{path}" + (f"?{query}" if query else "")
         body_bytes = b""
         if json_body is not None:
             body_bytes = json.dumps(json_body).encode("utf-8")
-        headers = {
-            "Accept": "application/json",
-            "User-Agent": "railroute-ai-feasibility/0.1 (+https://railcore.tech docs)",
-            "X-RailCore-Key": self._api_key,  # never logged, never in URLs
-        }
-        if json_body is not None:
-            headers["Content-Type"] = "application/json"
-        if self._hmac_secret:
-            headers.update(self._hmac_headers(method, path, query, body_bytes))
 
         attempts_allowed = 1 + self._max_retries
         last_error: RailwayProviderError | None = None
 
-        for attempt in range(1, attempts_allowed + 1):
-            started = time.monotonic()
-            response: httpx.Response | None = None
-            try:
-                response = self._http.request(
-                    method, url, headers=headers, content=body_bytes if body_bytes else None
-                )
-            except httpx.TimeoutException as exc:
-                last_error = ProviderTimeoutError(
-                    f"RailCore request timed out: {exc}",
-                    details={"path": path, "attempt": attempt},
-                )
-            except httpx.TransportError as exc:
-                last_error = ProviderTransportError(
-                    f"RailCore network error: {exc}",
-                    details={"path": path, "attempt": attempt},
-                )
-            else:
-                elapsed_ms = int((time.monotonic() - started) * 1000)
-                self.stats["requests_sent"] += 1
-                self._absorb_usage_headers(response)
-                request_id = response.headers.get("x-railcore-request-id")
-                logger.info(
-                    "railcore_call path=%s http=%s elapsed_ms=%s attempt=%s/%s request_id=%s",
-                    path, response.status_code, elapsed_ms, attempt, attempts_allowed, request_id,
-                )
+        for key_idx, current_key in enumerate(candidates):
+            headers = {
+                "Accept": "application/json",
+                "User-Agent": "railroute-ai-feasibility/0.1 (+https://railcore.tech docs)",
+                "X-RailCore-Key": current_key,  # never logged, never in URLs
+            }
+            if json_body is not None:
+                headers["Content-Type"] = "application/json"
+            if self._hmac_secret:
+                headers.update(self._hmac_headers(method, path, query, body_bytes))
 
-                if 200 <= response.status_code < 300:
-                    payload = self._parse_json(response, path)
-                    envelope_error = self._envelope_error(payload, response, path)
-                    if envelope_error is not None:
-                        self.stats["failed_requests"] += 1
-                        last_error = envelope_error
-                    else:
-                        self.stats["successful_requests"] += 1
-                        return _RawCall(
-                            payload=payload,
-                            http_status=response.status_code,
-                            request_id=request_id,
-                            credits_cost=self._header_int(response, "x-railcore-credits-cost"),
-                        )
+            key_error: RailwayProviderError | None = None
+            for attempt in range(1, attempts_allowed + 1):
+                started = time.monotonic()
+                response: httpx.Response | None = None
+                try:
+                    response = self._http.request(
+                        method, url, headers=headers, content=body_bytes if body_bytes else None
+                    )
+                except httpx.TimeoutException as exc:
+                    key_error = ProviderTimeoutError(
+                        f"RailCore request timed out: {exc}",
+                        details={"path": path, "attempt": attempt},
+                    )
+                except httpx.TransportError as exc:
+                    key_error = ProviderTransportError(
+                        f"RailCore network error: {exc}",
+                        details={"path": path, "attempt": attempt},
+                    )
                 else:
-                    self.stats["failed_requests"] += 1
-                    last_error = self._http_error(response, path)
+                    elapsed_ms = int((time.monotonic() - started) * 1000)
+                    self.stats["requests_sent"] += 1
+                    self._absorb_usage_headers(response)
+                    request_id = response.headers.get("x-railcore-request-id")
+                    logger.info(
+                        "railcore_call path=%s http=%s elapsed_ms=%s attempt=%s/%s request_id=%s key=%s",
+                        path, response.status_code, elapsed_ms, attempt, attempts_allowed, request_id, mask_key(current_key),
+                    )
 
-            # Failure path: retry only retryable errors, with backoff.
-            retry_after = self._retry_after_seconds(response) if response is not None else None
-            should_retry = (
-                attempt < attempts_allowed
-                and last_error is not None
-                and last_error.retryable
-                and (retry_after is None or retry_after <= MAX_INLINE_RETRY_AFTER_SECONDS)
-            )
-            if should_retry:
-                delay = self._retry_delay(attempt, retry_after)
-                logger.warning(
-                    "railcore_retry path=%s code=%s attempt=%s/%s retry_in=%.2fs",
-                    path, last_error.code if last_error else "?", attempt, attempts_allowed, delay,
+                    if 200 <= response.status_code < 300:
+                        payload = self._parse_json(response, path)
+                        envelope_error = self._envelope_error(payload, response, path)
+                        if envelope_error is not None:
+                            self.stats["failed_requests"] += 1
+                            key_error = envelope_error
+                        else:
+                            self.stats["successful_requests"] += 1
+                            self._key_pool.advance()
+                            return _RawCall(
+                                payload=payload,
+                                http_status=response.status_code,
+                                request_id=request_id,
+                                credits_cost=self._header_int(response, "x-railcore-credits-cost"),
+                            )
+                    else:
+                        self.stats["failed_requests"] += 1
+                        key_error = self._http_error(response, path)
+
+                # Retry on the current key if retryable and retry_after <= MAX_INLINE_RETRY_AFTER_SECONDS
+                # UNLESS it is 429/402 and we have other healthy keys to failover to immediately!
+                retry_after = self._retry_after_seconds(response) if response is not None else None
+                is_rate_limit_or_credits = isinstance(key_error, (ProviderRateLimitError, ProviderCreditsError))
+                has_other_keys = (key_idx + 1 < len(candidates))
+
+                if is_rate_limit_or_credits and has_other_keys:
+                    # Don't sleep/retry on this exhausted key: immediately fail over to the next healthy key!
+                    break
+
+                should_retry = (
+                    attempt < attempts_allowed
+                    and key_error is not None
+                    and key_error.retryable
+                    and (retry_after is None or retry_after <= MAX_INLINE_RETRY_AFTER_SECONDS)
                 )
-                time.sleep(delay)
-                continue
+                if should_retry:
+                    delay = self._retry_delay(attempt, retry_after)
+                    logger.warning(
+                        "railcore_retry path=%s code=%s attempt=%s/%s retry_in=%.2fs",
+                        path, key_error.code if key_error else "?", attempt, attempts_allowed, delay,
+                    )
+                    time.sleep(delay)
+                    continue
 
-            assert last_error is not None
-            raise last_error
+                break
+
+            last_error = key_error
+            # If current key failed due to rate limit or credits exhaustion:
+            if isinstance(key_error, (ProviderRateLimitError, ProviderCreditsError)):
+                retry_after_cd = key_error.details.get("retry_after_seconds") if key_error.details else None
+                self._key_pool.mark_rate_limited(current_key, retry_after_cd or 60.0)
+                if key_idx + 1 < len(candidates):
+                    logger.warning(
+                        "RailCore key %s rate-limited (code=%s). Failing over to next key (%d remaining)...",
+                        mask_key(current_key),
+                        key_error.code,
+                        len(candidates) - (key_idx + 1),
+                    )
+                    continue
+
+            # If it's a non-rate-limit error (e.g. AuthError 401, ClientError 404), raise immediately
+            if last_error is not None:
+                raise last_error
 
         raise last_error or ProviderUnexpectedResponseError("RailCore request failed")
 

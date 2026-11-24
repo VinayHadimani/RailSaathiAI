@@ -31,6 +31,8 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, Response
 from fastapi.responses import JSONResponse
 
+from ..agent.orchestrator import AgentOrchestrator
+from ..agent.schemas import AgentChatRequest, AgentChatResponse
 from ..core.config import get_settings
 from ..providers.railcore import RailCoreClient
 from ..schemas.journey_search import (
@@ -58,7 +60,7 @@ from ..services.segment_availability_service import SegmentAvailabilityTestServi
 from ..services.train_change_connection_service import TrainChangeConnectionService
 from ..services.mixed_journey_service import MixedJourneyCombinationService
 from ..services.unified_journey_service import UnifiedJourneyOrchestrationService
-from .deps import get_railcore_client
+from .deps import get_agent_orchestrator, get_railcore_client
 
 router = APIRouter(prefix="/api/v1")
 
@@ -358,3 +360,25 @@ def segment_availability_test(
     service = SegmentAvailabilityTestService(client)
     body, status_code = service.run(payload)
     return JSONResponse(status_code=status_code, content=body)
+
+
+@router.post(
+    "/agent/chat",
+    tags=["agent"],
+    summary="Conversational journey discovery assistant",
+    description=(
+        "Conversational entry point for RailSaathi AI. Understands natural-language "
+        "journey inquiries, manages conversation state across turns, clarifies "
+        "ambiguities or missing parameters, and deterministically coordinates with "
+        "the unified journey search engine once all mandatory parameters are verified."
+    ),
+    response_model=AgentChatResponse,
+)
+def agent_chat(
+    payload: AgentChatRequest,
+    orchestrator: AgentOrchestrator = Depends(get_agent_orchestrator),
+) -> AgentChatResponse:
+    return orchestrator.process_message(
+        message=payload.message,
+        session_id=payload.session_id,
+    )

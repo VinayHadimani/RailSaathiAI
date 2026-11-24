@@ -34,6 +34,7 @@ class Settings(BaseSettings):
 
     # --- RailCore provider -------------------------------------------------
     railcore_api_key: SecretStr | None = None
+    railcore_api_keys: list[SecretStr] | None = None
     railcore_base_url: str = "https://ir.railcore.tech/v1"
     railcore_timeout_seconds: float = 15.0
     railcore_connect_timeout_seconds: float = 5.0
@@ -127,10 +128,60 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3000",
     ]
 
+    # --- Date normalization & booking window (Phase 6B) --------------------
+    booking_window_max_days: int = 120
+    booking_window_enforce: bool = False  # Disabled by default until train-specific exceptions are supported
+
+    # --- LLM Client (Phase 6B.3) -------------------------------------------
+    llm_provider: str = "gemini"  # "gemini" or "mock"
+    llm_model: str = "gemini-2.5-flash-lite"
+    gemini_api_key: SecretStr | None = None
+    gemini_api_keys: list[SecretStr] | None = None
+    llm_timeout_seconds: float = 30.0
+
+    # --- Conversational Agent Session Store (Phase 6B.4) -------------------
+    agent_session_ttl_seconds: float = 3600.0
+    agent_max_history_messages: int = 20
+
+    @property
+    def gemini_api_keys_list(self) -> list[str]:
+        keys: list[str] = []
+        if self.gemini_api_keys:
+            for k in self.gemini_api_keys:
+                val = k.get_secret_value().strip()
+                if val and val not in keys:
+                    keys.append(val)
+        if self.gemini_api_key:
+            val = self.gemini_api_key.get_secret_value()
+            for part in val.split(","):
+                part_clean = part.strip()
+                if part_clean and part_clean not in keys:
+                    keys.append(part_clean)
+        return keys
+
+    @property
+    def gemini_api_key_is_configured(self) -> bool:
+        return len(self.gemini_api_keys_list) > 0
+
+    @property
+    def railcore_api_keys_list(self) -> list[str]:
+        keys: list[str] = []
+        if self.railcore_api_keys:
+            for k in self.railcore_api_keys:
+                val = k.get_secret_value().strip()
+                if val and val not in keys:
+                    keys.append(val)
+        if self.railcore_api_key:
+            val = self.railcore_api_key.get_secret_value()
+            for part in val.split(","):
+                part_clean = part.strip()
+                if part_clean and part_clean not in keys:
+                    keys.append(part_clean)
+        return keys
+
     @property
     def railcore_api_key_is_configured(self) -> bool:
-        value = self.railcore_api_key.get_secret_value() if self.railcore_api_key else ""
-        return bool(value.strip())
+        return len(self.railcore_api_keys_list) > 0
 
     @property
     def railcore_hmac_enabled(self) -> bool:
