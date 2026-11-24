@@ -267,7 +267,11 @@ const STATIONS = [
   { code: "PUNE",name: "Pune Jn",              city: "Pune",        state: "Maharashtra" },
 ];
 const STATION_MAP = Object.fromEntries(STATIONS.map(s => [s.code, s]));
-const getStation = (code) => STATION_MAP[code];
+const getStation = (code) => {
+  if (!code) return { code: "", name: "Unknown", city: "Unknown", state: "" };
+  if (STATION_MAP[code]) return STATION_MAP[code];
+  return { code: code, name: code, city: code, state: "" };
+};
 function stationSearch(q) {
   const k = q.trim().toLowerCase();
   if (!k) return STATIONS.slice(0, 8);
@@ -567,6 +571,7 @@ const ICON_PATHS = {
   waypoints: <><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><path d="m8 15 4-4 4 4"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="19" r="2"/><path d="M7.5 17.5 10 15"/><path d="m14 15 2.5 2.5"/></>,
   circleDot: <><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2" fill="currentColor"/></>,
   trendingDown: <><path d="M22 17 13.5 8.5 8.5 13.5 2 7"/><path d="M16 17h6v-6"/></>,
+  refresh: <><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></>,
 };
 function Icon({ name, size = 20, className = "", strokeWidth = 2, style }) {
   const inner = ICON_PATHS[name] || ICON_PATHS.circleDot;
@@ -855,20 +860,36 @@ function buildItineraryText(j, q) {
   lines.push("");
   j.segments.forEach((s, i) => {
     lines.push(`Segment ${i + 1}: ${getStation(s.from).name} -> ${getStation(s.to).name}`);
-    lines.push(`  Train: ${s.trainName} (${s.trainNumber}) [${s.trainType}]`);
-    lines.push(`  Depart: ${minTo12(s.departAbs)}  Arrive: ${minTo12(s.arriveAbs)}`);
-    lines.push(`  Coach: ${s.coach}  Seat: ${s.seat}  Fare: Rs.${s.fare}`);
+    lines.push(`  Train: ${s.trainName} (${s.trainNumber}) [${s.trainType || "Express"}]`);
+    lines.push(`  Depart: ${minTo12(s.departAbs)}  Arrive: ${minTo12(s.arriveAbs)}${dayOffsetLabel(s.arriveAbs)}`);
+    lines.push(`  Coach: ${s.coach || "Coach"}  Seat: ${s.seat || "Confirmed"}  Fare: Rs.${s.fare}`);
+    if (s.availability_text) {
+      lines.push(`  Availability status: ${s.availability_text}`);
+    }
+    if (s.booking_url) {
+      lines.push(`  Booking link: ${s.booking_url}`);
+    }
     lines.push("");
   });
-  if (j.connections.length) {
+  if (j.connections && j.connections.length) {
     lines.push("Connections / transfers:");
     j.connections.forEach((c) => {
       lines.push(`  At ${getStation(c.station).name}: wait ${durStr(c.wait)}${c.short ? " (SHORT TRANSFER - please confirm)" : ""}`);
     });
   }
   lines.push("");
-  lines.push(`Availability: ${AVAILABILITY_SOURCE}`);
-  lines.push("This itinerary is generated from demo data. Verify with the operator before travel.");
+  if (j.isDemo) {
+    lines.push(`Availability: ${AVAILABILITY_SOURCE}`);
+    lines.push("This itinerary is generated from offline demo data. Real seat availability was not queried. Verify with the operator before travel.");
+  } else if (j.isLiveProviderVerified) {
+    lines.push("Availability: Confirmed via RailSaathi Backend (Live RailCore Provider)");
+    lines.push(`Status: ${j.verificationStatus || "AVAILABLE_COMBINATION"}`);
+    lines.push("Point-in-time check. Not a ticket booking. Railway rules on split tickets must be verified before travel.");
+  } else {
+    lines.push("Availability: Confirmed via RailSaathi Unified Backend Engine");
+    lines.push(`Status: ${j.verificationStatus || "AVAILABLE_COMBINATION"}`);
+    lines.push("Point-in-time check. Not a ticket booking. Railway rules on split tickets must be verified before travel.");
+  }
   return lines.join("\n");
 }
 
@@ -1093,7 +1114,7 @@ function ClassSelect({ value, onChange }) {
 }
 
 function SearchCard({ compact = false }) {
-  const { runSearch } = useApp();
+  const { runSearch, searchMode } = useApp();
   const [from, setFrom] = useState("MYS");
   const [to, setTo] = useState("BGM");
   const [date, setDate] = useState(todayISO());
@@ -1125,7 +1146,11 @@ function SearchCard({ compact = false }) {
     <Card className="p-5 md:p-6 shadow-cardlg" id="search">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2"><Icon name="route" size={18} className="text-electric"/><h3 className="font-display font-bold text-navy-900">Find your journey</h3></div>
-        <Badge color="cyan" icon="info">Demo data</Badge>
+        <div className="flex items-center gap-2">
+          <Badge color={searchMode === "demo" ? "amber" : "emerald"} icon={searchMode === "demo" ? "info" : "shield"}>
+            {searchMode === "demo" ? "Demo Mode" : "FastAPI Backend"}
+          </Badge>
+        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
         <Autocomplete value={from} onSelect={setFrom} label="From" placeholder="Departure city" icon="mapPin" />
@@ -1151,6 +1176,9 @@ function SearchCard({ compact = false }) {
       </div>
       <div className="mt-5 flex flex-col sm:flex-row sm:items-center gap-3">
         <Button variant="primary" size="lg" onClick={submit} className="flex-1 sm:flex-none sm:px-10"><Icon name="search" size={18}/> Search Journey</Button>
+        <Button variant="outline" size="lg" onClick={() => runSearch({ from, to, date, passengers: pax, travelClass: cls }, { mode: "demo" })} className="text-navy-600">
+          <Icon name="layers" size={16}/> Demo Search
+        </Button>
         <button onClick={swap} className="md:hidden inline-flex items-center justify-center gap-2 text-sm font-semibold text-navy-600 hover:text-electric"><Icon name="swap" size={16}/> Swap cities</button>
         <p className="text-xs text-navy-400 sm:ml-auto flex items-center gap-1.5"><Icon name="shield" size={14} className="text-emerald-500"/> Confirmed-availability results only</p>
       </div>
@@ -1953,7 +1981,7 @@ function SegmentRow({ seg, index }) {
       <div className="mt-1.5 grid sm:grid-cols-2 gap-x-4 gap-y-1 text-sm">
         <div className="text-navy-600"><span className="text-navy-400">Train:</span> <span className="font-semibold text-navy-900">{seg.trainName}</span> <span className="text-navy-400">#{seg.trainNumber} · {seg.trainType}</span></div>
         <div className="text-navy-600"><span className="text-navy-400">Time:</span> <span className="font-semibold text-navy-900">{minTo12(seg.departAbs)} → {minTo12(seg.arriveAbs)}{dayOffsetLabel(seg.arriveAbs)}</span></div>
-        <div className="text-navy-600"><span className="text-navy-400">Seat:</span> <span className="font-semibold text-emerald-700 inline-flex items-center gap-1"><Icon name="checkCircle" size={13}/> {seg.coach}-{seg.seat}</span> <span className="text-navy-400">· Pl {seg.fromPlatform}→{seg.toPlatform}</span></div>
+        <div className="text-navy-600"><span className="text-navy-400">Seat:</span> {seg.status === "available" ? <span className="font-semibold text-emerald-700 inline-flex items-center gap-1"><Icon name="checkCircle" size={13}/> {seg.coach}-{seg.seat}</span> : <span className="font-semibold text-amber-700 inline-flex items-center gap-1"><Icon name="alert" size={13}/> {seg.availability_text || seg.status || "Unverified"}</span>} <span className="text-navy-400">· Pl {seg.fromPlatform}→{seg.toPlatform}</span></div>
         <div className="text-navy-600"><span className="text-navy-400">Fare:</span> <span className="font-semibold text-navy-900">₹{seg.fare}</span> <span className="text-navy-400">· {durStr(seg.duration)}</span></div>
       </div>
     </div>
@@ -1974,7 +2002,13 @@ function JourneyCard({ journey, rank, best, reason, onSave, onCompare, saved, co
           {best && <Badge color="cyan" icon="sparkles">Recommended</Badge>}
           <Badge color={cs.color} icon={journey.changeType === "direct" ? "checkCircle" : journey.changeType === "seat" ? "swap" : journey.changeType === "train" ? "gitBranch" : "layers"}>{cs.label}</Badge>
           {journey.overnight && <Badge color="violet" icon="moon">Overnight</Badge>}
-          <Badge color="emerald" icon="shield">All segments confirmed</Badge>
+          {journey.isUnverified ? (
+            <Badge color="amber" icon="alert">Unverified candidate</Badge>
+          ) : (
+            <Badge color="emerald" icon="shield">All segments confirmed</Badge>
+          )}
+          {journey.isDemo && <Badge color="amber" icon="info">Demo Data</Badge>}
+          {journey.isLiveProviderVerified && <Badge color="emerald" icon="shield">Live Provider-Verified</Badge>}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-5 items-center">
@@ -2116,12 +2150,86 @@ function CompareTray({ items, onRemove, onClear, onCompare }) {
 }
 
 function ResultsPage() {
-  const { search, journeys, compareList, toggleCompare, toggleSave, savedJourneys } = useApp();
-  const [progressing, setProgressing] = useState(true);
+  const {
+    search, journeys, unverifiedCandidates, searchMeta, searchError,
+    isSearching, searchMode, runSearch, compareList, toggleCompare, toggleSave, savedJourneys
+  } = useApp();
+  const [progressing, setProgressing] = useState(false);
   const [sort, setSort] = useState("best");
   const [filters, setFilters] = useState({ maxDuration: 0, maxChanges: 5, trainTypes: [], departBands: [], arriveBands: [], overnight: "any", changeTypes: [] });
-  useEffect(() => { setProgressing(true); const t = setTimeout(() => setProgressing(false), 1500); return () => clearTimeout(t); }, [search]);
-  if (!search || !journeys) {
+
+  const confirmedJourneys = journeys || [];
+  const best = useMemo(() => computeBest(confirmedJourneys), [confirmedJourneys]);
+  const filtered = useMemo(() => applySort(filterJourneys(confirmedJourneys, filters), sort), [confirmedJourneys, filters, sort]);
+
+  // While search request is in-flight, show progress indicator
+  if (isSearching || progressing) {
+    return (
+      <main className="pt-24 pb-20 min-h-screen">
+        <SearchProgress query={search || { from: "MYS", to: "BGM" }} onDone={() => setProgressing(false)} />
+      </main>
+    );
+  }
+
+  // If a network or backend error occurred, show explicit error card with retry
+  if (searchError) {
+    return (
+      <main className="pt-24 pb-20 min-h-screen">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="pt-6 flex items-center justify-between gap-3 mb-6">
+            <StepIndicator current={1} />
+            <button onClick={() => navigate("/search")} className="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-500 hover:text-electric">
+              <Icon name="arrowLeft" size={15}/> Edit search
+            </button>
+          </div>
+          <Card className="p-8 text-center border-rose-200 bg-rose-50/40">
+            <div className="inline-grid place-items-center w-16 h-16 rounded-2xl bg-rose-100 text-rose-600 mb-4">
+              <Icon name="alert" size={30} />
+            </div>
+            <h2 className="font-display text-2xl font-extrabold text-navy-900">
+              {searchError.isNetworkError ? "Backend Connection Error" : "Search Error"}
+            </h2>
+            <p className="mt-2 text-navy-600 max-w-xl mx-auto text-sm leading-relaxed">
+              {searchError.message}
+            </p>
+            {searchError.status && (
+              <div className="mt-2 inline-block px-2.5 py-1 rounded bg-rose-100 text-rose-800 text-xs font-mono">
+                HTTP {searchError.status}
+              </div>
+            )}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              {searchError.retry && (
+                <Button variant="primary" size="md" onClick={searchError.retry}>
+                  <Icon name="refresh" size={16}/> Retry Search
+                </Button>
+              )}
+              {search && (
+                <Button variant="outline" size="md" onClick={() => runSearch(search, { mode: "demo" })}>
+                  <Icon name="layers" size={16}/> Explore in Demo Mode
+                </Button>
+              )}
+              <Button variant="ghost" size="md" onClick={() => navigate("/search")}>
+                <Icon name="search" size={16}/> New Search
+              </Button>
+            </div>
+            {searchError.isNetworkError && (
+              <div className="mt-6 p-4 rounded-xl bg-white border border-rose-100 text-left text-xs text-navy-600 space-y-1.5">
+                <div className="font-semibold text-navy-800">Local backend setup:</div>
+                <div className="font-mono bg-navy-50 p-2 rounded text-navy-900">
+                  cd backend<br/>
+                  uvicorn app.main:app --reload --port 8000
+                </div>
+                <div>Configured API base URL: <code className="font-mono text-electric">{RAILSAATHI_CONFIG.baseUrl}</code> (set <code className="font-mono">window.RAILSAATHI_API_URL</code> to change)</div>
+              </div>
+            )}
+          </Card>
+        </div>
+      </main>
+    );
+  }
+
+  // If no search has been initiated yet
+  if (!search) {
     return (
       <main className="pt-24 pb-20 min-h-screen">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
@@ -2133,16 +2241,11 @@ function ResultsPage() {
       </main>
     );
   }
+
   const from = getStation(search.from), to = getStation(search.to);
-  const best = useMemo(() => computeBest(journeys), [journeys]);
   const reason = best ? recommendReason(best.best, best) : "";
-  const filtered = useMemo(() => applySort(filterJourneys(journeys, filters), sort), [journeys, filters, sort]);
   const savedIds = new Set(savedJourneys.map((j) => j.key));
   const compareKeys = new Set(compareList.map((c) => c.key));
-
-  if (progressing) {
-    return <main className="pt-24 pb-20 min-h-screen"><SearchProgress query={search} onDone={() => setProgressing(false)} /></main>;
-  }
 
   return (
     <main className="pt-20 pb-28 min-h-screen">
@@ -2158,36 +2261,128 @@ function ResultsPage() {
           <div>
             <div className="flex items-center gap-2 text-sm text-navy-400"><button onClick={() => navigate("/")} className="hover:text-electric">Home</button><Icon name="chevronRight" size={13}/><span>Results</span></div>
             <h1 className="font-display text-2xl md:text-3xl font-extrabold text-navy-900 mt-1">{from ? from.name : search.from} <Icon name="arrowRight" size={20} className="inline text-electric" /> {to ? to.name : search.to}</h1>
-            <p className="text-navy-500 text-sm mt-1">{prettyDate(search.date)} · {search.passengers} passenger{search.passengers > 1 ? "s" : ""} · {CLASSES.find((c) => c.code === search.travelClass).label}</p>
+            <p className="text-navy-500 text-sm mt-1">{prettyDate(search.date)} · {search.passengers} passenger{search.passengers > 1 ? "s" : ""} · {((CLASSES.find((c) => c.code === search.travelClass)) || {}).label || search.travelClass}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge color="emerald" icon="checkCircle">Search complete</Badge>
-            <Badge color="cyan" icon="info">Demo data</Badge>
+            {searchMeta?.isComplete !== false ? (
+              <Badge color="emerald" icon="checkCircle">Search complete</Badge>
+            ) : (
+              <Badge color="amber" icon="alert">Partial search</Badge>
+            )}
+            <Badge color={searchMode === "live" ? "emerald" : "amber"} icon={searchMode === "live" ? "shield" : "info"}>
+              {searchMode === "live" ? (searchMeta?.isLiveProvider ? "Live Provider-Verified" : "Backend Verified") : "Demo Data"}
+            </Badge>
           </div>
         </div>
 
-        <div className="mt-4"><AIRecommendBanner best={best && best.best} reason={reason} count={journeys.length} onPick={() => { if (best) { toggleCompare(best.best); } }} onView={() => best && navigate(`/journey/${journeys.indexOf(best.best) + 1}`)} /></div>
-
-        <div className="mt-5"><SortBar sort={sort} setSort={setSort} count={journeys.length} filtered={filtered.length} /></div>
-
-        <div className="mt-5 grid lg:grid-cols-[280px_1fr] gap-6">
-          <aside className="hidden lg:block"><FilterSidebar filters={filters} setFilters={setFilters} total={journeys.length} journeys={journeys} /></aside>
-          <details className="lg:hidden bg-white rounded-xl border border-navy-100"><summary className="px-4 py-3 flex items-center justify-between font-semibold text-navy-900"><span className="flex items-center gap-2"><Icon name="filter" size={16} className="text-electric"/> Filters</span><Icon name="chevronDown" size={16}/></summary><div className="px-2 pb-2"><FilterSidebar filters={filters} setFilters={setFilters} total={journeys.length} journeys={journeys} /></div></details>
-          <div className="space-y-4">
-            {filtered.length === 0 ? (
-              <Card className="p-10 text-center">
-                <div className="inline-grid place-items-center w-14 h-14 rounded-2xl bg-navy-50 text-navy-400 mb-3"><Icon name="route" size={26} /></div>
-                <h3 className="font-display font-bold text-navy-900 text-lg">No journeys match your filters</h3>
-                <p className="text-navy-500 text-sm mt-1">Try relaxing the duration, changes or time filters.</p>
-                <Button variant="outline" size="md" className="mt-4" onClick={() => setFilters({ maxDuration: 0, maxChanges: 5, trainTypes: [], departBands: [], arriveBands: [], overnight: "any", changeTypes: [] })}><Icon name="x" size={15}/> Reset filters</Button>
-              </Card>
-            ) : filtered.map((j) => {
-              const rank = journeys.indexOf(j) + 1;
-              const isBest = best && j.key === best.best.key;
-              return <JourneyCard key={j.key} journey={j} rank={rank} best={isBest} reason={isBest ? reason : ""} saved={savedIds.has(j.key)} compared={compareKeys.has(j.key)} disabled={compareList.length >= 3} onSave={toggleSave} onCompare={toggleCompare} />;
-            })}
+        {/* Demo Mode Notice */}
+        {searchMode === "demo" && (
+          <div className="mt-4 rounded-xl bg-cyanx-500/10 border border-cyanx-500/30 p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-cyanx-900">
+            <div className="flex items-center gap-2">
+              <Icon name="info" size={18} className="text-cyanx-600 shrink-0" />
+              <span>You are viewing <strong>offline demo journeys</strong>. Real seat availability was not queried.</span>
+            </div>
+            <Button variant="primary" size="sm" onClick={() => runSearch(search, { mode: "live" })}>
+              <Icon name="refresh" size={13}/> Run Backend Search
+            </Button>
           </div>
-        </div>
+        )}
+
+        {/* Completeness / Budget Warnings */}
+        {searchMeta?.searchCompleteness && !searchMeta.searchCompleteness.complete && (
+          <div className="mt-4 rounded-xl bg-amber-50 border border-amber-200 p-3.5 flex items-start gap-2.5 text-xs text-amber-800">
+            <Icon name="alert" size={16} className="text-amber-600 mt-0.5 shrink-0" />
+            <div>
+              <span className="font-semibold">Partial search completed: </span>
+              {searchMeta.searchCompleteness.incomplete_reasons?.join("; ") || "Search scope was limited by the shared request/credit budget."}
+              {searchMeta.searchCompleteness.engines_reporting_incomplete?.length > 0 && (
+                <span className="ml-1 text-amber-700">
+                  (Engines reporting incomplete: {searchMeta.searchCompleteness.engines_reporting_incomplete.join(", ")})
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {confirmedJourneys.length > 0 ? (
+          <>
+            <div className="mt-4"><AIRecommendBanner best={best && best.best} reason={reason} count={confirmedJourneys.length} onPick={() => { if (best) { toggleCompare(best.best); } }} onView={() => best && navigate(`/journey/${confirmedJourneys.indexOf(best.best) + 1}`)} /></div>
+
+            <div className="mt-5"><SortBar sort={sort} setSort={setSort} count={confirmedJourneys.length} filtered={filtered.length} /></div>
+
+            <div className="mt-5 grid lg:grid-cols-[280px_1fr] gap-6">
+              <aside className="hidden lg:block"><FilterSidebar filters={filters} setFilters={setFilters} total={confirmedJourneys.length} journeys={confirmedJourneys} /></aside>
+              <details className="lg:hidden bg-white rounded-xl border border-navy-100"><summary className="px-4 py-3 flex items-center justify-between font-semibold text-navy-900"><span className="flex items-center gap-2"><Icon name="filter" size={16} className="text-electric"/> Filters</span><Icon name="chevronDown" size={16}/></summary><div className="px-2 pb-2"><FilterSidebar filters={filters} setFilters={setFilters} total={confirmedJourneys.length} journeys={confirmedJourneys} /></div></details>
+              <div className="space-y-4">
+                {filtered.length === 0 ? (
+                  <Card className="p-10 text-center">
+                    <div className="inline-grid place-items-center w-14 h-14 rounded-2xl bg-navy-50 text-navy-400 mb-3"><Icon name="route" size={26} /></div>
+                    <h3 className="font-display font-bold text-navy-900 text-lg">No journeys match your filters</h3>
+                    <p className="text-navy-500 text-sm mt-1">Try relaxing the duration, changes or time filters.</p>
+                    <Button variant="outline" size="md" className="mt-4" onClick={() => setFilters({ maxDuration: 0, maxChanges: 5, trainTypes: [], departBands: [], arriveBands: [], overnight: "any", changeTypes: [] })}><Icon name="x" size={15}/> Reset filters</Button>
+                  </Card>
+                ) : filtered.map((j) => {
+                  const rank = confirmedJourneys.indexOf(j) + 1;
+                  const isBest = best && j.key === best.best.key;
+                  return <JourneyCard key={j.key} journey={j} rank={rank} best={isBest} reason={isBest ? reason : ""} saved={savedIds.has(j.key)} compared={compareKeys.has(j.key)} disabled={compareList.length >= 3} onSave={toggleSave} onCompare={toggleCompare} />;
+                })}
+              </div>
+            </div>
+          </>
+        ) : (
+          <Card className="mt-8 p-10 text-center">
+            <div className="inline-grid place-items-center w-16 h-16 rounded-2xl bg-amber-50 text-amber-500 mb-3">
+              <Icon name="route" size={26} />
+            </div>
+            <h3 className="font-display font-bold text-navy-900 text-lg">No confirmed journeys found</h3>
+            <p className="text-navy-500 text-sm mt-1 max-w-md mx-auto">
+              {searchMeta?.message || "No complete journeys with confirmed seat availability were found for this route, date and travel class."}
+            </p>
+            <div className="mt-5 flex flex-wrap justify-center gap-3">
+              <Button variant="primary" size="md" onClick={() => navigate("/search")}>
+                <Icon name="search" size={15}/> Search Another Date/Class
+              </Button>
+              <Button variant="outline" size="md" onClick={() => runSearch(search, { mode: "demo" })}>
+                <Icon name="layers" size={15}/> View Demo Alternatives
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {/* Unverified Candidates Section */}
+        {unverifiedCandidates && unverifiedCandidates.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-navy-100">
+            <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 mb-4">
+              <div className="flex items-start gap-2.5">
+                <Icon name="alert" size={18} className="text-amber-600 mt-0.5 shrink-0" />
+                <div>
+                  <h4 className="text-sm font-bold text-amber-900">
+                    Unverified Journey Candidates ({unverifiedCandidates.length})
+                  </h4>
+                  <p className="text-xs text-amber-800 mt-0.5 leading-relaxed">
+                    These multi-segment journeys have valid connecting timetables, but one or more segments could not be confirmed available by the provider (e.g. waitlisted, RAC, or check failed). They are NOT confirmed options and are presented for reference only.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-4 opacity-85">
+              {unverifiedCandidates.map((uj, uIdx) => (
+                <JourneyCard
+                  key={"unverified-" + (uj.key || uIdx)}
+                  journey={uj}
+                  rank={confirmedJourneys.length + uIdx + 1}
+                  best={false}
+                  reason="Unverified candidate route"
+                  saved={savedIds.has(uj.key)}
+                  compared={compareKeys.has(uj.key)}
+                  disabled={true}
+                  onSave={toggleSave}
+                  onCompare={toggleCompare}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
       <CompareTray items={compareList.map((c) => ({ ...c }))} onRemove={toggleCompare} onClear={() => compareList.forEach(toggleCompare)} onCompare={() => navigate("/compare")} />
     </main>
@@ -2232,26 +2427,413 @@ function PageShell({ title, breadcrumb, children, actions }) {
   );
 }
 
+/* ===================== FASTAPI BACKEND CLIENT & ADAPTER ===================== */
+const RAILSAATHI_CONFIG = {
+  get baseUrl() {
+    return (window.RAILSAATHI_API_URL || "http://127.0.0.1:8000").replace(/\/+$/, "");
+  },
+  timeoutMs: 45000,
+};
+
+async function apiSearchJourneys(query, options = {}) {
+  const url = `${RAILSAATHI_CONFIG.baseUrl}/api/v1/journeys/search`;
+
+  const payload = {
+    from_station: (query.from || "").trim().toUpperCase(),
+    to_station: (query.to || "").trim().toUpperCase(),
+    journey_date: query.date || todayISO(),
+    travel_class: query.travelClass || "SL",
+    quota: query.quota || "GN",
+    ranking_preference: query.rankingPreference || "FASTEST",
+    via_stations: query.viaStations || [],
+    engines: query.engines || ["SAME_TRAIN", "TRAIN_CHANGE", "MIXED"],
+    max_results: query.maxResults || 30,
+  };
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), RAILSAATHI_CONFIG.timeoutMs);
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    const contentType = res.headers.get("content-type") || "";
+    const isJson = contentType.includes("application/json");
+    const data = isJson ? await res.json() : await res.text();
+
+    if (!res.ok) {
+      let errorMessage = `Backend returned status ${res.status}`;
+      let errorDetails = null;
+
+      if (res.status === 422) {
+        errorMessage = "Validation error: Please verify station codes, date and travel class.";
+        errorDetails = data && data.detail ? data.detail : data;
+      } else if (res.status === 502) {
+        errorMessage = (data && data.message) || "RailCore provider failure: External railway API was unreachable or returned an error.";
+        errorDetails = data;
+      } else if (res.status === 503) {
+        errorMessage = (data && data.message) || "RailCore API key is not configured on the backend.";
+        errorDetails = data;
+      } else if (data && data.message) {
+        errorMessage = data.message;
+        errorDetails = data;
+      }
+
+      const err = new Error(errorMessage);
+      err.status = res.status;
+      err.data = data;
+      err.details = errorDetails;
+      err.isBackendError = true;
+      throw err;
+    }
+
+    return data;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err.name === "AbortError") {
+      const timeoutErr = new Error(`Request timed out after ${RAILSAATHI_CONFIG.timeoutMs / 1000}s. The backend may be busy.`);
+      timeoutErr.isNetworkError = true;
+      throw timeoutErr;
+    }
+    if (err.isBackendError) {
+      throw err;
+    }
+    const netErr = new Error(`Cannot connect to RailSaathi backend at ${RAILSAATHI_CONFIG.baseUrl}. Ensure the FastAPI server is running with 'uvicorn app.main:app'.`);
+    netErr.isNetworkError = true;
+    netErr.original = err;
+    throw netErr;
+  }
+}
+
+function adaptUnifiedJourney(j, isUnverified = false, isLiveProvider = false) {
+  const registerStation = (point) => {
+    if (!point) return;
+    const code = point.code || point.station_code;
+    const name = point.name || point.station_name || code;
+    if (code && !STATION_MAP[code]) {
+      STATION_MAP[code] = { code, name, city: name, state: "" };
+    }
+  };
+
+  if (j.departure && j.departure.station) registerStation(j.departure.station);
+  if (j.arrival && j.arrival.station) registerStation(j.arrival.station);
+
+  const depTimeStr = j.departure?.time || j.departure?.departure_time || "00:00";
+  const depDay = j.departure?.day || j.departure?.departure_day || 1;
+  const departAbs = (depDay - 1) * 1440 + (timeToMin(depTimeStr) || 0);
+
+  const arrTimeStr = j.arrival?.time || j.arrival?.arrival_time || "00:00";
+  const arrDay = j.arrival?.day || j.arrival?.arrival_day || depDay;
+  let arriveAbs = (arrDay - 1) * 1440 + (timeToMin(arrTimeStr) || 0);
+
+  const totalDuration = j.total_duration_minutes != null
+    ? j.total_duration_minutes
+    : Math.max(0, arriveAbs - departAbs);
+
+  if (arriveAbs <= departAbs && totalDuration > 0) {
+    arriveAbs = departAbs + totalDuration;
+  }
+
+  const segments = [];
+  const rawSegments = j.segments || [];
+  const trainChanges = j.train_changes ?? 0;
+  const seatChanges = j.seat_changes ?? 0;
+
+  let currentLegIndex = 0;
+  let prevTrainNo = null;
+
+  rawSegments.forEach((s, idx) => {
+    registerStation(s.from_station);
+    registerStation(s.to_station);
+
+    let boundary = null;
+    if (idx === 0) {
+      boundary = null;
+      prevTrainNo = s.train_number;
+    } else {
+      if (s.segment_type === "TRAIN_CHANGE" || (s.train_number !== prevTrainNo)) {
+        boundary = "train";
+        currentLegIndex++;
+      } else {
+        boundary = "seat";
+      }
+      prevTrainNo = s.train_number;
+    }
+
+    const sDepTimeStr = s.departure_time || "00:00";
+    const sDepDay = s.departure_day || 1;
+    const sDepartAbs = (sDepDay - 1) * 1440 + (timeToMin(sDepTimeStr) || 0);
+
+    const sArrTimeStr = s.arrival_time || "00:00";
+    const sArrDay = s.arrival_day || sDepDay;
+    let sArriveAbs = (sArrDay - 1) * 1440 + (timeToMin(sArrTimeStr) || 0);
+    if (sArriveAbs < sDepartAbs) sArriveAbs += 1440;
+
+    const sDur = Math.max(0, sArriveAbs - sDepartAbs);
+    const dist = Math.round(s.distance_km_at_to_station || 0);
+
+    const isAvailable = s.status === "CONFIRMED_AVAILABLE";
+    const availText = s.availability_text || (isAvailable ? "AVAILABLE" : s.status);
+
+    const fromCode = s.from_station ? (s.from_station.code || s.from_station.station_code) : "";
+    const toCode = s.to_station ? (s.to_station.code || s.to_station.station_code) : "";
+
+    segments.push({
+      trainNumber: s.train_number,
+      trainName: s.train_name || ("Train #" + s.train_number),
+      trainType: (s.train_name && s.train_name.includes("SF")) ? "Superfast" : "Express",
+      from: fromCode,
+      to: toCode,
+      fromPlatform: (s.from_station && s.from_station.platform) || "1",
+      toPlatform: (s.to_station && s.to_station.platform) || "2",
+      departAbs: sDepartAbs,
+      arriveAbs: sArriveAbs,
+      duration: sDur,
+      dist: dist,
+      fare: s.fare != null ? s.fare : 0,
+      coach: s.coach || (s.travel_class || "Coach"),
+      seat: s.seat || (s.available_count != null ? `Seat (${s.available_count} avail)` : (availText.replace("AVAILABLE ", "") || "Confirmed")),
+      boundary: boundary,
+      legIndex: currentLegIndex,
+      status: isAvailable ? "available" : "unverified",
+      availability_text: availText,
+      booking_url: s.booking_url || null,
+      rawStatus: s.status,
+      providerStatus: s.provider_status,
+      checkedAt: s.checked_at,
+    });
+  });
+
+  const connections = [];
+  let totalWait = 0;
+  const rawTransitions = j.transitions || [];
+
+  rawTransitions.forEach((t) => {
+    registerStation(t.station);
+    const wait = t.wait_minutes != null ? t.wait_minutes : (t.onboard_halt_minutes || 0);
+    if (t.is_train_change) totalWait += wait;
+
+    const stCode = t.station ? (t.station.code || t.station.station_code) : "";
+    const stName = t.station ? (t.station.name || t.station.station_name || stCode) : stCode;
+
+    connections.push({
+      station: stCode,
+      stationName: stName,
+      wait: wait,
+      short: t.is_train_change && wait < 20,
+      arriveAbs: t.arrival_datetime ? timeToMin(t.arrival_datetime.slice(11, 16)) : null,
+      departAbs: t.departure_datetime ? timeToMin(t.departure_datetime.slice(11, 16)) : null,
+      platformFrom: (t.station && t.station.platform) || null,
+      platformTo: (t.station && t.station.platform) || null,
+      isTrainChange: Boolean(t.is_train_change),
+      transitionType: t.transition_type,
+    });
+  });
+
+  let changeType = "direct";
+  if (trainChanges > 0 && seatChanges > 0) {
+    changeType = "combined";
+  } else if (trainChanges > 0) {
+    changeType = "train";
+  } else if (seatChanges > 0) {
+    changeType = "seat";
+  } else if (j.journey_type === "SAME_TRAIN_SEGMENTS") {
+    changeType = "seat";
+  } else if (j.journey_type === "TRAIN_CHANGE") {
+    changeType = "train";
+  } else if (j.journey_type === "MIXED") {
+    changeType = "combined";
+  }
+
+  const distinctTrainNos = j.distinct_trains || [...new Set(segments.map(s => s.trainNumber))];
+  const legs = distinctTrainNos.map((trainNo) => {
+    const legSegs = segments.filter(s => s.trainNumber === trainNo);
+    const first = legSegs[0] || {};
+    const last = legSegs[legSegs.length - 1] || {};
+    return {
+      train: {
+        number: trainNo,
+        name: first.trainName || trainNo,
+        type: first.trainType || "Express",
+      },
+      intervals: legSegs,
+      departAbs: first.departAbs || departAbs,
+      arriveAbs: last.arriveAbs || arriveAbs,
+      duration: Math.max(0, (last.arriveAbs || arriveAbs) - (first.departAbs || departAbs)),
+      dist: legSegs.reduce((sum, s) => sum + (s.dist || 0), 0),
+      seatChanges: Math.max(0, legSegs.length - 1),
+    };
+  });
+
+  const totalFare = j.total_fare != null ? j.total_fare : segments.reduce((sum, s) => sum + (s.fare || 0), 0);
+  const totalDist = segments.reduce((sum, s) => sum + (s.dist || 0), 0);
+
+  const score = aiScore({
+    totalDuration,
+    totalFare,
+    trainChanges,
+    seatChanges,
+    totalWait,
+    overnight: Boolean(j.overnight),
+    connections,
+  });
+
+  return {
+    key: j.journey_id,
+    id: j.journey_id,
+    journeyId: j.journey_id,
+    departAbs,
+    arriveAbs,
+    totalDuration,
+    totalFare,
+    totalDist,
+    trainChanges,
+    seatChanges,
+    changeType,
+    overnight: Boolean(j.overnight),
+    segments,
+    connections,
+    legs,
+    totalWait,
+    score,
+    sourceEngines: j.source_engines || [],
+    isUnverified: isUnverified,
+    isLiveProviderVerified: Boolean(isLiveProvider && !isUnverified),
+    verificationStatus: j.journey_status || (isUnverified ? "PARTIALLY_VERIFIED" : "AVAILABLE_COMBINATION"),
+    allConfirmed: Boolean(j.all_segments_confirmed_available),
+    bookingUrl: (segments.find(s => s.booking_url) || {}).booking_url || null,
+    isDemo: false,
+  };
+}
+
+function adaptBackendResponse(resp) {
+  // Live provider verification is only claimed if explicitly established by the backend response
+  const isLiveProvider = Boolean(
+    resp && (
+      resp.is_live_provider === true ||
+      resp.live_verified === true ||
+      resp.provider_mode === "live" ||
+      (resp.api_usage && resp.api_usage.is_live === true)
+    )
+  );
+
+  const confirmed = (resp.results || []).map(j => adaptUnifiedJourney(j, false, isLiveProvider));
+  const unverified = (resp.unverified_candidates || []).map(j => adaptUnifiedJourney(j, true, isLiveProvider));
+
+  return {
+    success: resp.success,
+    status: resp.status,
+    message: resp.message,
+    rankedBy: resp.ranked_by,
+    results: confirmed,
+    unverifiedCandidates: unverified,
+    totalResults: resp.total_results || confirmed.length,
+    totalUnverifiedCandidates: resp.total_unverified_candidates || unverified.length,
+    searchCompleteness: resp.search_completeness,
+    deduplication: resp.deduplication,
+    perEngine: resp.per_engine || [],
+    directTrains: resp.direct_trains || [],
+    availabilityCheckedAt: resp.availability_checked_at,
+    isLiveProvider: isLiveProvider,
+    notes: resp.notes || [],
+    errors: resp.errors || [],
+  };
+}
+
 function AppProvider({ children }) {
   const hash = useHashRoute();
   const route = parseRoute(hash);
   const [user, setUser] = useState(null);
   const [search, setSearch] = useState(null);
   const [journeys, setJourneys] = useState(null);
+  const [unverifiedCandidates, setUnverifiedCandidates] = useState([]);
   const [searchMeta, setSearchMeta] = useState(null);
+  const [searchError, setSearchError] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchMode, setSearchMode] = useState("live");
+  const [backendResponse, setBackendResponse] = useState(null);
   const [savedJourneys, setSaved] = useState([]);
   const [recentSearches, setRecent] = useState([]);
   const [compareList, setCompare] = useState([]);
 
-  const runSearch = useCallback((q) => {
-    const js = discoverJourneys(q.from, q.to, q.travelClass, { maxTrains: 3 });
-    setSearch(q); setJourneys(js);
-    setSearchMeta({ from: q.from, to: q.to, date: q.date, passengers: q.passengers, travelClass: q.travelClass, count: js.length, at: Date.now() });
+  const runSearch = useCallback(async (q, opts = {}) => {
+    const mode = opts.mode || "live";
+    setSearch(q);
+    setSearchError(null);
     setRecent((prev) => {
       const key = q.from + "-" + q.to + "-" + q.travelClass;
       return [{ ...q, key, at: Date.now() }, ...prev.filter((p) => p.key !== key)].slice(0, 8);
     });
+
+    if (mode === "demo") {
+      setIsSearching(true);
+      setSearchMode("demo");
+      const js = discoverJourneys(q.from, q.to, q.travelClass, { maxTrains: 3 }).map(j => ({ ...j, isDemo: true }));
+      setJourneys(js);
+      setUnverifiedCandidates([]);
+      setBackendResponse(null);
+      setSearchMeta({
+        from: q.from, to: q.to, date: q.date, passengers: q.passengers, travelClass: q.travelClass,
+        count: js.length, totalUnverified: 0, status: "DEMO_DATA", isComplete: true, at: Date.now(),
+        isLiveProvider: false,
+        isDemo: true,
+        message: "Offline demo journeys (simulated data)",
+      });
+      setIsSearching(false);
+      navigate("/discover");
+      return;
+    }
+
+    // Live backend search
+    setIsSearching(true);
+    setSearchMode("live");
     navigate("/discover");
+
+    try {
+      const rawData = await apiSearchJourneys(q, opts);
+      const adapted = adaptBackendResponse(rawData);
+
+      setJourneys(adapted.results);
+      setUnverifiedCandidates(adapted.unverifiedCandidates);
+      setBackendResponse(adapted);
+      setSearchMeta({
+        from: q.from, to: q.to, date: q.date, passengers: q.passengers, travelClass: q.travelClass,
+        count: adapted.results.length,
+        totalUnverified: adapted.unverifiedCandidates.length,
+        status: adapted.status,
+        isComplete: adapted.searchCompleteness ? adapted.searchCompleteness.complete : true,
+        searchCompleteness: adapted.searchCompleteness,
+        deduplication: adapted.deduplication,
+        perEngine: adapted.perEngine,
+        at: Date.now(),
+        isLiveProvider: adapted.isLiveProvider,
+        isDemo: false,
+        message: adapted.message,
+      });
+      setSearchError(null);
+    } catch (err) {
+      setJourneys(null);
+      setUnverifiedCandidates([]);
+      setBackendResponse(null);
+      setSearchError({
+        message: err.message,
+        status: err.status,
+        details: err.details,
+        isNetworkError: Boolean(err.isNetworkError),
+        retry: () => runSearch(q, { mode: "live" }),
+      });
+    } finally {
+      setIsSearching(false);
+    }
   }, []);
 
   const toggleSave = useCallback((j) => {
@@ -2272,7 +2854,14 @@ function AppProvider({ children }) {
   const signIn = useCallback((name, email) => { setUser({ name, email, initials: initialsOf(name) }); navigate("/dashboard"); }, []);
   const signOut = useCallback(() => { setUser(null); navigate("/"); }, []);
 
-  const value = { user, signIn, signOut, search, journeys, searchMeta, savedJourneys, toggleSave, isSaved, recentSearches, compareList, toggleCompare, clearCompare, notifications: NOTIFICATIONS, runSearch, routeName: route.name, routeParam: route.param, route };
+  const value = {
+    user, signIn, signOut, search, journeys, unverifiedCandidates,
+    searchMeta, searchError, isSearching, searchMode, backendResponse,
+    savedJourneys, toggleSave, isSaved, recentSearches,
+    compareList, toggleCompare, clearCompare,
+    notifications: NOTIFICATIONS, runSearch,
+    routeName: route.name, routeParam: route.param, route
+  };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
@@ -2311,12 +2900,12 @@ function JourneyDetailsPage() {
     { icon: "route", label: "Total distance", value: j.totalDist + " km" },
     { icon: "shuffle", label: "Changes", value: (j.trainChanges + j.seatChanges) + ` (${j.trainChanges} train · ${j.seatChanges} seat)` },
     { icon: j.overnight ? "moon" : "sunrise", label: "Overnight", value: j.overnight ? "Yes" : "No" },
-    { icon: "shield", label: "Verification", value: "All confirmed" },
+    { icon: "shield", label: "Verification", value: j.isUnverified ? "Unverified candidate" : (j.isDemo ? "Demo data (simulated)" : (j.isLiveProviderVerified ? "Live provider verified" : "Backend engine verified")) },
   ];
 
   return (
     <PageShell title={`Journey #${rank}`} breadcrumb={[{ label: "Results", action: () => navigate("/discover") }]}
-      actions={<div className="flex gap-2"><Button variant="outline" size="md" onClick={() => navigate("/discover")}><Icon name="arrowLeft" size={15}/> Back</Button><Button variant={saved ? "soft" : "outline"} size="md" onClick={() => toggleSave(j)}><Icon name="heart" size={15}/> {saved ? "Saved" : "Save"}</Button><Button variant={compared ? "soft" : "outline"} size="md" onClick={() => toggleCompare(j)} disabled={!compared && compareList.length >= 3}><Icon name="compare" size={15}/> {compared ? "Comparing" : "Compare"}</Button><Button variant="primary" size="md" onClick={() => navigate(`/booking/${rank}`)}><Icon name="arrowRight" size={15}/> Book</Button></div>}>
+      actions={<div className="flex gap-2"><Button variant="outline" size="md" onClick={() => navigate("/discover")}><Icon name="arrowLeft" size={15}/> Back</Button><Button variant={saved ? "soft" : "outline"} size="md" onClick={() => toggleSave(j)}><Icon name="heart" size={15}/> {saved ? "Saved" : "Save"}</Button><Button variant={compared ? "soft" : "outline"} size="md" onClick={() => toggleCompare(j)} disabled={!compared && compareList.length >= 3}><Icon name="compare" size={15}/> {compared ? "Comparing" : "Compare"}</Button>{j.bookingUrl && <a href={j.bookingUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-electric to-cyanx-500 text-white shadow-glow hover:opacity-95"><Icon name="external" size={15}/> Book Provider</a>}<Button variant="primary" size="md" onClick={() => navigate(`/booking/${rank}`)}><Icon name="arrowRight" size={15}/> Book</Button></div>}>
       <div className="mb-4"><StepIndicator current={2} /></div>
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         <div className="space-y-6">
@@ -2325,8 +2914,14 @@ function JourneyDetailsPage() {
             <div className="flex flex-wrap items-center gap-2 mb-4">
               <Badge color={cs.color} icon={j.changeType === "direct" ? "checkCircle" : j.changeType === "seat" ? "swap" : j.changeType === "train" ? "gitBranch" : "layers"}>{cs.label}</Badge>
               {j.overnight && <Badge color="violet" icon="moon">Overnight</Badge>}
-              <Badge color="emerald" icon="shield">All segments confirmed</Badge>
-              <Badge color="cyan" icon="info">Demo data</Badge>
+              {j.isUnverified ? (
+                <Badge color="amber" icon="alert">Unverified candidate</Badge>
+              ) : (
+                <Badge color="emerald" icon="shield">All segments confirmed</Badge>
+              )}
+              <Badge color={j.isDemo ? "amber" : "emerald"} icon={j.isDemo ? "info" : "shield"}>
+                {j.isDemo ? "Demo Data" : (j.isLiveProviderVerified ? "Live Provider-Verified" : "Backend Verified")}
+              </Badge>
             </div>
             <div className="flex items-center gap-4 md:gap-6">
               <div><div className="font-display text-3xl font-extrabold text-navy-900">{minTo12(j.departAbs)}</div><div className="text-sm text-navy-500 font-semibold">{from.city}</div><div className="text-xs text-navy-400">{from.code} · Pl {j.segments[0].fromPlatform}</div></div>
@@ -2421,7 +3016,7 @@ function JourneyDetailsPage() {
             </div>
           </Card>
           <Card className="p-5 bg-cyanx-500/5 border-cyanx-500/20">
-            <div className="flex items-start gap-2.5"><Icon name="info" size={18} className="text-cyanx-600 mt-0.5 shrink-0" /><p className="text-xs text-navy-600 leading-relaxed">Times, platforms, seats and fares come from {AVAILABILITY_SOURCE.toLowerCase()}. Verify with the railway operator before booking. Real backend & live availability API can be plugged in without changing the UI.</p></div>
+            <div className="flex items-start gap-2.5"><Icon name="info" size={18} className="text-cyanx-600 mt-0.5 shrink-0" /><p className="text-xs text-navy-600 leading-relaxed">{j.isDemo ? ("Times, platforms, seats and fares come from " + AVAILABILITY_SOURCE.toLowerCase() + ". Real seat availability was not queried. Verify with the railway operator before booking.") : j.isLiveProviderVerified ? "Times, seats and fares verified through RailSaathi FastAPI backend and live RailCore provider checks. Availability is a point-in-time check, not a booking. Verify railway rules on split journeys before travel." : "Times, seats and fares computed through RailSaathi unified journey backend engine. Availability reflects point-in-time engine verification. Verify railway rules on split journeys before travel."}</p></div>
           </Card>
         </aside>
       </div>
@@ -2431,7 +3026,7 @@ function JourneyDetailsPage() {
 
 function AIPage() {
   const { journeys, search, toggleCompare, compareList } = useApp();
-  if (!journeys) {
+  if (!journeys || journeys.length === 0) {
     return <PageShell title="AI Recommendations" breadcrumb={[]}><Card className="p-10 text-center"><p className="text-navy-500">Run a search to see AI-ranked recommendations.</p><Button variant="primary" size="md" className="mt-4" onClick={() => navigate("/")}><Icon name="search" size={15}/> Search</Button></Card></PageShell>;
   }
   const best = computeBest(journeys);
@@ -2459,7 +3054,13 @@ function AIPage() {
         </Card>
 
         <Card className="p-5 md:p-6">
-          <div className="flex items-center justify-between mb-4"><h3 className="font-display font-bold text-navy-900 flex items-center gap-2"><Icon name="gauge" size={18} className="text-electric" /> Dynamic ranking</h3><Badge color="navy" icon="info">{journeys.length} journeys scored</Badge></div>
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div>
+              <h3 className="font-display font-bold text-navy-900 flex items-center gap-2"><Icon name="gauge" size={18} className="text-electric" /> Dynamic ranking</h3>
+              <p className="text-xs text-navy-500 mt-0.5">Multi-factor heuristic scoring based on travel time, fare, changes & transfer buffers (deterministic engine calculation, non-LLM)</p>
+            </div>
+            <Badge color="navy" icon="info">{journeys.length} journeys scored</Badge>
+          </div>
           <div className="space-y-3">
             {ranked.map((j, i) => {
               const v = vals(j); const rank = journeys.indexOf(j) + 1;
@@ -2487,7 +3088,7 @@ function AIPage() {
                     })}
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-2">
-                    <div className="text-xs text-navy-500">AI score <span className="font-bold text-navy-900">{j.score}</span> · lower is better</div>
+                    <div className="text-xs text-navy-500">Heuristic score <span className="font-bold text-navy-900">{j.score}</span> · lower is better</div>
                     <div className="flex gap-2"><Button variant="soft" size="sm" onClick={() => toggleCompare(j)} disabled={!compareList.some((c) => c.key === j.key) && compareList.length >= 3}><Icon name="compare" size={13}/> Compare</Button><Button variant="primary" size="sm" onClick={() => navigate(`/journey/${rank}`)}><Icon name="arrowRight" size={13}/> View</Button></div>
                   </div>
                 </div>

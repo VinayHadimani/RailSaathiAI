@@ -117,6 +117,16 @@ class Settings(BaseSettings):
     unified_discovery_cache_ttl_seconds: float = 300.0
     unified_min_request_interval_seconds: float = 0.0
 
+    # --- CORS (development origins) ----------------------------------------
+    cors_allowed_origins: list[str] = [
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+
     @property
     def railcore_api_key_is_configured(self) -> bool:
         value = self.railcore_api_key.get_secret_value() if self.railcore_api_key else ""

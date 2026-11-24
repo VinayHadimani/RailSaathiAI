@@ -35,6 +35,7 @@ Swagger UI: http://127.0.0.1:8000/docs
 from __future__ import annotations
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from .api.routes import router
@@ -62,6 +63,14 @@ app = FastAPI(
         "point-in-time checks, not bookings, and separate-ticket combinations "
         "are reported as requiring railway-rule verification."
     ),
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(router)
