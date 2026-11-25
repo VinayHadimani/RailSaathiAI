@@ -2619,13 +2619,16 @@ async function apiSearchJourneys(query, options = {}) {
   }
 }
 
-async function apiAgentChat(message, sessionId = null) {
+async function apiAgentChat(message, sessionId = null, clientSlots = null) {
   const url = `${RAILSAATHI_CONFIG.baseUrl}/api/v1/agent/chat`;
 
   const payload = {
     message: String(message || "").trim(),
     session_id: sessionId || null,
   };
+  if (clientSlots) {
+    payload.slots = clientSlots;
+  }
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), RAILSAATHI_CONFIG.timeoutMs);
@@ -3707,7 +3710,7 @@ function ConversationalAssistant() {
     setLoading(true);
 
     try {
-      const resp = await apiAgentChat(textToSend, sessionId);
+      const resp = await apiAgentChat(textToSend, sessionId, activeSlots);
       if (resp.session_id) {
         setSessionId(resp.session_id);
       }

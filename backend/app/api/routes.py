@@ -381,4 +381,5 @@ def agent_chat(
     return orchestrator.process_message(
         message=payload.message,
         session_id=payload.session_id,
+        client_slots=payload.slots,
     )

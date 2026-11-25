@@ -686,3 +686,41 @@ def test_agent_chat_api_endpoint():
         assert "reply" in data
     finally:
         fastapi_app.dependency_overrides.clear()
+
+
+def test_agent_chat_preserves_client_slots_across_fresh_serverless_instance():
+    """Follow-up turn on a fresh InMemorySessionStore preserves prior client slots."""
+    mock_llm = MockLLMClient(
+        default_response=_make_llm_json(
+            intent="CORRECTION",
+            travel_class="3A",
+            is_correction=True,
+            correction_target="travel_class",
+        )
+    )
+    fresh_store = InMemorySessionStore()
+    mock_unified_service = MagicMock()
+    mock_unified_service.run.return_value = (_sample_unified_body(), 200)
+
+    orch = AgentOrchestrator(
+        extractor=IntentAndSlotExtractor(mock_llm),
+        session_store=fresh_store,
+        unified_service=mock_unified_service,
+    )
+
+    resp = orch.process_message(
+        message="in 3A",
+        session_id="ephemeral-serverless-session",
+        client_slots=AgentSlots(
+            from_station="PUNE",
+            to_station="CSMT",
+            journey_date="2026-11-26",
+            travel_class="SL",
+        ),
+    )
+
+    assert resp.slots.from_station == "PUNE"
+    assert resp.slots.to_station == "CSMT"
+    assert resp.slots.travel_class == "3A"
+    assert resp.search_triggered is True
+

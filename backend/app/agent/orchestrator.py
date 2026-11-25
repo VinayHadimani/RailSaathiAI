@@ -115,12 +115,14 @@ class AgentOrchestrator:
         self,
         message: str,
         session_id: str | None = None,
+        client_slots: AgentSlots | None = None,
     ) -> AgentChatResponse:
         """Process one conversational turn from the user.
 
         Args:
             message: User's natural-language journey inquiry.
             session_id: Optional client session UUID.
+            client_slots: Optional client-held slots for serverless instance continuity.
 
         Returns:
             AgentChatResponse with updated state, message, slots, and search results.
@@ -128,6 +130,9 @@ class AgentOrchestrator:
         # 1. Retrieve or create session
         session, is_new = self._session_store.get_or_create_session(session_id)
         sid = session.session_id
+        if is_new and client_slots is not None:
+            self._session_store.update_slots(sid, client_slots)
+            session.slots = client_slots
 
         # Record user message in session history
         self._session_store.add_message(sid, "user", message)
@@ -171,7 +176,7 @@ class AgentOrchestrator:
                 reply=reply,
                 slots=slots,
                 missing_slots=["from_station", "to_station", "journey_date"],
-                suggested_actions=["Mysuru to Belagavi", "Bengaluru to Dharwad", "Delhi to Mumbai"],
+                suggested_actions=["Bengaluru to Chennai", "Pune to Mumbai CSMT", "New Delhi to Mumbai CSMT"],
             )
 
         # 5. Handle Ambiguous Station Clusters

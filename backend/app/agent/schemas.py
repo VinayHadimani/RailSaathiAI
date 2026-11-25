@@ -109,6 +109,10 @@ class AgentChatRequest(BaseModel):
         max_length=1000,
         description="User's natural-language journey inquiry.",
     )
+    slots: AgentSlots | None = Field(
+        None,
+        description="Optional client-held slots to preserve multi-turn continuity across serverless instances.",
+    )
 
 
 class AgentChatResponse(BaseModel):
