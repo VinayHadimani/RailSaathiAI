@@ -29,7 +29,7 @@ class GeminiLLMClient(LLMClient):
     both synchronous and asynchronous generation.
     """
 
-    DEFAULT_MODEL = "gemini-2.5-flash"
+    DEFAULT_MODEL = "gemini-3.5-flash-lite"
     DEFAULT_TIMEOUT_SECONDS = 30.0
 
     def __init__(
@@ -264,8 +264,8 @@ class GeminiLLMClient(LLMClient):
             raise LLMAuthenticationError("Gemini API key is not configured.", provider="gemini")
 
         models_to_try = [self._model]
-        if "3.1-flash-lite" not in self._model:
-            models_to_try.append("gemini-3.1-flash-lite")
+        if "3.5-flash-lite" not in self._model:
+            models_to_try.append("gemini-3.5-flash-lite")
 
         last_exc: LLMError | None = None
         for key_idx, current_key in enumerate(candidates):
@@ -328,8 +328,8 @@ class GeminiLLMClient(LLMClient):
             raise LLMAuthenticationError("Gemini API key is not configured.", provider="gemini")
 
         models_to_try = [self._model]
-        if "3.1-flash-lite" not in self._model:
-            models_to_try.append("gemini-3.1-flash-lite")
+        if "3.5-flash-lite" not in self._model:
+            models_to_try.append("gemini-3.5-flash-lite")
 
         last_exc: LLMError | None = None
         for key_idx, current_key in enumerate(candidates):

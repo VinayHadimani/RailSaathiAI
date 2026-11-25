@@ -134,7 +134,7 @@ class Settings(BaseSettings):
 
     # --- LLM Client (Phase 6B.3) -------------------------------------------
     llm_provider: str = "gemini"  # "gemini" or "mock"
-    llm_model: str = "gemini-2.5-flash-lite"
+    llm_model: str = "gemini-3.5-flash-lite"
     gemini_api_key: SecretStr | None = None
     gemini_api_keys: list[SecretStr] | None = None
     llm_timeout_seconds: float = 30.0

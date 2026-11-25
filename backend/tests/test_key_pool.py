@@ -195,7 +195,7 @@ def test_gemini_multi_key_failover():
 
     client = GeminiLLMClient(
         api_keys=["gemini-key-1", "gemini-key-2"],
-        model="gemini-2.5-flash-lite",
+        model="gemini-3.5-flash-lite",
     )
     # Inject mocked SDK clients mapped to the keys
     client._clients["gemini-key-1"] = MockGenAIClient("gemini-key-1")
@@ -220,7 +220,7 @@ def test_gemini_all_keys_rate_limited():
 
     client = GeminiLLMClient(
         api_keys=["gk1", "gk2"],
-        model="gemini-2.5-flash-lite",
+        model="gemini-3.5-flash-lite",
     )
     client._clients["gk1"] = MockGenAIClient()
     client._clients["gk2"] = MockGenAIClient()

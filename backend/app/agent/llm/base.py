@@ -21,7 +21,7 @@ class LLMClient(ABC):
     @property
     @abstractmethod
     def model_name(self) -> str:
-        """Name of the specific model in use (e.g. 'gemini-2.5-flash-lite')."""
+        """Name of the specific model in use (e.g. 'gemini-3.5-flash-lite')."""
 
     @abstractmethod
     def generate_text(

@@ -123,16 +123,16 @@ def test_gemini_client_empty_key_raises_auth_error():
 
 
 def test_gemini_client_repr_and_str_mask_key():
-    client = GeminiLLMClient(api_key=SecretStr("AIzaSyVerySecretKey123"), model="gemini-2.5-flash-lite")
+    client = GeminiLLMClient(api_key=SecretStr("AIzaSyVerySecretKey123"), model="gemini-3.5-flash-lite")
     repr_str = repr(client)
     str_str = str(client)
 
     assert "AIzaSy" not in repr_str
     assert "VerySecretKey123" not in repr_str
     assert "AIzaSy" not in str_str
-    assert "gemini-2.5-flash-lite" in repr_str
+    assert "gemini-3.5-flash-lite" in repr_str
     assert client.provider_name == "gemini"
-    assert client.model_name == "gemini-2.5-flash-lite"
+    assert client.model_name == "gemini-3.5-flash-lite"
 
 
 # ============================================================================
@@ -145,7 +145,7 @@ def test_gemini_client_sync_generation_success():
     mock_response.text = "Here is your train route from NDLS to BCT."
     mock_sdk_client.models.generate_content.return_value = mock_response
 
-    client = GeminiLLMClient(client=mock_sdk_client, model="gemini-2.5-flash-lite")
+    client = GeminiLLMClient(client=mock_sdk_client, model="gemini-3.5-flash-lite")
 
     result = client.generate_text(
         prompt="Find trains from Delhi to Mumbai",
@@ -158,7 +158,7 @@ def test_gemini_client_sync_generation_success():
     mock_sdk_client.models.generate_content.assert_called_once()
     call_kwargs = mock_sdk_client.models.generate_content.call_args.kwargs
 
-    assert call_kwargs["model"] == "gemini-2.5-flash-lite"
+    assert call_kwargs["model"] == "gemini-3.5-flash-lite"
     assert call_kwargs["contents"] == "Find trains from Delhi to Mumbai"
     config = call_kwargs["config"]
     assert config.system_instruction == "You are RailSaathi AI assistant."
@@ -174,7 +174,7 @@ async def test_gemini_client_async_generation_success():
     mock_response.text = "Async response from Gemini"
     mock_sdk_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
 
-    client = GeminiLLMClient(client=mock_sdk_client, model="gemini-2.5-flash-lite", timeout_seconds=12.5)
+    client = GeminiLLMClient(client=mock_sdk_client, model="gemini-3.5-flash-lite", timeout_seconds=12.5)
 
     result = await client.generate_text_async(
         prompt="Async query",
@@ -191,7 +191,7 @@ def test_gemini_client_lazy_initialization_passes_timeout_to_sdk():
     with patch("google.genai.Client") as mock_genai_constructor:
         client = GeminiLLMClient(
             api_key=SecretStr("AIzaSyDummyKeyForInitTest"),
-            model="gemini-2.5-flash-lite",
+            model="gemini-3.5-flash-lite",
             timeout_seconds=20.0,
         )
         sdk_client = client._get_client()
@@ -368,25 +368,25 @@ def test_factory_creates_gemini_client_with_injected_client():
     client = get_llm_client(
         provider="gemini",
         client=mock_sdk,
-        model="gemini-2.5-flash-lite",
+        model="gemini-3.5-flash-lite",
         timeout_seconds=20.0,
     )
     assert isinstance(client, GeminiLLMClient)
     assert client.provider_name == "gemini"
-    assert client.model_name == "gemini-2.5-flash-lite"
+    assert client.model_name == "gemini-3.5-flash-lite"
 
 
 def test_factory_creates_gemini_client_from_settings():
     settings = Settings(
         llm_provider="gemini",
-        llm_model="gemini-2.5-flash-lite",
+        llm_model="gemini-3.5-flash-lite",
         gemini_api_key=SecretStr("test-key-12345"),
         llm_timeout_seconds=25.0,
     )
     client = get_llm_client(settings=settings)
     assert isinstance(client, GeminiLLMClient)
     assert client.provider_name == "gemini"
-    assert client.model_name == "gemini-2.5-flash-lite"
+    assert client.model_name == "gemini-3.5-flash-lite"
 
 
 def test_factory_gemini_without_api_key_raises_auth_error_not_fallback():
