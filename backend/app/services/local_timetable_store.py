@@ -398,6 +398,7 @@ class LocalTimetableStore:
                 return self._station_cache
             by_code: dict[str, tuple[str, str, int]] = {}
             by_norm: dict[str, list[tuple[str, str, int]]] = {}
+            by_token: dict[str, list[tuple[str, str, int]]] = {}
             conns = self._read_connections()
             try:
                 for conn in conns:
@@ -416,18 +417,25 @@ class LocalTimetableStore:
                         name = str(row["name"] or "").strip()
                         cnt = int(row["cnt"] or 0)
                         if code and name and code not in by_code:
-                            by_code[code] = (code, name, cnt)
+                            entry = (code, name, cnt)
+                            by_code[code] = entry
                             norm = self._normalize_station_name(name)
                             if norm:
-                                by_norm.setdefault(norm, []).append((code, name, cnt))
+                                by_norm.setdefault(norm, []).append(entry)
+                                first_tok = norm.split()[0]
+                                if len(first_tok) >= 5:
+                                    by_token.setdefault(first_tok, []).append(entry)
             finally:
                 for conn in conns:
                     conn.close()
             for norm_key in by_norm:
                 by_norm[norm_key].sort(key=lambda item: (-item[2], item[0]))
+            for tok_key in by_token:
+                by_token[tok_key].sort(key=lambda item: (-item[2], item[0]))
             self._station_cache = {
                 "by_code": by_code,
                 "by_norm": by_norm,
+                "by_token": by_token,
                 "items": sorted(by_code.values(), key=lambda item: (-item[2], item[0])),
             }
             return self._station_cache
@@ -461,17 +469,27 @@ class LocalTimetableStore:
             prefix_hits.sort(key=lambda item: (-item[2], item[0]))
             return prefix_hits[:5]
 
-        # Strict fuzzy fallback for spelling variants (e.g. "kalburgi" -> "kalaburagi")
+        # Strict fuzzy fallback for spelling variants (e.g. "kalburgi" -> "kalaburagi",
+        # "hydrabad" -> "hyderabad", "vishakapatnam" -> "visakhapatnam").
         # Uses raw_alpha without stripping "city"/"town" to avoid false positives like "gotham city".
         raw_norm = self._normalize_station_name(query, strip_place_words=False)
         if len(raw_norm) >= 5:
-            close_keys = difflib.get_close_matches(raw_norm, by_norm.keys(), n=3, cutoff=0.86)
+            by_token: dict[str, list[tuple[str, str, int]]] = idx.get("by_token") or {}
+            close_keys = difflib.get_close_matches(raw_norm, by_norm.keys(), n=3, cutoff=0.85)
             if close_keys:
                 fuzzy_hits: list[tuple[str, str, int]] = []
                 for key in close_keys:
                     fuzzy_hits.extend(by_norm[key])
                 fuzzy_hits.sort(key=lambda item: (-item[2], item[0]))
                 return fuzzy_hits[:5]
+            if " " not in raw_norm and by_token:
+                close_toks = difflib.get_close_matches(raw_norm, by_token.keys(), n=3, cutoff=0.86)
+                if close_toks:
+                    tok_hits: list[tuple[str, str, int]] = []
+                    for tok in close_toks:
+                        tok_hits.extend(by_token[tok])
+                    tok_hits.sort(key=lambda item: (-item[2], item[0]))
+                    return tok_hits[:5]
         return []
 
     def search_stations(self, query: str, *, limit: int = 10) -> list[dict[str, str]]:
@@ -505,8 +523,11 @@ class LocalTimetableStore:
             scored.append((rank, -cnt, code, name))
 
         if not scored and len(q_norm) >= 5:
+            seen_codes: set[str] = set()
             for code, name, cnt in self.resolve_station_by_name(q):
-                scored.append((4, -cnt, code, name))
+                if code not in seen_codes:
+                    seen_codes.add(code)
+                    scored.append((4, -cnt, code, name))
 
         scored.sort()
         return [

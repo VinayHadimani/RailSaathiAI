@@ -7,6 +7,7 @@ multi-station cities.
 
 from __future__ import annotations
 
+import difflib
 import re
 from typing import Final
 
@@ -366,6 +367,41 @@ class StationResolver:
                     "against schedule and availability providers."
                 ),
             )
+
+        # 6.5 Fuzzy spelling-variant match against known clusters & aliases
+        # Handles common typos like "hydrabad", "banglore", "ahemdabad", "kolkatta".
+        if len(cleaned) >= 5:
+            curated_keys = list(AMBIGUOUS_CLUSTERS.keys()) + list(STATION_ALIASES.keys())
+            close_curated = difflib.get_close_matches(cleaned, curated_keys, n=1, cutoff=0.84)
+            if close_curated:
+                matched_key = close_curated[0]
+                if matched_key in AMBIGUOUS_CLUSTERS:
+                    codes = AMBIGUOUS_CLUSTERS[matched_key]
+                    candidates = [KNOWN_STATIONS[c] for c in codes if c in KNOWN_STATIONS]
+                    return StationResolutionResult(
+                        status=StationResolutionStatus.AMBIGUOUS,
+                        candidates=candidates,
+                        error=(
+                            f"'{query.strip()}' has multiple passenger stations. "
+                            f"Please choose from: {', '.join(c.code for c in candidates)}."
+                        ),
+                    )
+                if matched_key in STATION_ALIASES:
+                    code = STATION_ALIASES[matched_key]
+                    stn = KNOWN_STATIONS.get(code)
+                    if stn:
+                        return StationResolutionResult(
+                            status=StationResolutionStatus.RESOLVED,
+                            code=stn.code,
+                            name=stn.name,
+                            city=stn.city,
+                        )
+                    return StationResolutionResult(
+                        status=StationResolutionStatus.RESOLVED,
+                        code=code,
+                        name=matched_key.title(),
+                        city=matched_key.title(),
+                    )
 
         # 7. Pan-India local timetable DB fallback (9,000+ stations)
         try:

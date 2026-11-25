@@ -162,6 +162,11 @@ Extract parameters as JSON:"""
             Tuple of (slot_name, resolved_code) if directly resolved, else (None, None).
         """
         clean_msg = user_message.strip()
+        if clean_msg.lower() in ("any", "anyone", "any one", "whichever", "first", "main", "default"):
+            for slot_name, candidates in ambiguous_candidates.items():
+                if candidates:
+                    return slot_name, candidates[0].code
+
         # Test resolving directly with StationResolver
         res = StationResolver.resolve(clean_msg)
         if res.status == StationResolutionStatus.RESOLVED and res.code:

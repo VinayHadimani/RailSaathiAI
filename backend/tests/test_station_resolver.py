@@ -135,8 +135,15 @@ def test_pan_india_station_resolution():
         ("surat", "ST"),
         ("tirupati", "TPTY"),
         ("madurai", "MDU"),
+        ("ahemdabad", "ADI"),
+        ("vishakapatnam", "VSKP"),
+        ("bhubaneshwar", "BBS"),
     ]
     for raw, expected_code in cases:
         res = StationResolver.resolve(raw)
         assert res.status == StationResolutionStatus.RESOLVED, f"Failed for {raw}: {res}"
         assert res.code == expected_code
+
+    for typo_city in ("hydrabad", "banglore", "chenai", "kolkatta"):
+        res = StationResolver.resolve(typo_city)
+        assert res.status == StationResolutionStatus.AMBIGUOUS, f"Expected AMBIGUOUS for {typo_city}: {res}"
