@@ -471,12 +471,22 @@ class RailCoreClient:
 
             last_error = key_error
             # If current key failed due to rate limit, credits exhaustion, or invalid auth in a multi-key pool:
-            if isinstance(key_error, (ProviderRateLimitError, ProviderCreditsError)):
+            if isinstance(key_error, ProviderRateLimitError):
                 retry_after_cd = key_error.details.get("retry_after_seconds") if key_error.details else None
                 self._key_pool.mark_rate_limited(current_key, retry_after_cd or 60.0)
                 if key_idx + 1 < len(candidates):
                     logger.warning(
                         "RailCore key %s rate-limited (code=%s). Failing over to next key (%d remaining)...",
+                        mask_key(current_key),
+                        key_error.code,
+                        len(candidates) - (key_idx + 1),
+                    )
+                    continue
+            elif isinstance(key_error, ProviderCreditsError):
+                self._key_pool.mark_rate_limited(current_key, 3600.0)
+                if key_idx + 1 < len(candidates):
+                    logger.warning(
+                        "RailCore key %s exhausted credits (code=%s). Benching and failing over (%d remaining)...",
                         mask_key(current_key),
                         key_error.code,
                         len(candidates) - (key_idx + 1),

@@ -304,3 +304,47 @@ def test_railcore_all_keys_in_long_cooldown_fails_fast_without_hammering():
     assert calls == 2
 
 
+def test_railcore_credits_exhausted_failover_and_long_bench():
+    """Verify 402 CREDITS_EXHAUSTED benches the key and fails over to healthy keys."""
+    seen_keys: list[str] = []
+
+    def mock_handler(request: httpx.Request) -> httpx.Response:
+        key = request.headers.get("X-RailCore-Key")
+        seen_keys.append(key)
+        if key == "empty-key":
+            return httpx.Response(
+                402,
+                json={"success": False, "error": {"code": "CREDITS_EXHAUSTED", "message": "Credits exhausted"}},
+            )
+        return httpx.Response(
+            200,
+            json={
+                "success": True,
+                "data": {
+                    "train_number": "12345",
+                    "train_name": "Test Express",
+                    "source_station_code": "MYS",
+                    "destination_station_code": "SBC",
+                    "stops": [],
+                },
+                "meta": {},
+            },
+        )
+
+    client = RailCoreClient(
+        api_keys=["empty-key", "funded-key"],
+        base_url="https://mock.railcore.tech/v1",
+        max_retries=0,
+        http_client=httpx.Client(transport=httpx.MockTransport(mock_handler)),
+    )
+
+    resp = client.get_train_schedule("12345")
+    assert resp.data.train_number == "12345"
+    assert seen_keys == ["empty-key", "funded-key"]
+
+    # Subsequent call goes straight to funded-key because empty-key is benched
+    client.get_train_schedule("12345")
+    assert seen_keys == ["empty-key", "funded-key", "funded-key"]
+
+
+
