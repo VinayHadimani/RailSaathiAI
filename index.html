@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="RailRoute AI — AI-powered train journey discovery. When one train isn't enough, we find your way by connecting available seats across trains and stations." />
-<title>RailRoute AI — When One Train Isn't Enough, We Find Your Way</title>
+<meta name="description" content="RailSaathi AI — AI-powered train journey discovery. When one train isn't enough, we find your way by connecting available seats across trains and stations." />
+<title>RailSaathi AI — When One Train Isn't Enough, We Find Your Way</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306b6d4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='3' width='16' height='16' rx='2' fill='%230a1530'/%3E%3Cpath d='M4 11h16'/%3E%3Cpath d='M12 3v8'/%3E%3Ccircle cx='8' cy='15' r='1' fill='%2306b6d4'/%3E%3Ccircle cx='16' cy='15' r='1' fill='%2306b6d4'/%3E%3C/svg%3E" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -204,7 +204,7 @@
     <div class="flex flex-col items-center gap-4">
       <div class="flex items-center gap-2 text-white">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><circle cx="8" cy="15" r="1"/><circle cx="16" cy="15" r="1"/></svg>
-        <span class="font-display font-bold text-xl tracking-tight">RailRoute <span class="text-cyanx-400">AI</span></span>
+        <span class="font-display font-bold text-xl tracking-tight">RailSaathi <span class="text-cyanx-400">AI</span></span>
       </div>
       <div class="boot-ring"></div>
     </div>
@@ -883,7 +883,7 @@ function applySort(journeys, sort) {
 function buildItineraryText(j, q) {
   const from = getStation(q.from), to = getStation(q.to);
   let lines = [];
-  lines.push("RAILROUTE AI — JOURNEY ITINERARY");
+  lines.push("RAILSAATHI AI — JOURNEY ITINERARY");
   lines.push("=================================");
   lines.push(`From: ${from ? from.name : q.from}  ->  To: ${to ? to.name : q.to}`);
   lines.push(`Date: ${prettyDate(q.date)}   Passengers: ${q.passengers}   Class: ${q.travelClass}`);
@@ -1025,7 +1025,7 @@ function Logo({ light = false, onClick }) {
         <Icon name="train" size={20} />
       </span>
       <span className={cx("font-display font-extrabold text-lg tracking-tight", light ? "text-white" : "text-navy-900")}>
-        RailRoute <span className="text-cyanx-500">AI</span>
+        RailSaathi <span className="text-cyanx-500">AI</span>
       </span>
     </a>
   );
@@ -1351,7 +1351,7 @@ function Hero() {
     return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
   }, []);
   return (
-    <section className="portal-hero" aria-label="RailRoute AI">
+    <section className="portal-hero" aria-label="RailSaathi AI">
       <div className="portal-stage" ref={stageRef}>
         <div className="portal-img" ref={R.img}>
           <div className="portal-grid" />
@@ -1368,9 +1368,9 @@ function Hero() {
         <span className="portal-dot cyan" ref={R.dc} aria-hidden="true" />
         <span className="portal-dot blue" ref={R.db} aria-hidden="true" />
         <h1 className="portal-title" ref={R.title}>
-          <span className="pt-a" ref={R.ta}>RailRoute</span><span className="pt-b" ref={R.tb}>{" AI"}</span>
+          <span className="pt-a" ref={R.ta}>RailSaathi</span><span className="pt-b" ref={R.tb}>{" AI"}</span>
         </h1>
-        <div className="portal-corner tl">RailRoute AI — Demo data</div>
+        <div className="portal-corner tl">RailSaathi AI — Demo data</div>
         <div className="portal-corner tr">Portal / 01</div>
         <div className="portal-corner bl">Search · Connect · Discover</div>
         <div className="portal-corner br">Scroll to open ↓</div>
@@ -1530,7 +1530,7 @@ function HowItWorks() {
   return (
     <section className="py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <SectionHeading eyebrow="How it works" title="From search to seat in four steps" desc="RailRoute AI reads the whole rail network, then stitches together the seats and trains that get you there — every segment verified." />
+        <SectionHeading eyebrow="How it works" title="From search to seat in four steps" desc="RailSaathi AI reads the whole rail network, then stitches together the seats and trains that get you there — every segment verified." />
         <div className="mt-10 flex justify-center reveal">
           <StepDeck />
         </div>
@@ -1683,7 +1683,7 @@ function Benefits() {
   return (
     <section className="py-14 bg-white border-y border-navy-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <SectionHeading eyebrow="Why RailRoute AI" title="Built for journeys that don't fit on one ticket" desc="Twelve advanced discovery capabilities working together behind a clean, fast interface." />
+        <SectionHeading eyebrow="Why RailSaathi AI" title="Built for journeys that don't fit on one ticket" desc="Twelve advanced discovery capabilities working together behind a clean, fast interface." />
         <div className="reveal mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {BENEFITS.map((b) => (
             <Card key={b.title} hover className="p-6">
@@ -1758,7 +1758,7 @@ function Footer() {
           ))}
         </div>
         <div className="mt-10 pt-6 border-t border-navy-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-navy-400">© {new Date().getFullYear()} RailRoute AI · Prototype · Demo data only</p>
+          <p className="text-xs text-navy-400">© {new Date().getFullYear()} RailSaathi AI · Prototype · Demo data only</p>
           <p className="text-xs text-navy-400 font-display">"When One Train Isn't Enough, We Find Your Way."</p>
         </div>
       </div>
@@ -2164,7 +2164,7 @@ function JourneyCard({ journey, rank, best, reason, onSave, onCompare, saved, co
           <button onClick={() => onCompare(journey)} disabled={disabled && !compared} className={cx("inline-flex items-center gap-1.5 text-sm font-semibold px-2.5 py-1 rounded-lg", compared ? "text-electric bg-navy-50" : "text-navy-600 hover:bg-navy-50", disabled && !compared && "opacity-40 cursor-not-allowed")}>
             <Icon name="compare" size={15} /> {compared ? "Comparing" : "Compare"}
           </button>
-          <button onClick={() => downloadText(`RailRouteAI-Journey-${rank}.txt`, buildItineraryText(journey, search))} className="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-600 hover:bg-navy-50 px-2.5 py-1 rounded-lg">
+          <button onClick={() => downloadText(`RailSaathiAI-Journey-${rank}.txt`, buildItineraryText(journey, search))} className="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-600 hover:bg-navy-50 px-2.5 py-1 rounded-lg">
             <Icon name="download" size={15} /> Itinerary
           </button>
           {journey.bookingUrl && (
@@ -3310,7 +3310,7 @@ function JourneyDetailsPage() {
               ))}
               <div className="border-t border-navy-100 pt-2 flex items-center justify-between"><span className="font-bold text-navy-900">Total</span><span className="font-display font-extrabold text-electric text-lg">{fmtFare(j.totalFare)}</span></div>
             </div>
-            <Button variant="primary" size="md" className="w-full mt-4" onClick={() => downloadText(`RailRouteAI-Journey-${rank}.txt`, buildItineraryText(j, search || { from: from.code, to: to.code, date: todayISO(), passengers: 1, travelClass: "SL" }))}><Icon name="download" size={15}/> Download itinerary</Button>
+            <Button variant="primary" size="md" className="w-full mt-4" onClick={() => downloadText(`RailSaathiAI-Journey-${rank}.txt`, buildItineraryText(j, search || { from: from.code, to: to.code, date: todayISO(), passengers: 1, travelClass: "SL" }))}><Icon name="download" size={15}/> Download itinerary</Button>
           </Card>
           <Card className="p-5">
             <h4 className="font-display font-bold text-navy-900 mb-3 flex items-center gap-2"><Icon name="train" size={16} className="text-electric" /> Trains on this route</h4>
@@ -3480,7 +3480,7 @@ function ComparePage() {
 
 function DashboardPage() {
   const { user, signIn, signOut, recentSearches, savedJourneys, toggleSave, notifications, runSearch } = useApp();
-  const demoUser = user || { name: "Riya Sharma", email: "riya@railroute.ai", initials: "RS" };
+  const demoUser = user || { name: "Riya Sharma", email: "riya@railsaathi.ai", initials: "RS" };
   const favPairs = useMemo(() => {
     const map = {}; recentSearches.forEach((r) => { const k = r.from + "-" + r.to; map[k] = (map[k] || 0) + 1; });
     return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([k]) => ({ from: k.split("-")[0], to: k.split("-")[1] }));
@@ -3579,7 +3579,7 @@ function HowItWorksPage() {
     <PageShell title="How It Works" breadcrumb={[]}>
       <div className="space-y-8">
         <Card className="p-6 md:p-8">
-          <SectionHeading eyebrow="The idea" title="When one train isn't enough" desc="Most platforms stop at direct trains. RailRoute AI keeps going — it reads the entire rail network and stitches together the seats and trains that actually get you to your destination." />
+          <SectionHeading eyebrow="The idea" title="When one train isn't enough" desc="Most platforms stop at direct trains. RailSaathi AI keeps going — it reads the entire rail network and stitches together the seats and trains that actually get you to your destination." />
         </Card>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {HOW_STEPS.map((s, i) => (
@@ -3603,12 +3603,12 @@ function HowItWorksPage() {
 
 function AboutPage() {
   return (
-    <PageShell title="About RailRoute AI" breadcrumb={[]}>
+    <PageShell title="About RailSaathi AI" breadcrumb={[]}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="p-6 lg:col-span-2">
           <Badge color="cyan" icon="sparkles" className="mb-3">Our mission</Badge>
           <h2 className="font-display text-2xl font-extrabold text-navy-900">Make every destination reachable.</h2>
-          <p className="mt-3 text-navy-600 leading-relaxed">RailRoute AI was built around a simple frustration: a traveller needs to get from Mysuru to Belagavi, the direct seat is sold out, and the railway portal simply says "no availability". Yet the same train has free seats on shorter segments, and other trains connect at intermediate stations. The journey <em>is</em> possible — it just isn't surfaced.</p>
+          <p className="mt-3 text-navy-600 leading-relaxed">RailSaathi AI was built around a simple frustration: a traveller needs to get from Mysuru to Belagavi, the direct seat is sold out, and the railway portal simply says "no availability". Yet the same train has free seats on shorter segments, and other trains connect at intermediate stations. The journey <em>is</em> possible — it just isn't surfaced.</p>
           <p className="mt-3 text-navy-600 leading-relaxed">Our engine treats the rail network as a graph of confirmed-available seat segments, then searches for paths that combine them — same-train seat changes, multi-train connections, overnight and after-midnight arrivals — and ranks the results the way a thoughtful travel agent would.</p>
           <p className="mt-3 text-navy-600 leading-relaxed">The interface is designed to feel like a premium modern SaaS travel platform, not a legacy railway site: clean, fast, responsive and honest about what is and isn't confirmed.</p>
         </Card>
@@ -3644,14 +3644,14 @@ function SignInPage() {
       <div className="max-w-md mx-auto w-full px-4 sm:px-6 py-10">
         <Card className="p-7">
           <div className="text-center mb-6"><Logo /><h1 className="font-display text-xl font-extrabold text-navy-900 mt-4">Welcome back</h1><p className="text-sm text-navy-500 mt-1">Sign in to save journeys and track routes.</p></div>
-          <form onSubmit={(e) => { e.preventDefault(); signIn(name || "Riya Sharma", email || "riya@railroute.ai"); }} className="space-y-3">
+          <form onSubmit={(e) => { e.preventDefault(); signIn(name || "Riya Sharma", email || "riya@railsaathi.ai"); }} className="space-y-3">
             <div><label className="block text-xs font-semibold text-navy-500 mb-1.5 uppercase">Name</label><input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" className="w-full px-3.5 py-3 rounded-xl border border-navy-200 text-sm focus:outline-none focus:border-electric focus:ring-2 focus:ring-cyanx-400/30" /></div>
             <div><label className="block text-xs font-semibold text-navy-500 mb-1.5 uppercase">Email</label><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="w-full px-3.5 py-3 rounded-xl border border-navy-200 text-sm focus:outline-none focus:border-electric focus:ring-2 focus:ring-cyanx-400/30" /></div>
             <div><label className="block text-xs font-semibold text-navy-500 mb-1.5 uppercase">Password</label><input type="password" value={pw} onChange={(e) => setPw(e.target.value)} placeholder="••••••••" className="w-full px-3.5 py-3 rounded-xl border border-navy-200 text-sm focus:outline-none focus:border-electric focus:ring-2 focus:ring-cyanx-400/30" /></div>
             <Button variant="primary" size="lg" className="w-full" type="submit"><Icon name="arrowRight" size={16}/> Sign in</Button>
           </form>
           <div className="my-4 flex items-center gap-3 text-xs text-navy-300"><span className="flex-1 h-px bg-navy-100" />or<span className="flex-1 h-px bg-navy-100" /></div>
-          <Button variant="outline" size="md" className="w-full" onClick={() => signIn("Riya Sharma", "riya@railroute.ai")}><Icon name="sparkles" size={15}/> Continue as demo user</Button>
+          <Button variant="outline" size="md" className="w-full" onClick={() => signIn("Riya Sharma", "riya@railsaathi.ai")}><Icon name="sparkles" size={15}/> Continue as demo user</Button>
           <p className="mt-4 text-center text-xs text-navy-400">Demo only — no real authentication or data is stored.</p>
         </Card>
       </div>
@@ -4334,9 +4334,9 @@ function ExplorePage() {
     { title: "Learn & about", color: "emerald", items: [
       { icon: "info", title: "How it works", desc: "The four-step method behind seat-change and connection discovery.", to: "/how-it-works" },
       { icon: "bulb", title: "Travel tips", desc: "Practical advice for seat changes, connections and overnight rides.", to: "/tips" },
-      { icon: "info", title: "FAQ", desc: "Answers to the questions travellers ask most about RailRoute AI.", to: "/faq" },
+      { icon: "info", title: "FAQ", desc: "Answers to the questions travellers ask most about RailSaathi AI.", to: "/faq" },
       { icon: "trendingUp", title: "Network insights", desc: "Data charts on the busiest stations, train types and fare curves.", to: "/insights" },
-      { icon: "building", title: "About", desc: "Why RailRoute AI exists, what it does, and the demo-data disclaimer.", to: "/about" },
+      { icon: "building", title: "About", desc: "Why RailSaathi AI exists, what it does, and the demo-data disclaimer.", to: "/about" },
       { icon: "mail", title: "Contact", desc: "Get in touch, report an issue, or send feedback on the prototype.", to: "/contact" },
     ]},
     { title: "Legal", color: "amber", items: [
@@ -4346,8 +4346,8 @@ function ExplorePage() {
     ]},
   ];
   return (
-    <PageShell title="Explore RailRoute AI" breadcrumb={[{ label: "Explore", action: () => navigate("/explore") }]} actions={<Button variant="primary" size="md" onClick={() => navigate("/search")}><Icon name="search" size={15}/> New search</Button>}>
-      <p className="text-navy-500 -mt-2 mb-6 max-w-2xl">Everything RailRoute AI offers, in one place. {STATIONS.length} stations, {TRAINS.length} trains and {CLASSES.length} travel classes — pick a starting point below.</p>
+    <PageShell title="Explore RailSaathi AI" breadcrumb={[{ label: "Explore", action: () => navigate("/explore") }]} actions={<Button variant="primary" size="md" onClick={() => navigate("/search")}><Icon name="search" size={15}/> New search</Button>}>
+      <p className="text-navy-500 -mt-2 mb-6 max-w-2xl">Everything RailSaathi AI offers, in one place. {STATIONS.length} stations, {TRAINS.length} trains and {CLASSES.length} travel classes — pick a starting point below.</p>
       <div className="space-y-8">
         {groups.map((g) => (
           <section key={g.title}>
@@ -4417,7 +4417,7 @@ function StationDetailPage() {
         <div className="space-y-5">
           <Card className="p-5">
             <div className="flex flex-wrap items-center gap-2 mb-1"><Badge color="cyan" icon="mapPin">{s.city}, {s.state}</Badge><Badge color="navy" icon="train">{trains.length} halting train{trains.length !== 1 ? "s" : ""}</Badge></div>
-            <p className="text-navy-500 leading-relaxed">{s.name} is one of the {STATIONS.length} stations on the RailRoute AI corridor. {trains.length} train{trains.length !== 1 ? "s" : ""} call here, ranging from overnight expresses to local passengers. Use the schedule below to plan a boarding time, then jump straight into a journey search from this station.</p>
+            <p className="text-navy-500 leading-relaxed">{s.name} is one of the {STATIONS.length} stations on the RailSaathi AI corridor. {trains.length} train{trains.length !== 1 ? "s" : ""} call here, ranging from overnight expresses to local passengers. Use the schedule below to plan a boarding time, then jump straight into a journey search from this station.</p>
           </Card>
           <Card className="p-5">
             <h3 className="font-display font-bold text-navy-900 mb-3 flex items-center gap-2"><Icon name="train" size={18} className="text-electric"/> Trains halting at {s.code}</h3>
@@ -4775,7 +4775,7 @@ function HistoryPage() {
 function FAQPage() {
   const groups = [
     { title: "Searching & results", items: [
-      ["How does RailRoute AI find journeys when a direct train is full?", "The engine looks beyond a single train. It checks seat availability segment-by-segment across every train, then assembles complete paths from your origin to your destination — allowing a seat change on the same train or a connection between two trains at a shared station. Only journeys where every segment has confirmed availability are shown."],
+      ["How does RailSaathi AI find journeys when a direct train is full?", "The engine looks beyond a single train. It checks seat availability segment-by-segment across every train, then assembles complete paths from your origin to your destination — allowing a seat change on the same train or a connection between two trains at a shared station. Only journeys where every segment has confirmed availability are shown."],
       ["Why do I see a journey with a 'seat change'?", "A seat change means you stay on the same train but move to a different seat or coach partway through, because the seat you hold isn't available for the full distance. The engine finds another confirmed seat for the remaining segment so you can complete the journey on one ticket-equivalent path."],
       ["What does a 'train change' mean?", "A train change is a connection: you alight at an intermediate station and board a different train that also has confirmed seats for the onward segment. The connection time and station are shown in the journey timeline."],
       ["Are the results live?", "No. " + AVAILABILITY_SOURCE + ". The patterns are designed to demonstrate direct, seat-change, train-change and combined journeys."],
@@ -4821,7 +4821,7 @@ function FAQPage() {
 function TravelTipsPage() {
   const tips = [
     { icon: "shuffle", color: "amber", title: "Embrace the seat change", body: "A seat change on the same train is usually painless: you simply walk to a different coach at the named station. Keep your belongings with you and note the new coach–seat before the change station arrives." },
-    { icon: "route", color: "violet", title: "Plan connection buffers", body: "For train changes, aim for at least 20–30 minutes at the connecting station. RailRoute AI shows connection times in the timeline; treat tight ones as riskier and prefer a same-station change where possible." },
+    { icon: "route", color: "violet", title: "Plan connection buffers", body: "For train changes, aim for at least 20–30 minutes at the connecting station. RailSaathi AI shows connection times in the timeline; treat tight ones as riskier and prefer a same-station change where possible." },
     { icon: "moon", color: "sky", title: "Pick the right overnight", body: "Overnight journeys save a hotel night and a day. Board late, alight early, and choose a sleeper class (SL or AC) rather than seated classes for comfort on long rides." },
     { icon: "ticket", color: "emerald", title: "Match the class to the trip", body: "Short hops are fine in Second Sitting or Chair Car; anything over a few hours is far more comfortable in a sleeper or AC class. Use the Fares page to weigh cost against comfort." },
     { icon: "clock", color: "rose", title: "Check the running days", body: "Not every train runs daily. Each train card and the timetable show running days — double-check before you commit to a plan that depends on a specific service." },
@@ -4829,7 +4829,7 @@ function TravelTipsPage() {
   ];
   return (
     <PageShell title="Travel tips" breadcrumb={[{ label: "Explore", action: () => navigate("/explore") }]}>
-      <p className="text-navy-500 -mt-2 mb-5 max-w-2xl">Practical advice for getting the most out of seat changes, connections and overnight rides discovered by RailRoute AI.</p>
+      <p className="text-navy-500 -mt-2 mb-5 max-w-2xl">Practical advice for getting the most out of seat changes, connections and overnight rides discovered by RailSaathi AI.</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {tips.map((t) => (
           <Card key={t.title} className="p-5">
@@ -4927,7 +4927,7 @@ function ContactPage() {
           )}
         </Card>
         <aside className="space-y-4">
-          <Card className="p-5"><h4 className="font-display font-bold text-navy-900 mb-3">Other channels</h4><div className="space-y-3 text-sm"><div className="flex items-center gap-2 text-navy-600"><Icon name="mail" size={16} className="text-electric"/> hello@railroute-ai.demo</div><div className="flex items-center gap-2 text-navy-600"><Icon name="globe" size={16} className="text-electric"/> Prototype — no physical office</div><div className="flex items-center gap-2 text-navy-600"><Icon name="clock" size={16} className="text-electric"/> Replies within 2 business days*</div></div><p className="text-xs text-navy-400 mt-3">*Illustrative — this is a demo project.</p></Card>
+          <Card className="p-5"><h4 className="font-display font-bold text-navy-900 mb-3">Other channels</h4><div className="space-y-3 text-sm"><div className="flex items-center gap-2 text-navy-600"><Icon name="mail" size={16} className="text-electric"/> hello@railsaathi-ai.demo</div><div className="flex items-center gap-2 text-navy-600"><Icon name="globe" size={16} className="text-electric"/> Prototype — no physical office</div><div className="flex items-center gap-2 text-navy-600"><Icon name="clock" size={16} className="text-electric"/> Replies within 2 business days*</div></div><p className="text-xs text-navy-400 mt-3">*Illustrative — this is a demo project.</p></Card>
           <Card className="p-5"><h4 className="font-display font-bold text-navy-900 mb-2">Quick links</h4><div className="space-y-2"><Button variant="outline" size="sm" className="w-full justify-start" onClick={() => navigate("/faq")}><Icon name="info" size={15}/> FAQ</Button><Button variant="outline" size="sm" className="w-full justify-start" onClick={() => navigate("/about")}><Icon name="info" size={15}/> About</Button></div></Card>
         </aside>
       </div>
@@ -4943,7 +4943,7 @@ function PrivacyPage() {
         <Badge color="cyan" icon="shield" className="mb-2">Privacy notice</Badge>
         <h2 className="font-display text-xl font-extrabold text-navy-900">Nothing leaves your browser</h2>
         <div className="mt-4 space-y-4 text-sm text-navy-600 leading-relaxed">
-          <p>RailRoute AI is a front-end prototype. It runs entirely in your web browser: the journey discovery, fare calculation, saved journeys, search history and compare list all live in your browser's in-memory session state. No personal data, search queries or messages are transmitted to, or stored on, any server.</p>
+          <p>RailSaathi AI is a front-end prototype. It runs entirely in your web browser: the journey discovery, fare calculation, saved journeys, search history and compare list all live in your browser's in-memory session state. No personal data, search queries or messages are transmitted to, or stored on, any server.</p>
           <p>The Contact form on this site does not send a real message. Its contents are held in browser state only and are discarded when you close or refresh the tab. The demo "Sign In" does not authenticate against any backend — it simply stores a name and email in session state for the dashboard.</p>
           <h3 className="font-display font-bold text-navy-900 text-base mt-5">Data sources</h3>
           <p>{AVAILABILITY_SOURCE}. Station, train, schedule and availability data is illustrative and does not reflect live railway information or any real passenger records.</p>
@@ -4966,7 +4966,7 @@ function TermsPage() {
         <Badge color="amber" icon="save" className="mb-2">Terms</Badge>
         <h2 className="font-display text-xl font-extrabold text-navy-900">Prototype — demo use only</h2>
         <div className="mt-4 space-y-4 text-sm text-navy-600 leading-relaxed">
-          <p>By accessing RailRoute AI you acknowledge that it is a prototype demonstrating a journey-discovery algorithm and interaction design. It is not a booking platform, a ticketing service, or a source of live railway information.</p>
+          <p>By accessing RailSaathi AI you acknowledge that it is a prototype demonstrating a journey-discovery algorithm and interaction design. It is not a booking platform, a ticketing service, or a source of live railway information.</p>
           <h3 className="font-display font-bold text-navy-900 text-base mt-5">No bookings, no payments</h3>
           <p>No train ticket is booked, reserved or sold through this site, and no payment is ever processed. Any "Search" or journey result is computed from {AVAILABILITY_SOURCE.toLowerCase()} and must not be relied upon for travel.</p>
           <h3 className="font-display font-bold text-navy-900 text-base mt-5">Accuracy</h3>
@@ -4990,7 +4990,7 @@ function AccessibilityPage() {
         <Badge color="emerald" icon="users" className="mb-2">Accessibility statement</Badge>
         <h2 className="font-display text-xl font-extrabold text-navy-900">Built to be usable by everyone</h2>
         <div className="mt-4 space-y-4 text-sm text-navy-600 leading-relaxed">
-          <p>RailRoute AI aims for an accessible experience: semantic HTML structure, keyboard-navigable controls, sufficient colour contrast on the navy-and-cyan palette, and responsive layouts that reflow to a single column on phones. Interactive elements such as the search form, FAQ accordions and station selector can be operated without a mouse.</p>
+          <p>RailSaathi AI aims for an accessible experience: semantic HTML structure, keyboard-navigable controls, sufficient colour contrast on the navy-and-cyan palette, and responsive layouts that reflow to a single column on phones. Interactive elements such as the search form, FAQ accordions and station selector can be operated without a mouse.</p>
           <h3 className="font-display font-bold text-navy-900 text-base mt-5">What works</h3>
           <ul className="list-disc pl-5 space-y-1"><li>Keyboard focus on buttons, inputs, selects and links.</li><li>Responsive layouts that avoid horizontal scrolling down to 375px.</li><li>Text sizing that respects browser zoom.</li><li>SVG icons paired with text labels for primary actions.</li></ul>
           <h3 className="font-display font-bold text-navy-900 text-base mt-5">Known limitations</h3>
