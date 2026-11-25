@@ -2475,7 +2475,7 @@ function ResultsPage() {
                   reason="Unverified candidate route"
                   saved={savedIds.has(uj.key)}
                   compared={compareKeys.has(uj.key)}
-                  disabled={true}
+                  disabled={compareList.length >= 3}
                   onSave={toggleSave}
                   onCompare={toggleCompare}
                 />
@@ -2484,7 +2484,6 @@ function ResultsPage() {
           </div>
         )}
       </div>
-      <CompareTray items={compareList.map((c) => ({ ...c }))} onRemove={toggleCompare} onClear={() => compareList.forEach(toggleCompare)} onCompare={() => navigate("/compare")} />
     </main>
   );
 }
@@ -3099,10 +3098,14 @@ function AppProvider({ children }) {
     setCompare((prev) => {
       if (prev.some((x) => x.key === j.key)) return prev.filter((x) => x.key !== j.key);
       if (prev.length >= 3) return prev;
-      const rank = journeys ? journeys.indexOf(j) + 1 : 0;
-      return [...prev, { journey: j, search, rank, key: j.key }];
+      let rank = journeys ? journeys.findIndex((x) => x.key === j.key) + 1 : 0;
+      if (rank <= 0 && unverifiedCandidates) {
+        const uIdx = unverifiedCandidates.findIndex((x) => x.key === j.key);
+        if (uIdx >= 0) rank = (journeys ? journeys.length : 0) + uIdx + 1;
+      }
+      return [...prev, { journey: j, search, rank: rank || (prev.length + 1), key: j.key }];
     });
-  }, [journeys, search]);
+  }, [journeys, unverifiedCandidates, search]);
 
   const clearCompare = useCallback(() => setCompare([]), []);
   const signIn = useCallback((name, email) => { setUser({ name, email, initials: initialsOf(name) }); navigate("/dashboard"); }, []);
@@ -5129,7 +5132,7 @@ function BookingPage() {
 }
 
 function Shell() {
-  const { routeName } = useApp();
+  const { routeName, compareList, toggleCompare, clearCompare } = useApp();
   let page;
   switch (routeName) {
     case "": case "home": page = <LandingPage />; break;
@@ -5164,7 +5167,20 @@ function Shell() {
 
     default: page = <NotFound />;
   }
-  return <><Navbar />{page}</>;
+  return (
+    <>
+      <Navbar />
+      {page}
+      {routeName !== "compare" && (
+        <CompareTray
+          items={compareList}
+          onRemove={toggleCompare}
+          onClear={clearCompare}
+          onCompare={() => navigate("/compare")}
+        />
+      )}
+    </>
+  );
 }
 
 function App() {
