@@ -62,6 +62,9 @@ class Settings(BaseSettings):
     # Optional client-side pacing between provider HTTP calls (seconds),
     # used to stay under the provider's per-minute rate limit. 0 = off.
     search_min_request_interval_seconds: float = 0.0
+    # Local hybrid timetable DB (free schedules & route discovery; RailCore only for availability).
+    use_local_timetable: bool = True
+    local_timetable_db_path: str | None = None
 
     # --- Train-change connection search (phase 3) -------------------------
     # Minimum minutes between arriving on one train and departing on the

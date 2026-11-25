@@ -22,6 +22,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
+from ..core.config import get_settings
 from ..models.availability import SegmentAvailability
 from ..models.route_search import RouteTrainsResult
 from ..models.schedule import TrainSchedule
@@ -31,6 +32,7 @@ from ..providers.base import (
     RailwayProviderError,
 )
 from ..providers.railcore import RailCoreClient
+from .local_timetable_store import LocalTimetableStore, get_local_timetable_store
 from .search_budgets import SearchBudgets
 
 logger = logging.getLogger("railroute.services.query_planner")
@@ -82,9 +84,27 @@ class SegmentQueryPlanner:
         cls._shared_schedule_cache.clear()
         cls._shared_discovery_cache.clear()
 
-    def __init__(self, client: RailCoreClient, budgets: SearchBudgets) -> None:
+    def __init__(
+        self,
+        client: RailCoreClient,
+        budgets: SearchBudgets,
+        *,
+        timetable_store: LocalTimetableStore | None = None,
+    ) -> None:
         self.client = client
         self.budgets = budgets
+        if timetable_store is not None:
+            self._timetable_store: LocalTimetableStore | None = timetable_store
+        elif getattr(client, "_owns_client", False) and get_settings().use_local_timetable:
+            settings = get_settings()
+            store = (
+                LocalTimetableStore(db_path=settings.local_timetable_db_path)
+                if settings.local_timetable_db_path
+                else get_local_timetable_store()
+            )
+            self._timetable_store = store if store.is_available else None
+        else:
+            self._timetable_store = None
         # (train, from, to, date, class, quota) -> outcome; dedup within a search.
         self._memo: dict[tuple[str, str, str, str, str, str], SegmentQueryOutcome] = {}
         self.provider_errors: list[dict] = []
@@ -98,6 +118,8 @@ class SegmentQueryPlanner:
             "schedule_fetches": 0,
             "discovery_cache_hits": 0,
             "discovery_fetches": 0,
+            "local_schedule_hits": 0,
+            "local_discovery_hits": 0,
             "estimated_credits": 0,  # item-count estimate (batch items + calls)
         }
         self._last_request_at = 0.0
@@ -123,8 +145,12 @@ class SegmentQueryPlanner:
     # -------------------------------------------------------------- caches
 
     def get_schedule(self, train_number: str) -> TrainSchedule:
-        """Fetch (or reuse a cached) train schedule.
+        """Fetch (or reuse a cached/local) train schedule.
 
+        Checks the in-memory cache first, then the local SQLite timetable
+        store (fresh NTES/RailCore schedules, zero API credits), and finally
+        calls RailCore with write-through caching. If RailCore fails or budget
+        is exhausted, falls back to any baseline DataMeet schedule if present.
         Raises RailwayProviderError on failure - never a fake schedule.
         """
         train_number = train_number.strip()
@@ -132,45 +158,103 @@ class SegmentQueryPlanner:
         if cached is not None and (time.monotonic() - cached[0]) <= self.budgets.schedule_cache_ttl_seconds:
             self.stats["schedule_cache_hits"] += 1
             return cached[1]
-        if not self.requests_available():
-            raise _BudgetExhaustedError(STOP_BUDGET_REQUESTS)
-        self._respect_rate_limit()
-        call = self.client.get_train_schedule(train_number)  # raises on failure
-        self.stats["requests_sent"] += 1
-        self.stats["schedule_fetches"] += 1
-        self.stats["estimated_credits"] += call.credits_cost or 1
-        schedule = call.data
-        self._shared_schedule_cache[train_number] = (time.monotonic(), schedule)
-        return schedule
+        if self._timetable_store is not None:
+            local_sched = self._timetable_store.get_schedule(
+                train_number, require_fresh_source=True
+            )
+            if local_sched is not None:
+                self.stats["schedule_cache_hits"] += 1
+                self.stats["local_schedule_hits"] += 1
+                self._shared_schedule_cache[train_number] = (time.monotonic(), local_sched)
+                return local_sched
+        try:
+            if not self.requests_available():
+                raise _BudgetExhaustedError(STOP_BUDGET_REQUESTS)
+            self._respect_rate_limit()
+            call = self.client.get_train_schedule(train_number)  # raises on failure
+            self.stats["requests_sent"] += 1
+            self.stats["schedule_fetches"] += 1
+            self.stats["estimated_credits"] += call.credits_cost or 1
+            schedule = call.data
+            self._shared_schedule_cache[train_number] = (time.monotonic(), schedule)
+            if self._timetable_store is not None:
+                try:
+                    self._timetable_store.upsert_schedule(schedule, source="railcore")
+                except Exception as exc:
+                    logger.debug("timetable_store.upsert_schedule(%s) failed: %s", train_number, exc)
+            return schedule
+        except (RailwayProviderError, _BudgetExhaustedError):
+            if self._timetable_store is not None:
+                fallback_sched = self._timetable_store.get_schedule(
+                    train_number, require_fresh_source=False
+                )
+                if fallback_sched is not None:
+                    self.stats["schedule_cache_hits"] += 1
+                    self.stats["local_schedule_hits"] += 1
+                    self._shared_schedule_cache[train_number] = (time.monotonic(), fallback_sched)
+                    return fallback_sched
+            raise
 
     def get_trains_between(
         self, *, from_station: str, to_station: str, journey_date: str, quota: str
     ) -> RouteTrainsResult:
-        """Discover trains serving the route (or reuse a fresh cached result).
+        """Discover trains serving the route (or reuse a fresh cached/local result).
 
-        Raises RailwayProviderError on failure (including NO_TRAINS_FOUND
-        as a ProviderClientError) - never an invented train list.
+        Checks the in-memory cache first, then fresh local NTES/RailCore
+        timetables (zero API credits), and falls back to RailCore if no fresh
+        local trains are found. If RailCore fails or budget is exhausted,
+        falls back to any baseline DataMeet route matches if present.
+        Raises RailwayProviderError on failure - never an invented train list.
         """
         cache_key = (from_station, to_station, journey_date, quota)
         cached = self._shared_discovery_cache.get(cache_key)
         if cached is not None and (time.monotonic() - cached[0]) <= self.budgets.discovery_cache_ttl_seconds:
             self.stats["discovery_cache_hits"] += 1
             return cached[1]
-        if not self.requests_available():
-            raise _BudgetExhaustedError(STOP_BUDGET_REQUESTS)
-        self._respect_rate_limit()
-        call = self.client.get_trains_between_stations(
-            from_station=from_station,
-            to_station=to_station,
-            journey_date=journey_date,
-            quota=quota,
-        )
-        self.stats["requests_sent"] += 1
-        self.stats["discovery_fetches"] += 1
-        self.stats["estimated_credits"] += call.credits_cost or 1
-        result = call.data
-        self._shared_discovery_cache[cache_key] = (time.monotonic(), result)
-        return result
+        if self._timetable_store is not None:
+            local_res = self._timetable_store.get_trains_between(
+                from_station=from_station,
+                to_station=to_station,
+                journey_date=journey_date,
+                quota=quota,
+                require_fresh_source=True,
+            )
+            if local_res is not None and local_res.trains:
+                self.stats["discovery_cache_hits"] += 1
+                self.stats["local_discovery_hits"] += 1
+                self._shared_discovery_cache[cache_key] = (time.monotonic(), local_res)
+                return local_res
+        try:
+            if not self.requests_available():
+                raise _BudgetExhaustedError(STOP_BUDGET_REQUESTS)
+            self._respect_rate_limit()
+            call = self.client.get_trains_between_stations(
+                from_station=from_station,
+                to_station=to_station,
+                journey_date=journey_date,
+                quota=quota,
+            )
+            self.stats["requests_sent"] += 1
+            self.stats["discovery_fetches"] += 1
+            self.stats["estimated_credits"] += call.credits_cost or 1
+            result = call.data
+            self._shared_discovery_cache[cache_key] = (time.monotonic(), result)
+            return result
+        except (RailwayProviderError, _BudgetExhaustedError):
+            if self._timetable_store is not None:
+                fallback_res = self._timetable_store.get_trains_between(
+                    from_station=from_station,
+                    to_station=to_station,
+                    journey_date=journey_date,
+                    quota=quota,
+                    require_fresh_source=False,
+                )
+                if fallback_res is not None and fallback_res.trains:
+                    self.stats["discovery_cache_hits"] += 1
+                    self.stats["local_discovery_hits"] += 1
+                    self._shared_discovery_cache[cache_key] = (time.monotonic(), fallback_res)
+                    return fallback_res
+            raise
 
     # ------------------------------------------------------- availability
 
