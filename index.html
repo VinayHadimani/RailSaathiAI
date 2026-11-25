@@ -2232,7 +2232,7 @@ function ResultsPage() {
                   cd backend<br/>
                   uvicorn app.main:app --reload --port 8000
                 </div>
-                <div>Configured API base URL: <code className="font-mono text-electric">{RAILSAATHI_CONFIG.baseUrl}</code> (set <code className="font-mono">window.RAILSAATHI_API_URL</code> to change)</div>
+                <div>Configured API base URL: <code className="font-mono text-electric">{RAILSAATHI_CONFIG.baseUrlLabel}</code> (set <code className="font-mono">window.RAILSAATHI_API_URL</code> to change; same-origin <code className="font-mono">/api/v1</code> is used when hosted)</div>
               </div>
             )}
           </Card>
@@ -2443,7 +2443,20 @@ function PageShell({ title, breadcrumb, children, actions }) {
 /* ===================== FASTAPI BACKEND CLIENT & ADAPTER ===================== */
 const RAILSAATHI_CONFIG = {
   get baseUrl() {
-    return (window.RAILSAATHI_API_URL || "http://127.0.0.1:8000").replace(/\/+$/, "");
+    // 1. Explicit override always wins (local dev against any backend).
+    if (window.RAILSAATHI_API_URL) {
+      return String(window.RAILSAATHI_API_URL).replace(/\/+$/, "");
+    }
+    // 2. Local development (file://, localhost, 127.0.0.1) -> FastAPI on :8000.
+    const host = (window.location && window.location.hostname) || "";
+    const isLocal = host === "127.0.0.1" || host === "localhost" || host === "0.0.0.0" || window.location.protocol === "file:";
+    if (isLocal) return "http://127.0.0.1:8000";
+    // 3. Hosted deployments (Vercel): API is served same-origin at /api/v1/*.
+    return "";
+  },
+  get baseUrlLabel() {
+    const b = this.baseUrl;
+    return b || (window.location && window.location.origin) || "same-origin /api";
   },
   timeoutMs: 45000,
 };
@@ -3679,10 +3692,10 @@ function ConversationalAssistant() {
                 <div className="rounded-2xl rounded-tl-sm bg-white border border-navy-100 p-3.5 sm:p-4 shadow-sm text-sm text-navy-800">
                   <p className="whitespace-pre-wrap leading-relaxed">{m.text}</p>
 
-                  {/* Clarification state with clickable suggested actions */}
-                  {m.status === "NEEDS_CLARIFICATION" && m.suggestedActions && m.suggestedActions.length > 0 && (
+                  {/* Suggested actions / clarification chips (shown whenever the backend provides them) */}
+                  {m.suggestedActions && m.suggestedActions.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-navy-100">
-                      <div className="text-xs font-semibold text-navy-500 mb-2">Select a suggested option:</div>
+                      <div className="text-xs font-semibold text-navy-500 mb-2">{m.status === "NEEDS_CLARIFICATION" ? "Select a suggested option:" : "Try asking:"}</div>
                       <div className="flex flex-wrap gap-2">
                         {m.suggestedActions.map((action, aIdx) => (
                           <button

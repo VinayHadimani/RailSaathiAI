@@ -1,6 +1,7 @@
 """RailSaathi AI - Provider-Independent LLM Client Package (Phase 6B.3)."""
 
 from .base import LLMClient
+from .demo import DemoLLMClient
 from .exceptions import (
     LLMAuthenticationError,
     LLMError,
@@ -17,6 +18,7 @@ __all__ = [
     "LLMClient",
     "GeminiLLMClient",
     "MockLLMClient",
+    "DemoLLMClient",
     "get_llm_client",
     "LLMError",
     "LLMAuthenticationError",

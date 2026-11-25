@@ -248,6 +248,30 @@ class AgentOrchestrator:
                 missing_slots=extraction.missing_slots,
             )
 
+        # 7.5 Same-station guard: a search where origin == destination can
+        # never produce results (and would fail request validation with a
+        # raw HTTP 500). Ask for a different station instead.
+        if (
+            slots.from_station
+            and slots.to_station
+            and slots.from_station.upper() == slots.to_station.upper()
+        ):
+            reply = (
+                f"Your departure and destination are the same station ({slots.from_station}). "
+                "Please tell me a different destination station."
+            )
+            self._session_store.add_message(sid, "assistant", reply)
+            return AgentChatResponse(
+                session_id=sid,
+                state=AgentStateEnum.NEED_INFORMATION,
+                status="NEEDS_CLARIFICATION",
+                intent=intent_str,
+                assistant_message=reply,
+                reply=reply,
+                slots=slots,
+                missing_slots=["to_station"],
+            )
+
         # 8. All Mandatory Slots are Present and Verified -> Execute Unified Journey Search
         ranking_pref = _map_ranking_preference(slots.ranking_preference)
 
@@ -326,18 +350,18 @@ class AgentOrchestrator:
                     completeness=completeness,
                 )
 
-        # 9. Construct UnifiedSearchRequest
-        unified_request = UnifiedSearchRequest(
-            from_station=slots.from_station,
-            to_station=slots.to_station,
-            journey_date=slots.journey_date,
-            travel_class=slots.travel_class or "SL",
-            quota=slots.quota or "GN",
-            ranking_preference=ranking_pref,
-            engines=UnifiedEngineSelection.all_engines(),
-        )
-
+        # 9. Construct UnifiedSearchRequest (inside the guard so any
+        # validation error degrades to a friendly reply instead of HTTP 500)
         try:
+            unified_request = UnifiedSearchRequest(
+                from_station=slots.from_station,
+                to_station=slots.to_station,
+                journey_date=slots.journey_date,
+                travel_class=slots.travel_class or "SL",
+                quota=slots.quota or "GN",
+                ranking_preference=ranking_pref,
+                engines=UnifiedEngineSelection.all_engines(),
+            )
             body, status_code = self._unified_service.run(unified_request)
         except Exception as exc:
             logger.exception("Unified journey search crashed: %s", exc)

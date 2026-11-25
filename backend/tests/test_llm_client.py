@@ -14,6 +14,7 @@ import pytest
 from pydantic import SecretStr
 
 from app.agent.llm import (
+    DemoLLMClient,
     GeminiLLMClient,
     LLMAuthenticationError,
     LLMError,
@@ -409,18 +410,19 @@ def test_factory_mock_never_requires_api_key():
     assert client.generate_text("Test query") == "Mock LLM response"
 
 
-def test_factory_unsupported_provider_falls_back_to_mock_when_unconfigured():
+def test_factory_unsupported_provider_falls_back_to_demo_when_unconfigured():
     # Hermetic: explicit credential-less settings so the assertion cannot
     # depend on the developer's local backend/.env (which may hold real keys).
     # Contract: an unknown provider string NEVER hard-crashes the app - with
-    # no credentials configured it degrades to the offline mock client.
+    # no credentials configured it degrades to the offline demo client
+    # (deterministic rule-based extraction, still fully functional offline).
     settings = Settings(
         llm_provider="unsupported_ai",
         gemini_api_key=None,
     )
     client = get_llm_client(settings=settings, provider="unsupported_ai")
-    assert isinstance(client, MockLLMClient)
-    assert client.provider_name == "mock"
+    assert isinstance(client, DemoLLMClient)
+    assert client.provider_name == "demo"
 
 
 def test_factory_unsupported_provider_falls_back_to_gemini_when_configured():

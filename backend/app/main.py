@@ -34,9 +34,11 @@ Swagger UI: http://127.0.0.1:8000/docs
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse
 
 from .api.routes import router
 from .core.config import get_settings
@@ -75,7 +77,27 @@ app.add_middleware(
 
 app.include_router(router)
 
+# Single-file frontend (repo root index.html). Served by the API server for
+# the one-command local demo (uvicorn only); on hosted deployments (Vercel)
+# the platform serves the static file and these routes are never hit.
+_FRONTEND_FILES = [Path(__file__).resolve().parents[2] / "index.html", Path(__file__).resolve().parents[1] / "index.html"]
 
-@app.get("/", include_in_schema=False)
-def root() -> RedirectResponse:
+
+def _frontend_file() -> Path | None:
+    for candidate in _FRONTEND_FILES:
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+@app.get("/", include_in_schema=False, response_model=None)
+def frontend_root():
+    f = _frontend_file()
+    if f is not None:
+        return FileResponse(f, media_type="text/html")
     return RedirectResponse(url="/docs")
+
+
+@app.get("/index.html", include_in_schema=False, response_model=None)
+def frontend_index():
+    return frontend_root()

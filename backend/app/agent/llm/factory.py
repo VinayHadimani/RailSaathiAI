@@ -8,6 +8,7 @@ from typing import Any
 
 from ...core.config import Settings, get_settings
 from .base import LLMClient
+from .demo import DemoLLMClient
 from .exceptions import LLMError
 from .gemini import GeminiLLMClient
 from .mock import MockLLMClient
@@ -157,7 +158,7 @@ def get_llm_client(settings: Settings | None = None, **overrides: Any) -> LLMCli
     Args:
         settings: Application settings instance (defaults to cached get_settings()).
         **overrides: Optional runtime overrides:
-            provider: "gemini" or "mock"
+            provider: "gemini", "demo" or "mock"
             model / model_name: Model identifier string
             api_key: Provider API key
             timeout_seconds: Request timeout in seconds
@@ -167,18 +168,18 @@ def get_llm_client(settings: Settings | None = None, **overrides: Any) -> LLMCli
     Returns:
         Configured LLMClient instance. An unrecognized provider string never
         raises: it degrades to 'gemini' when credentials are configured, or
-        to the offline 'mock' client otherwise, with a warning logged.
+        to the offline 'demo' client otherwise, with a warning logged.
 
     Raises:
-        ValueError: Only if provider is neither 'gemini' nor 'mock' AND the
-            credential fallback above could not resolve to a usable provider.
+        ValueError: Only if provider is none of 'gemini', 'demo', 'mock' AND
+            the credential fallback above could not resolve to a usable provider.
     """
     if settings is None:
         settings = get_settings()
 
     provider = str(overrides.get("provider") or settings.llm_provider).strip().lower()
 
-    if provider not in ("gemini", "mock"):
+    if provider not in ("gemini", "demo", "mock"):
         if settings.gemini_api_key_is_configured:
             logger.warning(
                 "Unrecognized LLM_PROVIDER '%s'. Falling back to 'gemini' as Gemini credentials are configured.",
@@ -187,10 +188,10 @@ def get_llm_client(settings: Settings | None = None, **overrides: Any) -> LLMCli
             provider = "gemini"
         else:
             logger.warning(
-                "Unrecognized LLM_PROVIDER '%s'. Falling back to 'mock'.",
+                "Unrecognized LLM_PROVIDER '%s'. Falling back to 'demo'.",
                 provider,
             )
-            provider = "mock"
+            provider = "demo"
 
     if provider == "mock":
         mock_kwargs: dict[str, Any] = {}
@@ -210,6 +211,9 @@ def get_llm_client(settings: Settings | None = None, **overrides: Any) -> LLMCli
         mock_kwargs["model_name"] = model_name
 
         return MockLLMClient(**mock_kwargs)
+
+    if provider == "demo":
+        return DemoLLMClient(model_name=overrides.get("model_name") or overrides.get("model") or "demo-rules-v1")
 
     if provider == "gemini":
         gemini_kwargs: dict[str, Any] = {}
@@ -231,5 +235,5 @@ def get_llm_client(settings: Settings | None = None, **overrides: Any) -> LLMCli
         )
 
     raise ValueError(
-        f"Unsupported LLM provider '{provider}'. Supported providers are: 'gemini', 'mock'."
+        f"Unsupported LLM provider '{provider}'. Supported providers are: 'gemini', 'demo', 'mock'."
     )
