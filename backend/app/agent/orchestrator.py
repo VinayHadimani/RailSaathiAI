@@ -439,7 +439,24 @@ class AgentOrchestrator:
         else:
             status_str = "NO_CONFIRMED_RESULTS"
             state_enum = AgentStateEnum.NO_RESULTS
-            if unverified:
+            errors_list = body.get("errors") or []
+            err_codes = {str(e.get("code") or "") for e in errors_list if isinstance(e, dict)}
+            if "CREDITS_EXHAUSTED" in err_codes:
+                reply = (
+                    f"Live RailCore API credits are exhausted (HTTP 402), so availability could not be verified "
+                    f"from {slots.from_station} to {slots.to_station} on {slots.journey_date}. "
+                    f"Please add a fresh RAILCORE_API_KEY or use Demo Search in Direct Form Search."
+                )
+                state_enum = AgentStateEnum.SEARCH_FAILED
+                status_str = "ERROR"
+            elif "RATE_LIMITED" in err_codes and not unverified:
+                reply = (
+                    f"RailCore rate limit was reached (HTTP 429) while checking {slots.from_station} to {slots.to_station}. "
+                    f"Please wait ~30 seconds and try again."
+                )
+                state_enum = AgentStateEnum.SEARCH_FAILED
+                status_str = "ERROR"
+            elif unverified:
                 reply = (
                     f"No fully confirmed available seats found from {slots.from_station} to {slots.to_station} "
                     f"on {slots.journey_date}. Found {len(unverified)} unverified option(s) with waitlist/RAC or unconfirmed segments."
