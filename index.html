@@ -914,6 +914,37 @@ function parseRoute(hash) {
 }
 const navigate = (path) => { window.location.hash = path; };
 
+// Stable journey reference for routes: prefer the unique journey key (the
+// backend journey_id scoped by search class + quota) over the numeric rank,
+// so Details/Book resolve correctly from any result set (chat search or
+// direct form search) even after the same physical journey is re-searched
+// in a different class.
+const journeyScopeKey = (j) => {
+  if (!j || !j.key) return null;
+  const scope = [j.travelClass, j.quota].filter(Boolean).join("/");
+  return scope ? `${j.key}|${scope}` : j.key;
+};
+const journeyRef = (j, rank) => { const k = journeyScopeKey(j); return encodeURIComponent(k != null ? k : rank); };
+const findJourney = (journeys, ref, registry) => {
+  if (!ref) return null;
+  let decoded = String(ref);
+  try { decoded = decodeURIComponent(String(ref)); } catch (e) {}
+  const byKey = (journeys || []).find((x) => journeyScopeKey(x) === decoded || x.key === decoded);
+  if (byKey) return byKey;
+  if (registry && (registry[decoded] || registry[String(ref)])) return registry[decoded] || registry[String(ref)];
+  const rank = parseInt(ref, 10);
+  return Number.isFinite(rank) ? (journeys || [])[rank - 1] || null : null;
+};
+// Human-friendly display rank for a journey: its position in the current
+// result list, else the first segment's train number (e.g. "12781").
+const journeyDisplayRank = (j, journeys, ref) => {
+  if (j && journeys && journeys.includes(j)) return String(journeys.indexOf(j) + 1);
+  const n = parseInt(ref, 10);
+  if (Number.isFinite(n) && String(n) === String(ref).trim()) return String(n);
+  const t = j && j.segments && j.segments[0] && j.segments[0].trainNumber;
+  return t != null ? String(t) : "1";
+};
+
 // Intersection-observer reveal hook
 function useReveal() {
   const ref = useRef(null);
@@ -2046,7 +2077,7 @@ function JourneyCard({ journey, rank, best, reason, onSave, onCompare, saved, co
               <div className="text-xs text-navy-400 font-semibold uppercase">Total fare</div>
               <div className="font-display text-2xl font-extrabold text-navy-900">₹{journey.totalFare}</div>
             </div>
-            <Button variant="primary" size="sm" onClick={() => navigate(`/journey/${rank}`)}><Icon name="arrowRight" size={14}/> Details</Button>
+            <Button variant="primary" size="sm" onClick={() => navigate(`/journey/${journeyRef(journey, rank)}`)}><Icon name="arrowRight" size={14}/> Details</Button>
           </div>
         </div>
 
@@ -2319,7 +2350,7 @@ function ResultsPage() {
 
         {confirmedJourneys.length > 0 ? (
           <>
-            <div className="mt-4"><AIRecommendBanner best={best && best.best} reason={reason} count={confirmedJourneys.length} onPick={() => { if (best) { toggleCompare(best.best); } }} onView={() => best && navigate(`/journey/${confirmedJourneys.indexOf(best.best) + 1}`)} /></div>
+            <div className="mt-4"><AIRecommendBanner best={best && best.best} reason={reason} count={confirmedJourneys.length} onPick={() => { if (best) { toggleCompare(best.best); } }} onView={() => best && navigate(`/journey/${journeyRef(best.best, confirmedJourneys.indexOf(best.best) + 1)}`)} /></div>
 
             <div className="mt-5"><SortBar sort={sort} setSort={setSort} count={confirmedJourneys.length} filtered={filtered.length} /></div>
 
@@ -2842,14 +2873,18 @@ function adaptBackendResponse(resp) {
   };
 }
 
+// sessionStorage JSON helpers (best-effort; quota errors are ignored).
+const readSessionJSON = (k) => { try { const raw = sessionStorage.getItem(k); return raw ? JSON.parse(raw) : null; } catch (e) { return null; } };
+const writeSessionJSON = (k, v) => { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+
 function AppProvider({ children }) {
   const hash = useHashRoute();
   const route = parseRoute(hash);
   const [user, setUser] = useState(null);
-  const [search, setSearch] = useState(null);
-  const [journeys, setJourneys] = useState(null);
-  const [unverifiedCandidates, setUnverifiedCandidates] = useState([]);
-  const [searchMeta, setSearchMeta] = useState(null);
+  const [search, setSearch] = useState(() => readSessionJSON("railsaathi_app_search"));
+  const [journeys, setJourneys] = useState(() => readSessionJSON("railsaathi_app_journeys"));
+  const [unverifiedCandidates, setUnverifiedCandidates] = useState(() => readSessionJSON("railsaathi_app_unverified") || []);
+  const [searchMeta, setSearchMeta] = useState(() => readSessionJSON("railsaathi_app_meta"));
   const [searchError, setSearchError] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchMode, setSearchMode] = useState("live");
@@ -2857,6 +2892,28 @@ function AppProvider({ children }) {
   const [savedJourneys, setSaved] = useState([]);
   const [recentSearches, setRecent] = useState([]);
   const [compareList, setCompare] = useState([]);
+  // Registry of every journey seen this session (keyed by journey key) so
+  // Details/Book keep working for older cards after a newer search replaces
+  // the current result list. Persisted so a reload keeps them resolvable.
+  const [journeyRegistry, setJourneyRegistry] = useState(() => readSessionJSON("railsaathi_app_registry") || {});
+
+  // Persist the current search state (best-effort) so a reload keeps the
+  // Results/Details/Booking steps working off the last search.
+  useEffect(() => {
+    writeSessionJSON("railsaathi_app_search", search);
+    writeSessionJSON("railsaathi_app_journeys", journeys);
+    writeSessionJSON("railsaathi_app_unverified", unverifiedCandidates);
+    writeSessionJSON("railsaathi_app_meta", searchMeta);
+    writeSessionJSON("railsaathi_app_registry", journeyRegistry);
+  }, [search, journeys, unverifiedCandidates, searchMeta, journeyRegistry]);
+
+  const rememberJourneys = useCallback((js) => {
+    setJourneyRegistry((prev) => {
+      const next = { ...prev };
+      (js || []).forEach((j) => { const k = journeyScopeKey(j); if (k) next[k] = j; });
+      return next;
+    });
+  }, []);
 
   const runSearch = useCallback(async (q, opts = {}) => {
     const mode = opts.mode || "live";
@@ -2870,8 +2927,9 @@ function AppProvider({ children }) {
     if (mode === "demo") {
       setIsSearching(true);
       setSearchMode("demo");
-      const js = discoverJourneys(q.from, q.to, q.travelClass, { maxTrains: 3 }).map(j => ({ ...j, isDemo: true }));
+      const js = discoverJourneys(q.from, q.to, q.travelClass, { maxTrains: 3 }).map(j => ({ ...j, isDemo: true, travelClass: q.travelClass, quota: q.quota || "GN" }));
       setJourneys(js);
+      rememberJourneys(js);
       setUnverifiedCandidates([]);
       setBackendResponse(null);
       setSearchMeta({
@@ -2895,7 +2953,9 @@ function AppProvider({ children }) {
       const rawData = await apiSearchJourneys(q, opts);
       const adapted = adaptBackendResponse(rawData);
 
-      setJourneys(adapted.results);
+      const stamped = (adapted.results || []).map((j) => ({ ...j, travelClass: q.travelClass, quota: q.quota || "GN" }));
+      setJourneys(stamped);
+      rememberJourneys(stamped);
       setUnverifiedCandidates(adapted.unverifiedCandidates);
       setBackendResponse(adapted);
       setSearchMeta({
@@ -2929,6 +2989,25 @@ function AppProvider({ children }) {
     }
   }, []);
 
+  // Adopt search results produced by the AI Assistant chat so the whole
+  // Results / Details / Booking journey works off conversational searches too.
+  // Mirrors runSearch's live branch without navigating away from the chat.
+  const applyChatSearch = useCallback((q, results, unverified, meta) => {
+    setSearch(q);
+    setSearchError(null);
+    setSearchMode("live");
+    setRecent((prev) => {
+      const key = q.from + "-" + q.to + "-" + q.travelClass;
+      return [{ ...q, key, at: Date.now() }, ...prev.filter((p) => p.key !== key)].slice(0, 8);
+    });
+    const stamped = (results || []).map((j) => ({ ...j, travelClass: j.travelClass || q.travelClass, quota: j.quota || q.quota }));
+    setJourneys(stamped);
+    rememberJourneys(stamped);
+    rememberJourneys(unverified || []);
+    setUnverifiedCandidates(unverified || []);
+    setSearchMeta(meta || null);
+  }, [rememberJourneys]);
+
   const toggleSave = useCallback((j) => {
     setSaved((prev) => prev.some((x) => x.key === j.key) ? prev.filter((x) => x.key !== j.key) : [...prev, j]);
   }, []);
@@ -2952,16 +3031,16 @@ function AppProvider({ children }) {
     searchMeta, searchError, isSearching, searchMode, backendResponse,
     savedJourneys, toggleSave, isSaved, recentSearches,
     compareList, toggleCompare, clearCompare,
-    notifications: NOTIFICATIONS, runSearch,
+    notifications: NOTIFICATIONS, runSearch, applyChatSearch, journeyRegistry,
     routeName: route.name, routeParam: route.param, route
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
 function JourneyDetailsPage() {
-  const { routeParam, journeys, search, toggleSave, toggleCompare, savedJourneys, compareList } = useApp();
-  const rank = parseInt(routeParam, 10);
-  const j = journeys && journeys[rank - 1];
+  const { routeParam, journeys, search, toggleSave, toggleCompare, savedJourneys, compareList, journeyRegistry } = useApp();
+  const j = findJourney(journeys, routeParam, journeyRegistry);
+  const rank = j ? journeyDisplayRank(j, journeys, routeParam) : parseInt(routeParam, 10);
   if (!j) {
     return <PageShell title="Journey not found" breadcrumb={[]}>
       <Card className="p-10 text-center">
@@ -2998,7 +3077,7 @@ function JourneyDetailsPage() {
 
   return (
     <PageShell title={`Journey #${rank}`} breadcrumb={[{ label: "Results", action: () => navigate("/discover") }]}
-      actions={<div className="flex gap-2"><Button variant="outline" size="md" onClick={() => navigate("/discover")}><Icon name="arrowLeft" size={15}/> Back</Button><Button variant={saved ? "soft" : "outline"} size="md" onClick={() => toggleSave(j)}><Icon name="heart" size={15}/> {saved ? "Saved" : "Save"}</Button><Button variant={compared ? "soft" : "outline"} size="md" onClick={() => toggleCompare(j)} disabled={!compared && compareList.length >= 3}><Icon name="compare" size={15}/> {compared ? "Comparing" : "Compare"}</Button>{j.bookingUrl && <a href={j.bookingUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-electric to-cyanx-500 text-white shadow-glow hover:opacity-95"><Icon name="external" size={15}/> Book Provider</a>}<Button variant="primary" size="md" onClick={() => navigate(`/booking/${rank}`)}><Icon name="arrowRight" size={15}/> Book</Button></div>}>
+      actions={<div className="flex gap-2"><Button variant="outline" size="md" onClick={() => navigate("/discover")}><Icon name="arrowLeft" size={15}/> Back</Button><Button variant={saved ? "soft" : "outline"} size="md" onClick={() => toggleSave(j)}><Icon name="heart" size={15}/> {saved ? "Saved" : "Save"}</Button><Button variant={compared ? "soft" : "outline"} size="md" onClick={() => toggleCompare(j)} disabled={!compared && compareList.length >= 3}><Icon name="compare" size={15}/> {compared ? "Comparing" : "Compare"}</Button>{j.bookingUrl && <a href={j.bookingUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-electric to-cyanx-500 text-white shadow-glow hover:opacity-95"><Icon name="external" size={15}/> Book Provider</a>}<Button variant="primary" size="md" onClick={() => navigate(`/booking/${journeyRef(j, rank)}`)}><Icon name="arrowRight" size={15}/> Book</Button></div>}>
       <div className="mb-4"><StepIndicator current={2} /></div>
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         <div className="space-y-6">
@@ -3141,7 +3220,7 @@ function AIPage() {
               <h3 className="font-display text-lg font-extrabold">Best recommendation</h3>
               <p className="mt-1 text-sm text-navy-100 max-w-2xl">{reason}</p>
               {best && <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm"><span className="inline-flex items-center gap-1.5"><Icon name="clock" size={14} className="text-cyanx-300" /> {durStr(best.best.totalDuration)}</span><span className="inline-flex items-center gap-1.5"><Icon name="wallet" size={14} className="text-cyanx-300" /> ₹{best.best.totalFare}</span><span className="inline-flex items-center gap-1.5"><Icon name="route" size={14} className="text-cyanx-300" /> {best.best.trainChanges + best.best.seatChanges} changes</span></div>}
-              <div className="mt-4 flex gap-2"><Button variant="white" size="sm" onClick={() => navigate(`/journey/${journeys.indexOf(best.best) + 1}`)}>View journey</Button><Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/10" onClick={() => toggleCompare(best.best)}><Icon name="compare" size={14}/> Add to compare</Button></div>
+              <div className="mt-4 flex gap-2"><Button variant="white" size="sm" onClick={() => navigate(`/journey/${journeyRef(best.best, journeys.indexOf(best.best) + 1)}`)}>View journey</Button><Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/10" onClick={() => toggleCompare(best.best)}><Icon name="compare" size={14}/> Add to compare</Button></div>
             </div>
           </div>
         </Card>
@@ -3182,7 +3261,7 @@ function AIPage() {
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-2">
                     <div className="text-xs text-navy-500">Heuristic score <span className="font-bold text-navy-900">{j.score}</span> · lower is better</div>
-                    <div className="flex gap-2"><Button variant="soft" size="sm" onClick={() => toggleCompare(j)} disabled={!compareList.some((c) => c.key === j.key) && compareList.length >= 3}><Icon name="compare" size={13}/> Compare</Button><Button variant="primary" size="sm" onClick={() => navigate(`/journey/${rank}`)}><Icon name="arrowRight" size={13}/> View</Button></div>
+                    <div className="flex gap-2"><Button variant="soft" size="sm" onClick={() => toggleCompare(j)} disabled={!compareList.some((c) => c.key === j.key) && compareList.length >= 3}><Icon name="compare" size={13}/> Compare</Button><Button variant="primary" size="sm" onClick={() => navigate(`/journey/${journeyRef(j, rank)}`)}><Icon name="arrowRight" size={13}/> View</Button></div>
                   </div>
                 </div>
               );
@@ -3243,7 +3322,7 @@ function ComparePage() {
               <Metric label="Distance" value={j.totalDist + " km"} />
               <Metric label="Overnight" value={j.overnight ? "Yes" : "No"} />
               <Metric label="Verification" value="Confirmed" />
-              <div className="mt-3"><Button variant="soft" size="sm" className="w-full" onClick={() => navigate(`/journey/${c.rank}`)}>View details <Icon name="arrowRight" size={13}/></Button></div>
+              <div className="mt-3"><Button variant="soft" size="sm" className="w-full" onClick={() => navigate(`/journey/${journeyRef(c.journey, c.rank)}`)}>View details <Icon name="arrowRight" size={13}/></Button></div>
             </Card>
           );
         })}
@@ -3465,11 +3544,21 @@ function StepIndicator({ current }) {
 }
 
 function ConversationalAssistant() {
-  const { toggleSave, isSaved, toggleCompare, compareList } = useApp();
+  const { toggleSave, isSaved, toggleCompare, compareList, applyChatSearch } = useApp();
   const [sessionId, setSessionId] = useState(() => {
     try { return sessionStorage.getItem("railsaathi_chat_session") || null; } catch (e) { return null; }
   });
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState(() => {
+    // Restore the persisted transcript (chat survives navigating to
+    // Results/Details/Booking and back within this browser tab).
+    try {
+      const raw = sessionStorage.getItem("railsaathi_chat_messages");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length) return parsed;
+      }
+    } catch (e) {}
+    return [
     {
       id: "welcome",
       role: "assistant",
@@ -3482,7 +3571,8 @@ function ConversationalAssistant() {
         "Bangalore to Belagavi",
       ],
     }
-  ]);
+  ];
+  });
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeSlots, setActiveSlots] = useState(null);
@@ -3497,6 +3587,23 @@ function ConversationalAssistant() {
       try { sessionStorage.removeItem("railsaathi_chat_session"); } catch (e) {}
     }
   }, [sessionId]);
+
+  // Persist the transcript (last 30 messages) so navigating between the
+  // stepper pages does not wipe the conversation.
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("railsaathi_chat_messages", JSON.stringify(messages.slice(-30)));
+    } catch (e) {
+      // Storage quota exceeded: keep a lightweight version (drop bulky
+      // journey result arrays from older messages, keep the newest one).
+      try {
+        const trimmed = messages.slice(-10).map((m, i, arr) => (
+          (i === arr.length - 1) ? m : { ...m, confirmedResults: undefined, unverifiedResults: undefined }
+        ));
+        sessionStorage.setItem("railsaathi_chat_messages", JSON.stringify(trimmed));
+      } catch (e2) {}
+    }
+  }, [messages]);
 
   const scrollToBottom = () => {
     if (chatEndRef.current) {
@@ -3544,6 +3651,43 @@ function ConversationalAssistant() {
       const confirmedJourneys = (resp.search_results || []).map((j) => adaptUnifiedJourney(j, false, isLiveProvider));
       const unverifiedJourneys = (resp.unverified_candidates || []).map((j) => adaptUnifiedJourney(j, true, isLiveProvider));
 
+      // Adopt the chat search into the app-level context so Results,
+      // Details and Booking steps work off conversational searches too.
+      if (resp.search_triggered || confirmedJourneys.length > 0 || unverifiedJourneys.length > 0) {
+        const slots = resp.slots || activeSlots || {};
+        const chatQuery = {
+          from: (slots.from_station || "").toUpperCase(),
+          to: (slots.to_station || "").toUpperCase(),
+          date: slots.journey_date || todayISO(),
+          travelClass: slots.travel_class || "SL",
+          quota: slots.quota || "GN",
+          passengers: 1,
+          rankingPreference: slots.ranking_preference || "FASTEST",
+        };
+        // Stamp the search's class + quota on each journey so the journey
+        // scope key (journey_id|class|quota) stays unique across re-searches
+        // in different classes and Details/Book keep resolving the exact
+        // card that was clicked.
+        const stamp = (j) => ({ ...j, travelClass: j.travelClass || chatQuery.travelClass, quota: j.quota || chatQuery.quota });
+        const stampedConfirmed = confirmedJourneys.map(stamp);
+        const stampedUnverified = unverifiedJourneys.map(stamp);
+        confirmedJourneys.length = 0; confirmedJourneys.push(...stampedConfirmed);
+        unverifiedJourneys.length = 0; unverifiedJourneys.push(...stampedUnverified);
+        applyChatSearch(chatQuery, confirmedJourneys, unverifiedJourneys, {
+          from: chatQuery.from, to: chatQuery.to, date: chatQuery.date, passengers: 1,
+          travelClass: chatQuery.travelClass,
+          count: confirmedJourneys.length,
+          totalUnverified: unverifiedJourneys.length,
+          status: "CHAT_SEARCH",
+          isComplete: Boolean(resp.completeness && resp.completeness.complete),
+          searchCompleteness: resp.completeness || null,
+          at: Date.now(),
+          isLiveProvider,
+          isDemo: false,
+          message: "Results from AI Assistant conversation",
+        });
+      }
+
       const assistantMsg = {
         id: "a_" + Date.now(),
         role: "assistant",
@@ -3589,6 +3733,7 @@ function ConversationalAssistant() {
     setActiveSlots(null);
     setLastError(null);
     try { sessionStorage.removeItem("railsaathi_chat_session"); } catch (e) {}
+    try { sessionStorage.removeItem("railsaathi_chat_messages"); } catch (e) {}
     setMessages([
       {
         id: "welcome_" + Date.now(),
@@ -4697,11 +4842,11 @@ function AccessibilityPage() {
   );
 }
 
-/* ---------- Booking & confirmation (/booking/:rank) ---------- */
+/* ---------- Booking & confirmation (/booking/:journeyKey-or-rank) ---------- */
 function BookingPage() {
-  const { routeParam, journeys, search } = useApp();
-  const rank = parseInt(routeParam, 10);
-  const j = journeys && journeys[rank - 1];
+  const { routeParam, journeys, search, journeyRegistry } = useApp();
+  const j = findJourney(journeys, routeParam, journeyRegistry);
+  const rank = j ? journeyDisplayRank(j, journeys, routeParam) : parseInt(routeParam, 10);
   const [pax, setPax] = useState(null);
   const [contact, setContact] = useState({ email: "", phone: "" });
   const [seatPref, setSeatPref] = useState("any");
@@ -4722,11 +4867,11 @@ function BookingPage() {
   const cs = changeStyle(j.changeType);
   const n = pax ? pax.length : (search && search.passengers) || 1;
   const grandTotal = j.totalFare * n;
-  const classLabel = (search && CLASSES.find((c) => c.code === search.travelClass)) || CLASSES[0];
+  const classLabel = CLASSES.find((c) => c.code === (j.travelClass || (search && search.travelClass))) || CLASSES[0];
 
   if (confirmed) {
     return (
-      <PageShell title="Booking confirmed" breadcrumb={[{ label: "Details", action: () => navigate(`/journey/${rank}`) }]} actions={<Button variant="outline" size="md" onClick={() => navigate("/discover")}><Icon name="arrowLeft" size={15} /> Results</Button>}>
+      <PageShell title="Booking confirmed" breadcrumb={[{ label: "Details", action: () => navigate(`/journey/${journeyRef(j, rank)}`) }]} actions={<Button variant="outline" size="md" onClick={() => navigate("/discover")}><Icon name="arrowLeft" size={15} /> Results</Button>}>
         <div className="mb-4"><StepIndicator current={3} /></div>
         <Card className="p-6 md:p-8 text-center">
           <div className="inline-grid place-items-center w-16 h-16 rounded-2xl bg-emerald-500 text-white mb-3"><Icon name="check" size={32} /></div>
@@ -4770,7 +4915,7 @@ function BookingPage() {
   const prefs = [["any", "No preference"], ["window", "Window"], ["aisle", "Aisle"], ["lower", "Lower berth"], ["upper", "Upper berth"]];
 
   return (
-    <PageShell title="Review & book" breadcrumb={[{ label: "Details", action: () => navigate(`/journey/${rank}`) }]} actions={<Button variant="outline" size="md" onClick={() => navigate(`/journey/${rank}`)}><Icon name="arrowLeft" size={15} /> Back to details</Button>}>
+    <PageShell title="Review & book" breadcrumb={[{ label: "Details", action: () => navigate(`/journey/${journeyRef(j, rank)}`) }]} actions={<Button variant="outline" size="md" onClick={() => navigate(`/journey/${journeyRef(j, rank)}`)}><Icon name="arrowLeft" size={15} /> Back to details</Button>}>
       <div className="mb-4"><StepIndicator current={3} /></div>
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         <div className="space-y-5">
