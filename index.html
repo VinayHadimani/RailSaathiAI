@@ -1091,39 +1091,135 @@ function Navbar() {
   );
 }
 
-function Autocomplete({ value, onSelect, placeholder = "Search city or station", icon = "mapPin", label }) {
-  const [q, setQ] = useState(() => { const s = value ? STATION_MAP[value] : null; return s ? `${s.name} (${s.code})` : ""; });
+async function resolveStationQuery(rawText) {
+  const raw = String(rawText || "").trim();
+  if (!raw) return "";
+  const parenCode = raw.match(/\(([A-Za-z]{2,5})\)$/);
+  if (parenCode) return parenCode[1].toUpperCase();
+  if (/^[A-Za-z]{2,5}$/.test(raw)) {
+    const up = raw.toUpperCase();
+    if (STATION_MAP[up]) return up;
+  }
+  const cleanQ = raw.includes("(") ? raw.slice(0, raw.indexOf("(")).trim() : raw;
+  const localHits = stationSearch(cleanQ);
+  const cleanLower = cleanQ.toLowerCase();
+  const exactLocal = localHits.find((s) =>
+    s.code.toLowerCase() === cleanLower ||
+    s.city.toLowerCase() === cleanLower ||
+    s.name.toLowerCase() === cleanLower
+  );
+  if (exactLocal) return exactLocal.code;
+
+  try {
+    const res = await fetch(`${RAILSAATHI_CONFIG.baseUrl}/api/v1/stations/search?q=${encodeURIComponent(cleanQ)}&limit=5`);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.stations) && data.stations.length > 0) {
+        const best = data.stations[0];
+        if (best && best.code) {
+          if (!STATION_MAP[best.code]) STATION_MAP[best.code] = best;
+          return best.code;
+        }
+      }
+    }
+  } catch (e) {}
+  if (localHits.length > 0) return localHits[0].code;
+  if (/^[A-Za-z]{2,5}$/.test(raw)) return raw.toUpperCase();
+  return "";
+}
+
+function Autocomplete({ value, onSelect, onTextChange, placeholder = "Search city or station", icon = "mapPin", label }) {
+  const [q, setQ] = useState(() => { const s = value ? STATION_MAP[value] : null; return s ? `${s.name} (${s.code})` : (value || ""); });
   const [open, setOpen] = useState(false);
   const [hi, setHi] = useState(0);
+  const [remoteResults, setRemoteResults] = useState([]);
   const ref = useRef(null);
-  useEffect(() => { const s = value ? STATION_MAP[value] : null; setQ(s ? `${s.name} (${s.code})` : ""); }, [value]);
+  useEffect(() => {
+    const s = value ? STATION_MAP[value] : null;
+    const formatted = s ? `${s.name} (${s.code})` : (value || "");
+    setQ(formatted);
+    if (onTextChange) onTextChange(formatted);
+  }, [value]);
   useEffect(() => {
     const onDoc = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
-  const results = useMemo(() => stationSearch(q.includes("(") ? q.slice(0, q.indexOf("(")) : q), [q]);
+  const cleanQ = (q.includes("(") ? q.slice(0, q.indexOf("(")) : q).trim();
+  const localResults = useMemo(() => stationSearch(cleanQ), [cleanQ]);
+  useEffect(() => {
+    if (!open || cleanQ.length < 2) { setRemoteResults([]); return; }
+    let cancelled = false;
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(`${RAILSAATHI_CONFIG.baseUrl}/api/v1/stations/search?q=${encodeURIComponent(cleanQ)}&limit=10`);
+        if (!res.ok || cancelled) return;
+        const data = await res.json();
+        if (!cancelled && Array.isArray(data.stations)) setRemoteResults(data.stations);
+      } catch (e) {}
+    }, 150);
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [open, cleanQ]);
+  const results = useMemo(() => {
+    const merged = [...localResults];
+    const seen = new Set(merged.map((s) => s.code));
+    remoteResults.forEach((s) => {
+      if (s && s.code && !seen.has(s.code)) {
+        seen.add(s.code);
+        merged.push(s);
+      }
+    });
+    return merged.slice(0, 10);
+  }, [localResults, remoteResults]);
+  const pickStation = (s) => {
+    if (s && s.code) {
+      if (!STATION_MAP[s.code]) STATION_MAP[s.code] = s;
+      const formatted = `${s.name} (${s.code})`;
+      setQ(formatted);
+      if (onTextChange) onTextChange(formatted);
+      onSelect(s.code);
+    }
+    setOpen(false);
+  };
   return (
     <div className="relative" ref={ref}>
       {label && <label className="block text-xs font-semibold text-navy-500 mb-1.5 uppercase tracking-wide">{label}</label>}
       <div className="relative">
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-electric"><Icon name={icon} size={18} /></span>
         <input
-          value={q} onChange={(e) => { setQ(e.target.value); setOpen(true); setHi(0); }}
+          value={q}
+          onChange={(e) => {
+            const val = e.target.value;
+            setQ(val);
+            if (onTextChange) onTextChange(val);
+            setOpen(true);
+            setHi(0);
+            if (!val.trim()) {
+              onSelect("");
+            } else if (value) {
+              const cur = STATION_MAP[value];
+              const curFmt = cur ? `${cur.name} (${cur.code})` : value;
+              if (val.trim() !== curFmt) onSelect("");
+            }
+          }}
           onFocus={() => setOpen(true)}
           onBlur={() => {
             const raw = q.trim();
+            if (!raw) { onSelect(""); return; }
             const codeMatch = raw.match(/\(([A-Za-z]{2,5})\)$/) || raw.match(/^([A-Za-z]{2,5})$/);
             if (codeMatch) {
               const typedCode = codeMatch[1].toUpperCase();
               if (typedCode !== value) onSelect(typedCode);
+            } else if (results.length > 0 && !value) {
+              pickStation(results[0]);
             }
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              if (open && results[hi]) { onSelect(results[hi].code); setOpen(false); return; }
+              if (open && results[hi]) { pickStation(results[hi]); return; }
               const raw = q.trim();
               if (/^[A-Za-z]{2,5}$/.test(raw)) { onSelect(raw.toUpperCase()); setOpen(false); }
+              else if (results[0]) { pickStation(results[0]); }
               return;
             }
             if (!open) return;
@@ -1138,12 +1234,12 @@ function Autocomplete({ value, onSelect, placeholder = "Search city or station",
       {open && results.length > 0 && (
         <div className="absolute z-40 mt-2 w-full bg-white rounded-xl border border-navy-100 shadow-cardlg overflow-hidden max-h-72 overflow-y-auto">
           {results.map((s, i) => (
-            <button key={s.code} onMouseEnter={() => setHi(i)} onClick={() => { onSelect(s.code); setOpen(false); }}
+            <button key={s.code} type="button" onMouseEnter={() => setHi(i)} onMouseDown={(e) => { e.preventDefault(); pickStation(s); }}
               className={cx("w-full flex items-center gap-3 px-3.5 py-2.5 text-left transition-colors", i === hi ? "bg-navy-50" : "bg-white")}>
               <span className="grid place-items-center w-8 h-8 rounded-lg bg-cyanx-500/10 text-cyanx-600 shrink-0"><Icon name="mapPin" size={15} /></span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold text-navy-900 truncate">{s.name}</span>
-                <span className="block text-xs text-navy-400">{s.city}, {s.state}</span>
+                <span className="block text-xs text-navy-400">{s.city}{s.state ? `, ${s.state}` : ""}</span>
               </span>
               <span className="text-xs font-bold text-navy-400">{s.code}</span>
             </button>
@@ -1193,6 +1289,9 @@ function SearchCard({ compact = false }) {
   const { search, runSearch, searchMode, isSearching } = useApp();
   const [from, setFrom] = useState(() => (compact && search?.from) || "MYS");
   const [to, setTo] = useState(() => (compact && search?.to) || "BGM");
+  const [fromText, setFromText] = useState("");
+  const [toText, setToText] = useState("");
+  const [formErr, setFormErr] = useState("");
   const [date, setDate] = useState(() => (compact && search?.date) || todayISO());
   const [pax, setPax] = useState(() => (compact && search?.passengers) || 1);
   const [cls, setCls] = useState(() => (compact && search?.travelClass) || "SL");
@@ -1204,24 +1303,41 @@ function SearchCard({ compact = false }) {
     if (search.passengers) setPax(search.passengers);
     if (search.travelClass) setCls(search.travelClass);
   }, [compact, search]);
-  const swap = () => { setFrom(to); setTo(from); };
-  const submit = () => { if (!isSearching) runSearch({ from, to, date, passengers: pax, travelClass: cls }); };
+  const swap = () => {
+    setFormErr("");
+    setFrom(to); setTo(from);
+    setFromText(toText); setToText(fromText);
+  };
+  const submit = async (modeOverride = null) => {
+    if (isSearching) return;
+    setFormErr("");
+    const fCode = from || (await resolveStationQuery(fromText));
+    const tCode = to || (await resolveStationQuery(toText));
+    if (!fCode) { setFormErr("Please choose a valid departure station from the list."); return; }
+    if (!tCode) { setFormErr("Please choose a valid destination station from the list."); return; }
+    if (fCode === tCode) { setFormErr("Departure and destination stations cannot be the same."); return; }
+    if (fCode !== from) setFrom(fCode);
+    if (tCode !== to) setTo(tCode);
+    const opts = modeOverride ? { mode: modeOverride } : {};
+    runSearch({ from: fCode, to: tCode, date, passengers: pax, travelClass: cls }, opts);
+  };
 
   if (compact) {
     return (
       <Card className="p-3 md:p-4">
         <div className="flex flex-col md:flex-row md:items-end gap-3">
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2 relative">
-            <Autocomplete value={from} onSelect={setFrom} placeholder="From" icon="mapPin" />
-            <Autocomplete value={to} onSelect={setTo} placeholder="To" icon="mapPin" />
-            <button onClick={swap} className="hidden md:grid place-items-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white border border-navy-200 text-navy-600 hover:text-electric hover:border-electric shadow-sm z-10" aria-label="Swap"><Icon name="swap" size={16} /></button>
+            <Autocomplete value={from} onSelect={(c) => { setFormErr(""); setFrom(c); }} onTextChange={setFromText} placeholder="From" icon="mapPin" />
+            <Autocomplete value={to} onSelect={(c) => { setFormErr(""); setTo(c); }} onTextChange={setToText} placeholder="To" icon="mapPin" />
+            <button type="button" onClick={swap} className="hidden md:grid place-items-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white border border-navy-200 text-navy-600 hover:text-electric hover:border-electric shadow-sm z-10" aria-label="Swap"><Icon name="swap" size={16} /></button>
           </div>
           <div className="flex-1 grid grid-cols-2 md:flex md:items-center gap-2">
             <input type="date" value={date} min={todayISO()} onChange={(e) => setDate(e.target.value)} className="rounded-xl border border-navy-200 px-3 py-3 text-sm font-medium text-navy-900 focus:outline-none focus:border-electric" />
             <ClassSelect value={cls} onChange={setCls} />
           </div>
-          <Button variant="primary" size="lg" disabled={isSearching} onClick={submit} className="md:px-7"><Icon name="search" size={18}/> Search</Button>
+          <Button variant="primary" size="lg" disabled={isSearching} onClick={() => submit()} className="md:px-7"><Icon name="search" size={18}/> Search</Button>
         </div>
+        {formErr && <p className="mt-2 text-xs font-semibold text-rose-600">{formErr}</p>}
       </Card>
     );
   }
@@ -1237,9 +1353,9 @@ function SearchCard({ compact = false }) {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
-        <Autocomplete value={from} onSelect={setFrom} label="From" placeholder="Departure city" icon="mapPin" />
-        <Autocomplete value={to} onSelect={setTo} label="To" placeholder="Destination city" icon="mapPin" />
-        <button onClick={swap} className="hidden md:grid place-items-center absolute left-1/2 top-[42px] -translate-x-1/2 w-10 h-10 rounded-full bg-white border-2 border-navy-100 text-navy-500 hover:text-electric hover:border-electric shadow-card transition-all hover:scale-105 z-10" aria-label="Swap source and destination"><Icon name="swap" size={18} /></button>
+        <Autocomplete value={from} onSelect={(c) => { setFormErr(""); setFrom(c); }} onTextChange={setFromText} label="From" placeholder="Departure city" icon="mapPin" />
+        <Autocomplete value={to} onSelect={(c) => { setFormErr(""); setTo(c); }} onTextChange={setToText} label="To" placeholder="Destination city" icon="mapPin" />
+        <button type="button" onClick={swap} className="hidden md:grid place-items-center absolute left-1/2 top-[42px] -translate-x-1/2 w-10 h-10 rounded-full bg-white border-2 border-navy-100 text-navy-500 hover:text-electric hover:border-electric shadow-card transition-all hover:scale-105 z-10" aria-label="Swap source and destination"><Icon name="swap" size={18} /></button>
       </div>
       <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
@@ -1258,12 +1374,13 @@ function SearchCard({ compact = false }) {
           <ClassSelect value={cls} onChange={setCls} />
         </div>
       </div>
+      {formErr && <p className="mt-3 text-xs font-semibold text-rose-600">{formErr}</p>}
       <div className="mt-5 flex flex-col sm:flex-row sm:items-center gap-3">
-        <Button variant="primary" size="lg" disabled={isSearching} onClick={submit} className="flex-1 sm:flex-none sm:px-10"><Icon name="search" size={18}/> Search Journey</Button>
-        <Button variant="outline" size="lg" onClick={() => runSearch({ from, to, date, passengers: pax, travelClass: cls }, { mode: "demo" })} className="text-navy-600">
+        <Button variant="primary" size="lg" disabled={isSearching} onClick={() => submit()} className="flex-1 sm:flex-none sm:px-10"><Icon name="search" size={18}/> Search Journey</Button>
+        <Button variant="outline" size="lg" onClick={() => submit("demo")} className="text-navy-600">
           <Icon name="layers" size={16}/> Demo Search
         </Button>
-        <button onClick={swap} className="md:hidden inline-flex items-center justify-center gap-2 text-sm font-semibold text-navy-600 hover:text-electric"><Icon name="swap" size={16}/> Swap cities</button>
+        <button type="button" onClick={swap} className="md:hidden inline-flex items-center justify-center gap-2 text-sm font-semibold text-navy-600 hover:text-electric"><Icon name="swap" size={16}/> Swap cities</button>
         <p className="text-xs text-navy-400 sm:ml-auto flex items-center gap-1.5"><Icon name="shield" size={14} className="text-emerald-500"/> Confirmed-availability results only</p>
       </div>
     </Card>

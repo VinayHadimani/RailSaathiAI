@@ -188,6 +188,44 @@ STATION_ALIASES: Final[dict[str, str]] = {
     "coimbatore": "CBE",
     "visakhapatnam": "VSKP",
     "vizag": "VSKP",
+    # Major pan-India city/historical aliases:
+    "kalaburagi": "KLBG",
+    "kalaburgi": "KLBG",
+    "kalburgi": "KLBG",
+    "gulbarga": "KLBG",
+    "solapur": "SUR",
+    "sholapur": "SUR",
+    "vijayawada": "BZA",
+    "tirupati": "TPTY",
+    "surat": "ST",
+    "vadodara": "BRC",
+    "baroda": "BRC",
+    "madurai": "MDU",
+    "tiruchirappalli": "TPJ",
+    "trichy": "TPJ",
+    "kozhikode": "CLT",
+    "calicut": "CLT",
+    "guwahati": "GHY",
+    "bhubaneswar": "BBS",
+    "prayagraj": "PRYJ",
+    "allahabad": "PRYJ",
+    "varanasi": "BSB",
+    "banaras": "BSB",
+    "jodhpur": "JU",
+    "udaipur": "UDZ",
+    "indore": "INDB",
+    "amritsar": "ASR",
+    "chandigarh": "CDG",
+    "dehradun": "DDN",
+    "ranchi": "RNC",
+    "raipur": "R",
+    "jabalpur": "JBP",
+    "gwalior": "GWL",
+    "agra": "AGC",
+    "ajmer": "AII",
+    "kolhapur": "KOP",
+    "miraj": "MRJ",
+    "puri": "PURI",
 }
 
 
@@ -267,6 +305,26 @@ class StationResolver:
                     name=stn.name,
                     city=stn.city,
                 )
+            try:
+                from ..services.local_timetable_store import get_local_timetable_store
+
+                hit = get_local_timetable_store().has_station(code)
+                if hit:
+                    pretty = hit[1].title()
+                    return StationResolutionResult(
+                        status=StationResolutionStatus.RESOLVED,
+                        code=hit[0],
+                        name=pretty,
+                        city=pretty,
+                    )
+            except Exception:
+                pass
+            return StationResolutionResult(
+                status=StationResolutionStatus.RESOLVED,
+                code=code,
+                name=cleaned.title(),
+                city=cleaned.title(),
+            )
 
         # 5. Exact match on full station names or city names in catalog
         matches: list[StationCandidate] = []
@@ -309,7 +367,25 @@ class StationResolver:
                 ),
             )
 
-        # 7. Unknown station
+        # 7. Pan-India local timetable DB fallback (9,000+ stations)
+        try:
+            from ..services.local_timetable_store import get_local_timetable_store
+
+            store = get_local_timetable_store()
+            db_hits = store.resolve_station_by_name(cleaned)
+            if db_hits:
+                best_code, best_name, _ = db_hits[0]
+                pretty = best_name.title()
+                return StationResolutionResult(
+                    status=StationResolutionStatus.RESOLVED,
+                    code=best_code,
+                    name=pretty,
+                    city=pretty,
+                )
+        except Exception:
+            pass
+
+        # 8. Unknown station
         return StationResolutionResult(
             status=StationResolutionStatus.UNKNOWN,
             error=f"Could not recognize railway station: '{raw}'.",

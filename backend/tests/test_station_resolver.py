@@ -121,3 +121,22 @@ def test_invalid_station_inputs():
     for empty in ["", "   ", None]:
         empty_res = StationResolver.resolve(empty)
         assert empty_res.status == StationResolutionStatus.UNKNOWN
+
+
+def test_pan_india_station_resolution():
+    """Pan-India cities & spelling variants resolve via aliases and trains.db."""
+    cases = [
+        ("kalburgi", "KLBG"),
+        ("kalaburgi", "KLBG"),
+        ("kalaburagi", "KLBG"),
+        ("gulbarga", "KLBG"),
+        ("solapur", "SUR"),
+        ("vijayawada", "BZA"),
+        ("surat", "ST"),
+        ("tirupati", "TPTY"),
+        ("madurai", "MDU"),
+    ]
+    for raw, expected_code in cases:
+        res = StationResolver.resolve(raw)
+        assert res.status == StationResolutionStatus.RESOLVED, f"Failed for {raw}: {res}"
+        assert res.code == expected_code

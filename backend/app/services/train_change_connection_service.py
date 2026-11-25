@@ -370,6 +370,13 @@ class TrainChangeConnectionService:
                 if request.via_stations:
                     # Hints anchor the search without any through train.
                     return None
+                store = getattr(self.planner, "_timetable_store", None)
+                if store is not None:
+                    hubs = store.find_interchange_hubs(source, destination, limit=6)
+                    if hubs:
+                        state.known.update(hubs)
+                        state.seed_corridor.update(hubs)
+                        return None
                 return (
                     TrainChangeSearchStatus.NO_CANDIDATE_TRAINS,
                     200,

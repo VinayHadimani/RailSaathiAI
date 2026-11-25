@@ -12,9 +12,11 @@ for live seat availability queries (`/availability/seats/batch`).
 
 from __future__ import annotations
 
+import difflib
 import json
 import logging
 import os
+import re
 import sqlite3
 import tempfile
 import threading
@@ -116,6 +118,7 @@ class LocalTimetableStore:
             self._overlay_path = None
         self._lock = threading.Lock()
         self._overlay_initialized = False
+        self._station_cache: dict | None = None
 
     @property
     def is_available(self) -> bool:
@@ -373,6 +376,189 @@ class LocalTimetableStore:
             for conn in conns:
                 conn.close()
         return counts
+
+    @staticmethod
+    def _normalize_station_name(raw: str, *, strip_place_words: bool = True) -> str:
+        s = raw.lower()
+        s = re.sub(
+            r"\b(jn|junction|terminus|terminal|cantt|cantonment|central|halt|ph|rd|road)\b",
+            " ",
+            s,
+        )
+        if strip_place_words:
+            s = re.sub(r"\b(city|town)\b", " ", s)
+        s = re.sub(r"[^a-z\s]", " ", s)
+        return " ".join(s.split())
+
+    def _get_station_index(self) -> dict:
+        if self._station_cache is not None:
+            return self._station_cache
+        with self._lock:
+            if self._station_cache is not None:
+                return self._station_cache
+            by_code: dict[str, tuple[str, str, int]] = {}
+            by_norm: dict[str, list[tuple[str, str, int]]] = {}
+            conns = self._read_connections()
+            try:
+                for conn in conns:
+                    rows = conn.execute(
+                        """
+                        SELECT s.code, s.name, COUNT(DISTINCT ss.train_number) AS cnt
+                        FROM stations s
+                        LEFT JOIN station_stops ss ON ss.station_code = s.code
+                        WHERE s.code NOT LIKE 'XX-%' AND s.code NOT LIKE 'YY-%'
+                          AND s.name IS NOT NULL AND TRIM(s.name) != ''
+                        GROUP BY s.code
+                        """
+                    ).fetchall()
+                    for row in rows:
+                        code = str(row["code"] or "").strip().upper()
+                        name = str(row["name"] or "").strip()
+                        cnt = int(row["cnt"] or 0)
+                        if code and name and code not in by_code:
+                            by_code[code] = (code, name, cnt)
+                            norm = self._normalize_station_name(name)
+                            if norm:
+                                by_norm.setdefault(norm, []).append((code, name, cnt))
+            finally:
+                for conn in conns:
+                    conn.close()
+            for norm_key in by_norm:
+                by_norm[norm_key].sort(key=lambda item: (-item[2], item[0]))
+            self._station_cache = {
+                "by_code": by_code,
+                "by_norm": by_norm,
+                "items": sorted(by_code.values(), key=lambda item: (-item[2], item[0])),
+            }
+            return self._station_cache
+
+    def has_station(self, code: str) -> tuple[str, str] | None:
+        """Return (code, name) if `code` exists in the local pan-India station DB."""
+        if not self.is_available or not code:
+            return None
+        idx = self._get_station_index()
+        hit = idx["by_code"].get(code.strip().upper())
+        return (hit[0], hit[1]) if hit else None
+
+    def resolve_station_by_name(self, query: str) -> list[tuple[str, str, int]]:
+        """Resolve a station/city name across all 9,000+ Indian Railways stations."""
+        if not self.is_available or not query or not query.strip():
+            return []
+        idx = self._get_station_index()
+        by_norm: dict[str, list[tuple[str, str, int]]] = idx["by_norm"]
+        norm_q = self._normalize_station_name(query)
+        if not norm_q:
+            return []
+        if norm_q in by_norm:
+            return list(by_norm[norm_q])
+
+        # Word-prefix exact match (e.g. "solapur" matches "solapur" or starts with query)
+        prefix_hits: list[tuple[str, str, int]] = []
+        for norm_key, entries in by_norm.items():
+            if norm_key.startswith(norm_q + " ") or (" " + norm_q + " ") in (" " + norm_key + " "):
+                prefix_hits.extend(entries)
+        if prefix_hits:
+            prefix_hits.sort(key=lambda item: (-item[2], item[0]))
+            return prefix_hits[:5]
+
+        # Strict fuzzy fallback for spelling variants (e.g. "kalburgi" -> "kalaburagi")
+        # Uses raw_alpha without stripping "city"/"town" to avoid false positives like "gotham city".
+        raw_norm = self._normalize_station_name(query, strip_place_words=False)
+        if len(raw_norm) >= 5:
+            close_keys = difflib.get_close_matches(raw_norm, by_norm.keys(), n=3, cutoff=0.86)
+            if close_keys:
+                fuzzy_hits: list[tuple[str, str, int]] = []
+                for key in close_keys:
+                    fuzzy_hits.extend(by_norm[key])
+                fuzzy_hits.sort(key=lambda item: (-item[2], item[0]))
+                return fuzzy_hits[:5]
+        return []
+
+    def search_stations(self, query: str, *, limit: int = 10) -> list[dict[str, str]]:
+        """Fast pan-India station autocomplete search over local DB."""
+        if not self.is_available:
+            return []
+        idx = self._get_station_index()
+        items: list[tuple[str, str, int]] = idx["items"]
+        q = (query or "").strip().lower()
+        if not q:
+            return [
+                {"code": code, "name": name.title(), "city": name.title(), "state": ""}
+                for code, name, _ in items[:limit]
+            ]
+
+        q_upper = q.upper()
+        q_norm = self._normalize_station_name(q)
+        scored: list[tuple[int, int, str, str]] = []
+        for code, name, cnt in items:
+            nl = name.lower()
+            if code == q_upper:
+                rank = 0
+            elif code.startswith(q_upper):
+                rank = 1
+            elif nl.startswith(q) or (q_norm and self._normalize_station_name(name).startswith(q_norm)):
+                rank = 2
+            elif q in nl or (q_norm and q_norm in self._normalize_station_name(name)):
+                rank = 3
+            else:
+                continue
+            scored.append((rank, -cnt, code, name))
+
+        if not scored and len(q_norm) >= 5:
+            for code, name, cnt in self.resolve_station_by_name(q):
+                scored.append((4, -cnt, code, name))
+
+        scored.sort()
+        return [
+            {"code": code, "name": name.title(), "city": name.title(), "state": ""}
+            for _, _, code, name in scored[:limit]
+        ]
+
+    def find_interchange_hubs(
+        self, from_station: str, to_station: str, *, limit: int = 8
+    ) -> list[str]:
+        """Find major interchange stations connecting from_station -> hub -> to_station."""
+        frm = str(from_station).strip().upper()
+        to = str(to_station).strip().upper()
+        if not frm or not to or frm == to or not self.is_available:
+            return []
+        conns = self._read_connections()
+        if not conns:
+            return []
+        scores: dict[str, int] = {}
+        try:
+            for conn in conns:
+                rows = conn.execute(
+                    """
+                    SELECT r1.hub, (r1.c1 + r2.c2) AS score
+                    FROM (
+                        SELECT b.station_code AS hub, COUNT(DISTINCT a.train_number) AS c1
+                        FROM station_stops a
+                        JOIN station_stops b ON a.train_number = b.train_number AND a.seq < b.seq
+                        WHERE a.station_code = ? AND b.station_code != ?
+                        GROUP BY b.station_code
+                    ) r1
+                    JOIN (
+                        SELECT a.station_code AS hub, COUNT(DISTINCT a.train_number) AS c2
+                        FROM station_stops a
+                        JOIN station_stops b ON a.train_number = b.train_number AND a.seq < b.seq
+                        WHERE b.station_code = ? AND a.station_code != ?
+                        GROUP BY a.station_code
+                    ) r2 ON r1.hub = r2.hub
+                    ORDER BY score DESC
+                    LIMIT ?
+                    """,
+                    (frm, to, to, frm, limit),
+                ).fetchall()
+                for row in rows:
+                    hub = str(row["hub"] or "").strip().upper()
+                    if hub and not hub.startswith(("XX-", "YY-")):
+                        scores[hub] = max(scores.get(hub, 0), int(row["score"] or 0))
+        finally:
+            for conn in conns:
+                conn.close()
+        ranked = sorted(scores.items(), key=lambda item: (-item[1], item[0]))
+        return [hub for hub, _ in ranked[:limit]]
 
     def upsert_schedule(self, schedule: TrainSchedule, *, source: str = "railcore") -> None:
         """Persist a live-fetched schedule into the writable local/overlay SQLite DB."""

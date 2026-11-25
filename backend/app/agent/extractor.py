@@ -12,6 +12,7 @@ import logging
 import re
 from typing import Any, Final
 
+from ..services.local_timetable_store import get_local_timetable_store
 from .date_normalizer import DateNormalizer, get_current_date_ist
 from .llm.base import LLMClient
 from .llm.exceptions import LLMError
@@ -265,9 +266,13 @@ Extract parameters as JSON:"""
                 active_ambiguities["from_station"] = res_orig.candidates
                 active_unverified.pop("from_station", None)
             elif res_orig.status == StationResolutionStatus.UNVERIFIED_CODE and res_orig.code:
+                db_match = get_local_timetable_store().has_station(res_orig.code)
                 slots.from_station = res_orig.code
-                active_unverified["from_station"] = res_orig.code
                 active_ambiguities.pop("from_station", None)
+                if db_match is not None:
+                    active_unverified.pop("from_station", None)
+                else:
+                    active_unverified["from_station"] = res_orig.code
             else:
                 slots.from_station = None
                 active_ambiguities.pop("from_station", None)
@@ -285,9 +290,13 @@ Extract parameters as JSON:"""
                 active_ambiguities["to_station"] = res_dest.candidates
                 active_unverified.pop("to_station", None)
             elif res_dest.status == StationResolutionStatus.UNVERIFIED_CODE and res_dest.code:
+                db_match = get_local_timetable_store().has_station(res_dest.code)
                 slots.to_station = res_dest.code
-                active_unverified["to_station"] = res_dest.code
                 active_ambiguities.pop("to_station", None)
+                if db_match is not None:
+                    active_unverified.pop("to_station", None)
+                else:
+                    active_unverified["to_station"] = res_dest.code
             else:
                 slots.to_station = None
                 active_ambiguities.pop("to_station", None)

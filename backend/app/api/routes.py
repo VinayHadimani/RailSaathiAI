@@ -60,6 +60,7 @@ from ..services.segment_availability_service import SegmentAvailabilityTestServi
 from ..services.train_change_connection_service import TrainChangeConnectionService
 from ..services.mixed_journey_service import MixedJourneyCombinationService
 from ..services.unified_journey_service import UnifiedJourneyOrchestrationService
+from ..services.local_timetable_store import get_local_timetable_store
 from .deps import get_agent_orchestrator, get_railcore_client
 
 router = APIRouter(prefix="/api/v1")
@@ -360,6 +361,12 @@ def segment_availability_test(
     service = SegmentAvailabilityTestService(client)
     body, status_code = service.run(payload)
     return JSONResponse(status_code=status_code, content=body)
+
+
+@router.get("/stations/search", tags=["system"], summary="Search pan-India railway stations")
+def search_stations_endpoint(q: str = "", limit: int = 10) -> dict:
+    clamped = max(1, min(25, limit))
+    return {"stations": get_local_timetable_store().search_stations(q, limit=clamped)}
 
 
 @router.post(
