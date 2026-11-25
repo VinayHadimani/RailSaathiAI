@@ -765,3 +765,31 @@ with explicit `journey_type` (`SAME_TRAIN_SEGMENTS` / `TRAIN_CHANGE` /
 station manager and persistence layer (PostgreSQL/Alembic when genuinely
 required), refresh/comparison endpoints, and the AI agent layer on top
 of the three verified search engines.
+
+## Multi-key rotation (operations)
+
+Both outbound providers — Gemini (LLM intent extraction) and RailCore
+(transport data) — run on multi-key pools (`app/core/key_pool.py`) so a
+rate-limited or quota-exhausted key never stops the service:
+
+- **Round-robin balance.** Every successful call advances the pool pointer,
+  so consecutive requests spread evenly across keys instead of draining
+  key #1 first (verified live: one user request produced
+  `key=rk_liv...9z9x` -> `key=rk_liv...ALIx` -> `key=rk_liv...EWg1`,
+  three credits billed across three different keys).
+- **Automatic failover.** HTTP 429 / quota-exhausted (and Gemini 503
+  "overloaded") responses bench the key for a cooldown — for RailCore the
+  cooldown honors the provider's `Retry-After` header — and the same
+  request is retried immediately on the next key. The caller never sees
+  the 429 unless every key is benched.
+- **Self-healing.** A benched key re-enters the pool automatically when its
+  cooldown expires; if ALL keys are benched, the pool serves the key
+  closest to recovery, so traffic resumes without a restart.
+- **Hard errors are not rotated.** Authentication (401/403) and request
+  errors (400, e.g. unsupported region) fail fast — rotating cannot fix a
+  bad key or a blocked region, and churning the pool would only burn
+  quota.
+- **Credential hygiene.** Keys are read from `backend/.env`
+  (comma-separated in `GEMINI_API_KEY` / `RAILCORE_API_KEY`), masked
+  (`rk_liv...9z9x`) in every log line, redacted from exception strings,
+  and never committed to git (`.env` is ignored at both repo levels).

@@ -165,11 +165,13 @@ def get_llm_client(settings: Settings | None = None, **overrides: Any) -> LLMCli
             responses / pattern_responses / error_to_raise: Mock client options
 
     Returns:
-        Configured LLMClient instance.
+        Configured LLMClient instance. An unrecognized provider string never
+        raises: it degrades to 'gemini' when credentials are configured, or
+        to the offline 'mock' client otherwise, with a warning logged.
 
     Raises:
-        ValueError: If provider is unsupported.
-        LLMAuthenticationError: If required credentials are missing for Gemini.
+        ValueError: Only if provider is neither 'gemini' nor 'mock' AND the
+            credential fallback above could not resolve to a usable provider.
     """
     if settings is None:
         settings = get_settings()

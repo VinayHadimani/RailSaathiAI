@@ -303,7 +303,7 @@ def test_gemini_client_maps_timeout_error():
 
 def test_gemini_client_maps_server_error_500():
     class DummyServerError(Exception):
-        code = 503
+        code = 500
 
     mock_sdk_client = MagicMock()
     mock_sdk_client.models.generate_content.side_effect = DummyServerError("Backend unavailable")
@@ -311,6 +311,25 @@ def test_gemini_client_maps_server_error_500():
     client = GeminiLLMClient(client=mock_sdk_client)
 
     with pytest.raises(LLMProviderError) as exc_info:
+        client.generate_text("Prompt")
+    assert exc_info.value.status_code == 500
+    assert exc_info.value.provider == "gemini"
+
+
+def test_gemini_client_maps_503_overload_to_rate_limit_for_key_failover():
+    """503 / overloaded / high-demand responses must map to LLMRateLimitError
+    (not LLMProviderError) so the key pool benches the key and fails over to
+    the next candidate instead of surfacing a hard error to the user."""
+
+    class DummyOverloaded(Exception):
+        code = 503
+
+    mock_sdk_client = MagicMock()
+    mock_sdk_client.models.generate_content.side_effect = DummyOverloaded("Model overloaded, high demand")
+
+    client = GeminiLLMClient(client=mock_sdk_client)
+
+    with pytest.raises(LLMRateLimitError) as exc_info:
         client.generate_text("Prompt")
     assert exc_info.value.status_code == 503
     assert exc_info.value.provider == "gemini"
@@ -390,7 +409,27 @@ def test_factory_mock_never_requires_api_key():
     assert client.generate_text("Test query") == "Mock LLM response"
 
 
-def test_factory_unsupported_provider_raises_value_error():
-    with pytest.raises(ValueError) as exc_info:
-        get_llm_client(provider="unsupported_ai")
-    assert "unsupported llm provider" in str(exc_info.value).lower()
+def test_factory_unsupported_provider_falls_back_to_mock_when_unconfigured():
+    # Hermetic: explicit credential-less settings so the assertion cannot
+    # depend on the developer's local backend/.env (which may hold real keys).
+    # Contract: an unknown provider string NEVER hard-crashes the app - with
+    # no credentials configured it degrades to the offline mock client.
+    settings = Settings(
+        llm_provider="unsupported_ai",
+        gemini_api_key=None,
+    )
+    client = get_llm_client(settings=settings, provider="unsupported_ai")
+    assert isinstance(client, MockLLMClient)
+    assert client.provider_name == "mock"
+
+
+def test_factory_unsupported_provider_falls_back_to_gemini_when_configured():
+    # Credentials present -> the factory must never hard-crash on an unknown
+    # provider string; it degrades to the configured Gemini pool instead.
+    settings = Settings(
+        llm_provider="unsupported_ai",
+        gemini_api_key=SecretStr("fake-key-123456789"),
+    )
+    client = get_llm_client(settings=settings, provider="unsupported_ai")
+    assert isinstance(client, GeminiLLMClient)
+    assert client.provider_name == "gemini"
