@@ -51,11 +51,11 @@ class APIKeyPool:
         self._default_cooldown = max(1.0, float(default_cooldown_seconds))
         self._lock = threading.Lock()
 
-        # Parse and normalize key list
+        # Parse and normalize key list (also strip accidental surrounding quotes from env vars)
         raw_keys: list[str] = []
         if isinstance(keys, str):
             for part in keys.split(","):
-                part_clean = part.strip()
+                part_clean = part.strip().strip('"').strip("'")
                 if part_clean:
                     raw_keys.append(part_clean)
         elif keys is not None:
@@ -64,11 +64,13 @@ class APIKeyPool:
                     item_str = str(item).strip()
                     if "," in item_str:
                         for sub in item_str.split(","):
-                            sub_clean = sub.strip()
+                            sub_clean = sub.strip().strip('"').strip("'")
                             if sub_clean:
                                 raw_keys.append(sub_clean)
-                    elif item_str:
-                        raw_keys.append(item_str)
+                    else:
+                        item_clean = item_str.strip('"').strip("'")
+                        if item_clean:
+                            raw_keys.append(item_clean)
 
         # Deduplicate preserving order
         seen: set[str] = set()
@@ -104,6 +106,15 @@ class APIKeyPool:
         t = time.monotonic() if now is None else now
         with self._lock:
             return sum(1 for k in self._keys if self._cooldowns.get(k, 0.0) <= t)
+
+    def min_cooldown_remaining(self, now: float | None = None) -> float:
+        """Shortest remaining cooldown (seconds) across keys, or 0.0 if any key is healthy."""
+        t = time.monotonic() if now is None else now
+        with self._lock:
+            if not self._keys:
+                return 0.0
+            remaining = [max(0.0, self._cooldowns.get(k, 0.0) - t) for k in self._keys]
+            return min(remaining) if remaining else 0.0
 
     def get_candidates(self) -> list[str]:
         """Get ordered list of candidate keys to try for a request.

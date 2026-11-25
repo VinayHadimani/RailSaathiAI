@@ -363,6 +363,18 @@ class RailCoreClient:
         if not candidates:
             raise ProviderNotConfiguredError("RailCore API key is not configured.")
 
+        # If every key in the pool is already in cooldown with more than
+        # MAX_INLINE_RETRY_AFTER_SECONDS remaining, fail fast with RATE_LIMITED
+        # instead of hammering the upstream API with doomed calls.
+        min_cd = self._key_pool.min_cooldown_remaining()
+        if min_cd > MAX_INLINE_RETRY_AFTER_SECONDS:
+            raise ProviderRateLimitError(
+                f"All RailCore API keys are rate-limited (cooldown {min_cd:.1f}s remaining).",
+                code="RATE_LIMITED",
+                http_status=429,
+                details={"path": path, "retry_after_seconds": round(min_cd, 1)},
+            )
+
         query = urlencode({k: v for k, v in (params or {}).items() if v is not None})
         url = f"{self._base_url}{path}" + (f"?{query}" if query else "")
         body_bytes = b""
@@ -458,7 +470,7 @@ class RailCoreClient:
                 break
 
             last_error = key_error
-            # If current key failed due to rate limit or credits exhaustion:
+            # If current key failed due to rate limit, credits exhaustion, or invalid auth in a multi-key pool:
             if isinstance(key_error, (ProviderRateLimitError, ProviderCreditsError)):
                 retry_after_cd = key_error.details.get("retry_after_seconds") if key_error.details else None
                 self._key_pool.mark_rate_limited(current_key, retry_after_cd or 60.0)
@@ -470,8 +482,17 @@ class RailCoreClient:
                         len(candidates) - (key_idx + 1),
                     )
                     continue
+            elif isinstance(key_error, ProviderAuthError) and key_idx + 1 < len(candidates):
+                self._key_pool.mark_rate_limited(current_key, 3600.0)
+                logger.warning(
+                    "RailCore key %s failed authentication (code=%s). Failing over to next key (%d remaining)...",
+                    mask_key(current_key),
+                    key_error.code,
+                    len(candidates) - (key_idx + 1),
+                )
+                continue
 
-            # If it's a non-rate-limit error (e.g. AuthError 401, ClientError 404), raise immediately
+            # If it's a non-rate-limit error (e.g. AuthError 401 with no fallback, ClientError 404), raise immediately
             if last_error is not None:
                 raise last_error
 

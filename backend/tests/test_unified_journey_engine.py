@@ -1337,3 +1337,66 @@ def test_unified_budget_clamps():
     assert budgets.time_budget_seconds == 0.5
     assert budgets.max_results == 1
     assert budgets.batch_size == 25
+
+
+def test_segment_distance_km_uses_delta_not_cumulative_origin_distance():
+    """A train starting 1800km earlier must report segment delta (192km), not 1992km."""
+    from app.services.journey_normalizer import _p2_journey
+
+    p2_combo = {
+        "combination_id": "11020-2026-11-26-PUNE-KYN-CSMT",
+        "train_number": "11020",
+        "train_name": "KONARK EXPRESS",
+        "journey_date": "2026-11-26",
+        "departure": {"station": {"code": "PUNE", "name": "Pune Jn", "sequence": 25}, "time": "01:25", "day": 2},
+        "arrival": {"station": {"code": "CSMT", "name": "Mumbai CSMT", "sequence": 28}, "time": "05:50", "day": 2},
+        "total_duration_minutes": 265,
+        "total_fare": 520.0,
+        "fares_complete": True,
+        "segments_missing_fare": [],
+        "segment_count": 2,
+        "seat_changes": 1,
+        "overnight": False,
+        "all_segments_confirmed_available": True,
+        "segments": [
+            {
+                "segment_number": 1,
+                "train_number": "11020",
+                "from_station": {"code": "PUNE", "name": "Pune Jn", "sequence": 25},
+                "to_station": {"code": "KYN", "name": "Kalyan Jn", "sequence": 27},
+                "departure_time": "01:25",
+                "departure_day": 2,
+                "arrival_time": "03:49",
+                "arrival_day": 2,
+                "boarding_query_date": "2026-11-26",
+                "distance_km_at_to_station": 1938.0,
+                "segment_distance_km": 138.0,
+                "travel_class": "3A",
+                "quota": "GN",
+                "status": "CONFIRMED_AVAILABLE",
+                "fare": 310.0,
+            },
+            {
+                "segment_number": 2,
+                "train_number": "11020",
+                "from_station": {"code": "KYN", "name": "Kalyan Jn", "sequence": 27},
+                "to_station": {"code": "CSMT", "name": "Mumbai CSMT", "sequence": 28},
+                "departure_time": "04:00",
+                "departure_day": 2,
+                "arrival_time": "05:50",
+                "arrival_day": 2,
+                "boarding_query_date": "2026-11-26",
+                "distance_km_at_to_station": 1992.0,
+                "segment_distance_km": 54.0,
+                "travel_class": "3A",
+                "quota": "GN",
+                "status": "CONFIRMED_AVAILABLE",
+                "fare": 210.0,
+            },
+        ],
+    }
+
+    unified = _p2_journey(p2_combo)
+    assert [s.segment_distance_km for s in unified.segments] == [138.0, 54.0]
+    assert unified.total_distance_km == 192.0
+

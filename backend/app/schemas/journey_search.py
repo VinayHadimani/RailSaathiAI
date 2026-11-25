@@ -137,6 +137,9 @@ class SegmentDetailOut(BaseModel):
     arrival_day: int | None = Field(None, description="Journey day number (1-based) at alighting.")
     halt_minutes_at_to_station: int | None = None
     distance_km_at_to_station: float | None = None
+    segment_distance_km: float | None = Field(
+        None, description="Actual distance travelled on this segment (to - from km)."
+    )
     travel_class: str
     quota: str
     boarding_query_date: str = Field(

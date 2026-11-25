@@ -112,7 +112,7 @@ class Settings(BaseSettings):
     # is skipped with an honestly reported reason.
     unified_max_api_requests: int = 60
     unified_max_credits: int = 150
-    unified_time_budget_seconds: float = 45.0
+    unified_time_budget_seconds: float = 38.0
     unified_max_results: int = 30
     unified_schedule_cache_ttl_seconds: float = 600.0
     unified_discovery_cache_ttl_seconds: float = 300.0
@@ -148,13 +148,13 @@ class Settings(BaseSettings):
         keys: list[str] = []
         if self.gemini_api_keys:
             for k in self.gemini_api_keys:
-                val = k.get_secret_value().strip()
+                val = k.get_secret_value().strip().strip('"').strip("'")
                 if val and val not in keys:
                     keys.append(val)
         if self.gemini_api_key:
             val = self.gemini_api_key.get_secret_value()
             for part in val.split(","):
-                part_clean = part.strip()
+                part_clean = part.strip().strip('"').strip("'")
                 if part_clean and part_clean not in keys:
                     keys.append(part_clean)
         return keys
@@ -168,13 +168,13 @@ class Settings(BaseSettings):
         keys: list[str] = []
         if self.railcore_api_keys:
             for k in self.railcore_api_keys:
-                val = k.get_secret_value().strip()
+                val = k.get_secret_value().strip().strip('"').strip("'")
                 if val and val not in keys:
                     keys.append(val)
         if self.railcore_api_key:
             val = self.railcore_api_key.get_secret_value()
             for part in val.split(","):
-                part_clean = part.strip()
+                part_clean = part.strip().strip('"').strip("'")
                 if part_clean and part_clean not in keys:
                     keys.append(part_clean)
         return keys

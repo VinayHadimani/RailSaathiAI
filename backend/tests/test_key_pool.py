@@ -227,3 +227,80 @@ def test_gemini_all_keys_rate_limited():
 
     with pytest.raises(LLMRateLimitError):
         client.generate_text("test prompt")
+
+
+def test_key_pool_strips_surrounding_quotes():
+    """Verify accidental surrounding quotes from env vars are stripped when parsing keys."""
+    pool = APIKeyPool('"rk_live_one", \'rk_live_two\', "rk_live_one"', name="TestQuoted")
+    assert pool.keys == ["rk_live_one", "rk_live_two"]
+
+
+def test_railcore_auth_failover_on_invalid_first_key():
+    """Verify RailCoreClient fails over to next key when first key returns 401 INVALID_API_KEY."""
+    seen_keys: list[str] = []
+
+    def mock_handler(request: httpx.Request) -> httpx.Response:
+        key = request.headers.get("X-RailCore-Key")
+        seen_keys.append(key)
+        if key == "bad-key":
+            return httpx.Response(
+                401,
+                json={"success": False, "error": {"code": "INVALID_API_KEY", "message": "Unauthorized"}},
+            )
+        return httpx.Response(
+            200,
+            json={
+                "success": True,
+                "data": {
+                    "train_number": "12345",
+                    "train_name": "Test Express",
+                    "source_station_code": "MYS",
+                    "destination_station_code": "SBC",
+                    "stops": [],
+                },
+                "meta": {},
+            },
+        )
+
+    client = RailCoreClient(
+        api_keys=["bad-key", "good-key"],
+        base_url="https://mock.railcore.tech/v1",
+        max_retries=0,
+        http_client=httpx.Client(transport=httpx.MockTransport(mock_handler)),
+    )
+
+    resp = client.get_train_schedule("12345")
+    assert resp.data.train_number == "12345"
+    assert seen_keys == ["bad-key", "good-key"]
+
+
+def test_railcore_all_keys_in_long_cooldown_fails_fast_without_hammering():
+    """Verify subsequent calls fail fast when all keys already have >5s cooldown."""
+    calls = 0
+
+    def mock_handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        return httpx.Response(
+            429,
+            headers={"Retry-After": "45"},
+            json={"success": False, "error": {"code": "RATE_LIMITED", "message": "429"}},
+        )
+
+    client = RailCoreClient(
+        api_keys=["k1", "k2"],
+        base_url="https://mock.railcore.tech/v1",
+        max_retries=0,
+        http_client=httpx.Client(transport=httpx.MockTransport(mock_handler)),
+    )
+
+    with pytest.raises(ProviderRateLimitError):
+        client.get_train_schedule("12345")
+    assert calls == 2
+
+    # Second call while both keys are in 45s cooldown must NOT hit HTTP again
+    with pytest.raises(ProviderRateLimitError):
+        client.get_train_schedule("12345")
+    assert calls == 2
+
+

@@ -594,6 +594,14 @@ class SameTrainCombinationService:
             if requested_class is not None and requested_class.last_updated_at:
                 oldest_updates.append(requested_class.last_updated_at)
 
+            seg_dist = (
+                round(stop_to.distance_km - stop_from.distance_km, 2)
+                if stop_from.distance_km is not None
+                and stop_to.distance_km is not None
+                and stop_to.distance_km >= stop_from.distance_km
+                else None
+            )
+
             segments.append(
                 SegmentDetailOut(
                     segment_number=t + 1,
@@ -610,6 +618,7 @@ class SameTrainCombinationService:
                     arrival_day=stop_to.day,
                     halt_minutes_at_to_station=stop_to.halt_minutes,
                     distance_km_at_to_station=stop_to.distance_km,
+                    segment_distance_km=seg_dist,
                     travel_class=request.travel_class,
                     quota=request.quota,
                     boarding_query_date=outcome.journey_date,

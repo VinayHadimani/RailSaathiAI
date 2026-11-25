@@ -116,6 +116,7 @@ def _segment_from_p2(segment: dict, *, index: int, train_name: str | None) -> Un
         boarding_query_date=segment["boarding_query_date"],
         halt_minutes_at_to_station=segment.get("halt_minutes_at_to_station"),
         distance_km_at_to_station=segment.get("distance_km_at_to_station"),
+        segment_distance_km=segment.get("segment_distance_km"),
         travel_class=segment["travel_class"],
         quota=segment["quota"],
         status=InternalAvailabilityStatus(segment["status"]),
@@ -189,6 +190,7 @@ def _segment_from_p34(segment: dict, *, segment_type: str) -> UnifiedSegmentOut:
         boarding_query_date=segment["boarding_query_date"],
         halt_minutes_at_to_station=segment.get("halt_minutes_at_to_station"),
         distance_km_at_to_station=segment.get("distance_km_at_to_station"),
+        segment_distance_km=segment.get("segment_distance_km"),
         travel_class=segment["travel_class"],
         quota=segment["quota"],
         status=InternalAvailabilityStatus(segment["status"]),
@@ -287,6 +289,14 @@ def _transition_from_p3(transfer: dict) -> UnifiedTransitionOut:
 # ------------------------------------------------------------- journeys
 
 
+def _total_distance_km(segments: list[UnifiedSegmentOut]) -> float | None:
+    if not segments:
+        return None
+    if any(s.segment_distance_km is None for s in segments):
+        return None
+    return round(sum(float(s.segment_distance_km) for s in segments), 2)
+
+
 def _p2_journey(combination: dict) -> UnifiedJourneyOut:
     """One phase 2 ``CombinationOut`` dict -> unified journey."""
     raw_segments = combination.get("segments") or []
@@ -317,6 +327,7 @@ def _p2_journey(combination: dict) -> UnifiedJourneyOut:
         arrival_datetime=arrival_datetime,
         overnight=bool(combination.get("overnight")),
         total_duration_minutes=combination.get("total_duration_minutes"),
+        total_distance_km=_total_distance_km(segments),
         total_fare=combination.get("total_fare"),
         fares_complete=bool(combination.get("fares_complete")),
         segments_missing_fare=combination.get("segments_missing_fare") or [],
@@ -362,6 +373,7 @@ def _p3_journey(journey: dict) -> UnifiedJourneyOut:
         arrival_datetime=journey.get("arrival_datetime"),
         overnight=bool(journey.get("overnight")),
         total_duration_minutes=journey.get("total_duration_minutes"),
+        total_distance_km=_total_distance_km(segments),
         total_fare=journey.get("total_fare"),
         fares_complete=bool(journey.get("fares_complete")),
         segments_missing_fare=journey.get("segments_missing_fare") or [],
@@ -404,6 +416,7 @@ def _p4_journey(journey: dict) -> UnifiedJourneyOut:
         arrival_datetime=journey.get("arrival_datetime"),
         overnight=bool(journey.get("overnight")),
         total_duration_minutes=journey.get("total_duration_minutes"),
+        total_distance_km=_total_distance_km(segments),
         total_fare=journey.get("total_fare"),
         fares_complete=bool(journey.get("fares_complete")),
         segments_missing_fare=journey.get("segments_missing_fare") or [],

@@ -260,6 +260,9 @@ class UnifiedSegmentOut(BaseModel):
     )
     halt_minutes_at_to_station: int | None = None
     distance_km_at_to_station: float | None = None
+    segment_distance_km: float | None = Field(
+        None, description="Actual distance travelled on this segment (to - from km)."
+    )
     travel_class: str
     quota: str
     status: InternalAvailabilityStatus = Field(description="Explicit availability status of THIS segment.")
@@ -357,6 +360,9 @@ class UnifiedJourneyOut(BaseModel):
     overnight: bool = Field(description="True when the journey crosses midnight.")
     total_duration_minutes: int | None = Field(
         None, description="Door-to-door duration including transfer waits (overnight-safe)."
+    )
+    total_distance_km: float | None = Field(
+        None, description="Sum of segment distances; null when any segment distance is unknown."
     )
     total_fare: float | None = Field(None, description="Sum of segment fares; null when any fare is unknown.")
     fares_complete: bool = Field(description="False when any segment fare is unknown (never estimated).")

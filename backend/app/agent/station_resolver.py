@@ -57,6 +57,19 @@ KNOWN_STATIONS: Final[dict[str, StationCandidate]] = {
     "MS": StationCandidate(code="MS", name="Chennai Egmore", city="Chennai", state="Tamil Nadu"),
     "HYB": StationCandidate(code="HYB", name="Hyderabad Deccan", city="Hyderabad", state="Telangana"),
     "SC": StationCandidate(code="SC", name="Secunderabad Junction", city="Secunderabad", state="Telangana"),
+    "HWH": StationCandidate(code="HWH", name="Howrah Junction", city="Kolkata", state="West Bengal"),
+    "SDAH": StationCandidate(code="SDAH", name="Sealdah", city="Kolkata", state="West Bengal"),
+    "ADI": StationCandidate(code="ADI", name="Ahmedabad Junction", city="Ahmedabad", state="Gujarat"),
+    "JP": StationCandidate(code="JP", name="Jaipur Junction", city="Jaipur", state="Rajasthan"),
+    "BPL": StationCandidate(code="BPL", name="Bhopal Junction", city="Bhopal", state="Madhya Pradesh"),
+    "CNB": StationCandidate(code="CNB", name="Kanpur Central", city="Kanpur", state="Uttar Pradesh"),
+    "LKO": StationCandidate(code="LKO", name="Lucknow Charbagh", city="Lucknow", state="Uttar Pradesh"),
+    "PNBE": StationCandidate(code="PNBE", name="Patna Junction", city="Patna", state="Bihar"),
+    "NGP": StationCandidate(code="NGP", name="Nagpur Junction", city="Nagpur", state="Maharashtra"),
+    "ERS": StationCandidate(code="ERS", name="Ernakulam Junction", city="Kochi", state="Kerala"),
+    "TVC": StationCandidate(code="TVC", name="Thiruvananthapuram Central", city="Thiruvananthapuram", state="Kerala"),
+    "CBE": StationCandidate(code="CBE", name="Coimbatore Junction", city="Coimbatore", state="Tamil Nadu"),
+    "VSKP": StationCandidate(code="VSKP", name="Visakhapatnam Junction", city="Visakhapatnam", state="Andhra Pradesh"),
 }
 
 # Ambiguous city clusters: multiple plausible stations exist.
@@ -73,6 +86,8 @@ AMBIGUOUS_CLUSTERS: Final[dict[str, list[str]]] = {
     "chennai": ["MAS", "MS"],
     "madras": ["MAS", "MS"],
     "hyderabad": ["HYB", "SC"],
+    "kolkata": ["HWH", "SDAH"],
+    "calcutta": ["HWH", "SDAH"],
 }
 
 # Unambiguous specific aliases and single-station towns.
@@ -112,7 +127,14 @@ STATION_ALIASES: Final[dict[str, str]] = {
     "hyderabad deccan": "HYB",
     "nampally": "HYB",
     "csmt": "CSMT",
+    "mumbai csmt": "CSMT",
+    "chhatrapati shivaji maharaj terminus": "CSMT",
+    "chhatrapati shivaji terminus": "CSMT",
+    "cst": "CSMT",
     "vt": "CSMT",
+    "mgr chennai central": "MAS",
+    "kolkata howrah": "HWH",
+    "ksr bengaluru city": "SBC",
     "victoria terminus": "CSMT",
     "mumbai central": "MMCT",
     "bandra terminus": "BDTS",
@@ -150,6 +172,22 @@ STATION_ALIASES: Final[dict[str, str]] = {
     "belgaum": "BGM",
     "pune": "PUNE",
     "pune jn": "PUNE",
+    "howrah": "HWH",
+    "sealdah": "SDAH",
+    "ahmedabad": "ADI",
+    "jaipur": "JP",
+    "bhopal": "BPL",
+    "kanpur": "CNB",
+    "lucknow": "LKO",
+    "patna": "PNBE",
+    "nagpur": "NGP",
+    "kochi": "ERS",
+    "ernakulam": "ERS",
+    "trivandrum": "TVC",
+    "thiruvananthapuram": "TVC",
+    "coimbatore": "CBE",
+    "visakhapatnam": "VSKP",
+    "vizag": "VSKP",
 }
 
 

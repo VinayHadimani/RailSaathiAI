@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="description" content="RailRoute AI — AI-powered train journey discovery. When one train isn't enough, we find your way by connecting available seats across trains and stations." />
 <title>RailRoute AI — When One Train Isn't Enough, We Find Your Way</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306b6d4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='3' width='16' height='16' rx='2' fill='%230a1530'/%3E%3Cpath d='M4 11h16'/%3E%3Cpath d='M12 3v8'/%3E%3Ccircle cx='8' cy='15' r='1' fill='%2306b6d4'/%3E%3Ccircle cx='16' cy='15' r='1' fill='%2306b6d4'/%3E%3C/svg%3E" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -164,7 +165,7 @@
 
   /* ---- Throwable step deck ---- */
   .deck-col { display: flex; flex-direction: column; align-items: center; gap: 18px; width: 100%; max-width: 460px; }
-  .step-deck { position: relative; width: 100%; max-width: 380px; aspect-ratio: 1 / 1; touch-action: pan-y; cursor: grab; outline: none; -webkit-user-select: none; user-select: none; }
+  .step-deck { position: relative; isolation: isolate; z-index: 1; width: 100%; max-width: 380px; aspect-ratio: 1 / 1; touch-action: pan-y; cursor: grab; outline: none; -webkit-user-select: none; user-select: none; }
   .step-deck.dragging { cursor: grabbing; }
   .step-deck:focus-visible { outline: 2px solid #22d3ee; outline-offset: 10px; border-radius: 14px; }
   .step-card { position: absolute; inset: 0; background: #fff; border: 1px solid #d8e0f4; border-radius: 16px; box-shadow: 0 24px 50px -14px rgba(10,21,48,.28), 0 4px 14px rgba(10,21,48,.08); padding: 24px; display: flex; flex-direction: column; color: #0a1530; will-change: transform; }
@@ -265,6 +266,24 @@ const STATIONS = [
   { code: "MAO", name: "Madgaon",              city: "Madgaon",     state: "Goa" },
   { code: "PVR", name: "Pernem",               city: "Pernem",      state: "Goa" },
   { code: "PUNE",name: "Pune Jn",              city: "Pune",        state: "Maharashtra" },
+  { code: "CSMT",name: "Mumbai CSMT",          city: "Mumbai",      state: "Maharashtra" },
+  { code: "MMCT",name: "Mumbai Central",       city: "Mumbai",      state: "Maharashtra" },
+  { code: "LTT", name: "Lokmanya Tilak (T)",   city: "Mumbai",      state: "Maharashtra" },
+  { code: "NDLS",name: "New Delhi",            city: "Delhi",       state: "Delhi" },
+  { code: "NZM", name: "Hazrat Nizamuddin",    city: "Delhi",       state: "Delhi" },
+  { code: "MAS", name: "MGR Chennai Central",  city: "Chennai",     state: "Tamil Nadu" },
+  { code: "SC",  name: "Secunderabad Jn",      city: "Hyderabad",   state: "Telangana" },
+  { code: "HYB", name: "Hyderabad Deccan",     city: "Hyderabad",   state: "Telangana" },
+  { code: "HWH", name: "Howrah Jn",            city: "Kolkata",     state: "West Bengal" },
+  { code: "ADI", name: "Ahmedabad Jn",         city: "Ahmedabad",   state: "Gujarat" },
+  { code: "JP",  name: "Jaipur Jn",            city: "Jaipur",      state: "Rajasthan" },
+  { code: "BPL", name: "Bhopal Jn",            city: "Bhopal",      state: "Madhya Pradesh" },
+  { code: "CNB", name: "Kanpur Central",       city: "Kanpur",      state: "Uttar Pradesh" },
+  { code: "LKO", name: "Lucknow Charbagh",     city: "Lucknow",     state: "Uttar Pradesh" },
+  { code: "NGP", name: "Nagpur Jn",            city: "Nagpur",      state: "Maharashtra" },
+  { code: "ERS", name: "Ernakulam Jn",         city: "Kochi",       state: "Kerala" },
+  { code: "SMVB",name: "SMVT Bengaluru",       city: "Bengaluru",   state: "Karnataka" },
+  { code: "MAQ", name: "Mangaluru Central",    city: "Mangaluru",   state: "Karnataka" },
 ];
 const STATION_MAP = Object.fromEntries(STATIONS.map(s => [s.code, s]));
 const getStation = (code) => {
@@ -455,18 +474,18 @@ const TRAIN_MAP = Object.fromEntries(TRAINS.map(t => [t.number, t]));
 const getTrain = (n) => TRAIN_MAP[n];
 
 const POPULAR_ROUTES = [
+  { from: "NDLS", to: "CSMT", label: "New Delhi → Mumbai" },
+  { from: "SBC", to: "MAS", label: "Bengaluru → Chennai" },
+  { from: "PUNE", to: "CSMT", label: "Pune → Mumbai" },
+  { from: "SC", to: "SBC", label: "Hyderabad → Bengaluru" },
+  { from: "ADI", to: "MMCT", label: "Ahmedabad → Mumbai" },
   { from: "MYS", to: "BGM", label: "Mysuru → Belagavi" },
-  { from: "SBC", to: "UBL", label: "Bengaluru → Hubballi" },
-  { from: "MYS", to: "MAO", label: "Mysuru → Madgaon" },
-  { from: "SBC", to: "BGM", label: "Bengaluru → Belagavi" },
-  { from: "PUNE", to: "SBC", label: "Pune → Bengaluru" },
-  { from: "ASK", to: "UBL", label: "Arsikere → Hubballi" },
 ];
 
 const EXAMPLE_ROUTES = [
-  { from: "MYS", to: "BGM", title: "Same train, different seats", desc: "Mysuru → Arsikere → Dharwad → Belagavi on one train, changing seats twice." },
-  { from: "MYS", to: "BGM", title: "Train + train connection", desc: "Ride to Arsikere, switch to the Sharavati Express up to Hubballi, then onward." },
-  { from: "MYS", to: "MAO", title: "Overnight connection", desc: "Evening departure, after-midnight arrival at the coast." },
+  { from: "SBC", to: "MAS", title: "Intercity express corridor", desc: "KSR Bengaluru → Chennai Central with direct & connecting seat options." },
+  { from: "PUNE", to: "CSMT", title: "Western ghat trunk route", desc: "Pune Jn → Mumbai CSMT across high-frequency express trains." },
+  { from: "NDLS", to: "CSMT", title: "Long-distance connections", desc: "New Delhi → Mumbai CSMT combining direct & intermediate segments." },
 ];
 
 const STATS = [
@@ -761,13 +780,17 @@ function discoverJourneys(fromCode, toCode, cls, opts = {}) {
   return final.slice(0, 24);
 }
 
+const fmtFare = (v) => (v != null && Number.isFinite(Number(v))) ? `₹${Math.round(Number(v))}` : "Fare N/A";
+const fmtDist = (v) => (v != null && Number.isFinite(Number(v))) ? `${Math.round(Number(v))} km` : "Distance N/A";
+
 // AI ranking: lower score = better. Penalises time, price, changes, waits,
 // overnight travel and short (risky) transfers.
 function aiScore(j) {
   const risk = j.connections.reduce((s, c) => s + (c.short ? 1 : 0), 0);
+  const farePenalty = j.totalFare != null ? j.totalFare / 8 : 500;
   return Math.round(
     j.totalDuration +
-    j.totalFare / 8 +
+    farePenalty +
     (j.trainChanges + j.seatChanges) * 45 +
     j.totalWait * 0.6 +
     (j.overnight ? 120 : 0) +
@@ -777,9 +800,8 @@ function aiScore(j) {
 function recommendReason(j, best) {
   const parts = [];
   if (best) parts.push("Recommended");
-  const mins = ["lowest travel time", "lowest total fare", "fewest changes", "shortest waiting time"];
   if (j.totalDuration === best.minDur) parts.push("lowest travel time");
-  if (j.totalFare === best.minFare) parts.push("lowest total fare");
+  if (best.minFare != null && j.totalFare === best.minFare) parts.push("lowest total fare");
   if (j.trainChanges + j.seatChanges === best.minChg) parts.push("fewest changes");
   if (j.totalWait === best.minWait) parts.push("shortest waiting time");
   const tail = parts.filter((p) => p !== "Recommended");
@@ -789,7 +811,8 @@ function recommendReason(j, best) {
 function computeBest(journeys) {
   if (!journeys.length) return null;
   const minDur = Math.min(...journeys.map((j) => j.totalDuration));
-  const minFare = Math.min(...journeys.map((j) => j.totalFare));
+  const knownFares = journeys.map((j) => j.totalFare).filter((f) => f != null);
+  const minFare = knownFares.length ? Math.min(...knownFares) : null;
   const minChg = Math.min(...journeys.map((j) => j.trainChanges + j.seatChanges));
   const minWait = Math.min(...journeys.map((j) => j.totalWait));
   let best = null, bestScore = Infinity;
@@ -843,7 +866,11 @@ function applyFilters(journeys, f) {
 function applySort(journeys, sort) {
   const arr = journeys.slice();
   if (sort === "fastest") arr.sort((a, b) => a.totalDuration - b.totalDuration);
-  else if (sort === "cheapest") arr.sort((a, b) => a.totalFare - b.totalFare);
+  else if (sort === "cheapest") arr.sort((a, b) => {
+    const af = a.totalFare != null ? a.totalFare : Number.POSITIVE_INFINITY;
+    const bf = b.totalFare != null ? b.totalFare : Number.POSITIVE_INFINITY;
+    return af - bf || a.totalDuration - b.totalDuration;
+  });
   else if (sort === "fewest") arr.sort((a, b) => (a.trainChanges + a.seatChanges) - (b.trainChanges + b.seatChanges) || a.totalDuration - b.totalDuration);
   else arr.sort((a, b) => a.score - b.score);
   return arr;
@@ -858,13 +885,13 @@ function buildItineraryText(j, q) {
   lines.push(`From: ${from ? from.name : q.from}  ->  To: ${to ? to.name : q.to}`);
   lines.push(`Date: ${prettyDate(q.date)}   Passengers: ${q.passengers}   Class: ${q.travelClass}`);
   lines.push(`Departure: ${minTo12(j.departAbs)}  Arrival: ${minTo12(j.arriveAbs)}${dayOffsetLabel(j.arriveAbs)}`);
-  lines.push(`Total duration: ${durStr(j.totalDuration)}  Total fare: Rs.${j.totalFare}  Changes: ${j.trainChanges + j.seatChanges}`);
+  lines.push(`Total duration: ${durStr(j.totalDuration)}  Total fare: ${j.totalFare != null ? "Rs." + j.totalFare : "N/A"}  Changes: ${j.trainChanges + j.seatChanges}`);
   lines.push("");
   j.segments.forEach((s, i) => {
     lines.push(`Segment ${i + 1}: ${getStation(s.from).name} -> ${getStation(s.to).name}`);
     lines.push(`  Train: ${s.trainName} (${s.trainNumber}) [${s.trainType || "Express"}]`);
     lines.push(`  Depart: ${minTo12(s.departAbs)}  Arrive: ${minTo12(s.arriveAbs)}${dayOffsetLabel(s.arriveAbs)}`);
-    lines.push(`  Coach: ${s.coach || "Coach"}  Seat: ${s.seat || "Confirmed"}  Fare: Rs.${s.fare}`);
+    lines.push(`  Coach: ${s.coach || "Coach"}  Seat: ${s.seat || "Confirmed"}  Fare: ${s.fare != null ? "Rs." + s.fare : "N/A"}`);
     if (s.availability_text) {
       lines.push(`  Availability status: ${s.availability_text}`);
     }
@@ -1081,11 +1108,24 @@ function Autocomplete({ value, onSelect, placeholder = "Search city or station",
         <input
           value={q} onChange={(e) => { setQ(e.target.value); setOpen(true); setHi(0); }}
           onFocus={() => setOpen(true)}
+          onBlur={() => {
+            const raw = q.trim();
+            const codeMatch = raw.match(/\(([A-Za-z]{2,5})\)$/) || raw.match(/^([A-Za-z]{2,5})$/);
+            if (codeMatch) {
+              const typedCode = codeMatch[1].toUpperCase();
+              if (typedCode !== value) onSelect(typedCode);
+            }
+          }}
           onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              if (open && results[hi]) { onSelect(results[hi].code); setOpen(false); return; }
+              const raw = q.trim();
+              if (/^[A-Za-z]{2,5}$/.test(raw)) { onSelect(raw.toUpperCase()); setOpen(false); }
+              return;
+            }
             if (!open) return;
             if (e.key === "ArrowDown") { e.preventDefault(); setHi((h) => Math.min(h + 1, results.length - 1)); }
             if (e.key === "ArrowUp") { e.preventDefault(); setHi((h) => Math.max(h - 1, 0)); }
-            if (e.key === "Enter" && results[hi]) { onSelect(results[hi].code); setOpen(false); }
             if (e.key === "Escape") setOpen(false);
           }}
           placeholder={placeholder}
@@ -1147,14 +1187,22 @@ function ClassSelect({ value, onChange }) {
 }
 
 function SearchCard({ compact = false }) {
-  const { runSearch, searchMode } = useApp();
-  const [from, setFrom] = useState("MYS");
-  const [to, setTo] = useState("BGM");
-  const [date, setDate] = useState(todayISO());
-  const [pax, setPax] = useState(1);
-  const [cls, setCls] = useState("SL");
+  const { search, runSearch, searchMode, isSearching } = useApp();
+  const [from, setFrom] = useState(() => (compact && search?.from) || "MYS");
+  const [to, setTo] = useState(() => (compact && search?.to) || "BGM");
+  const [date, setDate] = useState(() => (compact && search?.date) || todayISO());
+  const [pax, setPax] = useState(() => (compact && search?.passengers) || 1);
+  const [cls, setCls] = useState(() => (compact && search?.travelClass) || "SL");
+  useEffect(() => {
+    if (!compact || !search) return;
+    if (search.from) setFrom(search.from);
+    if (search.to) setTo(search.to);
+    if (search.date) setDate(search.date);
+    if (search.passengers) setPax(search.passengers);
+    if (search.travelClass) setCls(search.travelClass);
+  }, [compact, search]);
   const swap = () => { setFrom(to); setTo(from); };
-  const submit = () => runSearch({ from, to, date, passengers: pax, travelClass: cls });
+  const submit = () => { if (!isSearching) runSearch({ from, to, date, passengers: pax, travelClass: cls }); };
 
   if (compact) {
     return (
@@ -1169,7 +1217,7 @@ function SearchCard({ compact = false }) {
             <input type="date" value={date} min={todayISO()} onChange={(e) => setDate(e.target.value)} className="rounded-xl border border-navy-200 px-3 py-3 text-sm font-medium text-navy-900 focus:outline-none focus:border-electric" />
             <ClassSelect value={cls} onChange={setCls} />
           </div>
-          <Button variant="primary" size="lg" onClick={submit} className="md:px-7"><Icon name="search" size={18}/> Search</Button>
+          <Button variant="primary" size="lg" disabled={isSearching} onClick={submit} className="md:px-7"><Icon name="search" size={18}/> Search</Button>
         </div>
       </Card>
     );
@@ -1208,7 +1256,7 @@ function SearchCard({ compact = false }) {
         </div>
       </div>
       <div className="mt-5 flex flex-col sm:flex-row sm:items-center gap-3">
-        <Button variant="primary" size="lg" onClick={submit} className="flex-1 sm:flex-none sm:px-10"><Icon name="search" size={18}/> Search Journey</Button>
+        <Button variant="primary" size="lg" disabled={isSearching} onClick={submit} className="flex-1 sm:flex-none sm:px-10"><Icon name="search" size={18}/> Search Journey</Button>
         <Button variant="outline" size="lg" onClick={() => runSearch({ from, to, date, passengers: pax, travelClass: cls }, { mode: "demo" })} className="text-navy-600">
           <Icon name="layers" size={16}/> Demo Search
         </Button>
@@ -1509,7 +1557,7 @@ function StepDeck() {
       if (!el) return;
       const pos = (i - newTop + n) % n;
       const o = off(pos);
-      el.style.zIndex = String(100 - pos);
+      el.style.zIndex = String(10 - pos);
       if (i === thrown) {
         el.style.transition = "none";
         el.style.transform = "translate(" + o.x + "px," + o.y + "px) rotate(" + o.r + "deg) scale(" + o.s + ")";
@@ -1531,7 +1579,7 @@ function StepDeck() {
       if (!el) return;
       const pos = (i - topIdx + n) % n;
       const o = off(pos);
-      el.style.zIndex = String(100 - pos);
+      el.style.zIndex = String(10 - pos);
       el.style.transition = "none";
       el.style.transform = "translate(" + o.x + "px," + o.y + "px) rotate(" + o.r + "deg) scale(" + o.s + ")";
       el.style.opacity = "1";
@@ -1970,14 +2018,14 @@ function RouteMap({ journey, compact = false }) {
               <div className="rounded-lg bg-white border border-navy-100 p-3">
                 <div className="text-xs text-navy-400 font-semibold uppercase mb-1">Arriving</div>
                 <div className="font-semibold text-navy-900">{arrSeg.trainName} <span className="text-navy-400">({arrSeg.trainNumber})</span></div>
-                <div className="text-navy-600 text-xs mt-0.5">Arrives {minTo12(arrSeg.arriveAbs)}{dayOffsetLabel(arrSeg.arriveAbs)} · Pl {arrSeg.toPlatform}</div>
+                <div className="text-navy-600 text-xs mt-0.5">Arrives {minTo12(arrSeg.arriveAbs)}{dayOffsetLabel(arrSeg.arriveAbs)}{arrSeg.toPlatform ? ` · Pl ${arrSeg.toPlatform}` : ""}</div>
               </div>
             )}
             {depSeg && (
               <div className="rounded-lg bg-white border border-navy-100 p-3">
                 <div className="text-xs text-navy-400 font-semibold uppercase mb-1">Departing</div>
                 <div className="font-semibold text-navy-900">{depSeg.trainName} <span className="text-navy-400">({depSeg.trainNumber})</span></div>
-                <div className="text-navy-600 text-xs mt-0.5">Departs {minTo12(depSeg.departAbs)} · Pl {depSeg.fromPlatform}</div>
+                <div className="text-navy-600 text-xs mt-0.5">Departs {minTo12(depSeg.departAbs)}{depSeg.fromPlatform ? ` · Pl ${depSeg.fromPlatform}` : ""}</div>
               </div>
             )}
           </div>
@@ -2009,13 +2057,13 @@ function SegmentRow({ seg, index }) {
       </div>
       <div className="flex items-center gap-2 text-navy-900 font-semibold">
         <span>{from.city}</span><Icon name="arrowRight" size={14} className="text-electric" /><span>{to.city}</span>
-        <span className="text-xs font-normal text-navy-400">({seg.dist} km)</span>
+        {seg.dist != null && <span className="text-xs font-normal text-navy-400">({seg.dist} km)</span>}
       </div>
       <div className="mt-1.5 grid sm:grid-cols-2 gap-x-4 gap-y-1 text-sm">
         <div className="text-navy-600"><span className="text-navy-400">Train:</span> <span className="font-semibold text-navy-900">{seg.trainName}</span> <span className="text-navy-400">#{seg.trainNumber} · {seg.trainType}</span></div>
         <div className="text-navy-600"><span className="text-navy-400">Time:</span> <span className="font-semibold text-navy-900">{minTo12(seg.departAbs)} → {minTo12(seg.arriveAbs)}{dayOffsetLabel(seg.arriveAbs)}</span></div>
-        <div className="text-navy-600"><span className="text-navy-400">Seat:</span> {seg.status === "available" ? <span className="font-semibold text-emerald-700 inline-flex items-center gap-1"><Icon name="checkCircle" size={13}/> {seg.coach}-{seg.seat}</span> : <span className="font-semibold text-amber-700 inline-flex items-center gap-1"><Icon name="alert" size={13}/> {seg.availability_text || seg.status || "Unverified"}</span>} <span className="text-navy-400">· Pl {seg.fromPlatform}→{seg.toPlatform}</span></div>
-        <div className="text-navy-600"><span className="text-navy-400">Fare:</span> <span className="font-semibold text-navy-900">₹{seg.fare}</span> <span className="text-navy-400">· {durStr(seg.duration)}</span></div>
+        <div className="text-navy-600"><span className="text-navy-400">Seat:</span> {seg.status === "available" ? <span className="font-semibold text-emerald-700 inline-flex items-center gap-1"><Icon name="checkCircle" size={13}/> {seg.coach}-{seg.seat}</span> : <span className="font-semibold text-amber-700 inline-flex items-center gap-1"><Icon name="alert" size={13}/> {seg.availability_text || seg.rawStatus || "Unverified"}</span>}{(seg.fromPlatform || seg.toPlatform) && <span className="text-navy-400"> · Pl {seg.fromPlatform || "?"}→{seg.toPlatform || "?"}</span>}</div>
+        <div className="text-navy-600"><span className="text-navy-400">Fare:</span> <span className="font-semibold text-navy-900">{fmtFare(seg.fare)}</span> <span className="text-navy-400">· {durStr(seg.duration)}</span></div>
       </div>
     </div>
   );
@@ -2061,7 +2109,7 @@ function JourneyCard({ journey, rank, best, reason, onSave, onCompare, saved, co
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
               </div>
               <div className="flex items-center gap-1.5 text-[11px] text-navy-500">
-                <Icon name="route" size={12} /> {journey.totalDist} km
+                <Icon name="route" size={12} /> {fmtDist(journey.totalDist)}
                 <span className="text-navy-300">·</span>
                 <Icon name="shuffle" size={12} /> {journey.trainChanges + journey.seatChanges} changes
               </div>
@@ -2075,7 +2123,7 @@ function JourneyCard({ journey, rank, best, reason, onSave, onCompare, saved, co
           <div className="flex lg:flex-col items-center lg:items-end justify-between gap-2 lg:gap-1 lg:border-l lg:border-navy-100 lg:pl-5">
             <div className="text-right">
               <div className="text-xs text-navy-400 font-semibold uppercase">Total fare</div>
-              <div className="font-display text-2xl font-extrabold text-navy-900">₹{journey.totalFare}</div>
+              <div className="font-display text-2xl font-extrabold text-navy-900">{fmtFare(journey.totalFare)}</div>
             </div>
             <Button variant="primary" size="sm" onClick={() => navigate(`/journey/${journeyRef(journey, rank)}`)}><Icon name="arrowRight" size={14}/> Details</Button>
           </div>
@@ -2157,7 +2205,7 @@ function AIRecommendBanner({ best, reason, count, onPick, onView }) {
             <p className="mt-1.5 text-sm text-navy-100 max-w-xl">{reason}</p>
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm">
               <span className="inline-flex items-center gap-1.5"><Icon name="clock" size={14} className="text-cyanx-300" /> {durStr(best.totalDuration)}</span>
-              <span className="inline-flex items-center gap-1.5"><Icon name="wallet" size={14} className="text-cyanx-300" /> ₹{best.totalFare}</span>
+              <span className="inline-flex items-center gap-1.5"><Icon name="wallet" size={14} className="text-cyanx-300" /> {fmtFare(best.totalFare)}</span>
               <span className="inline-flex items-center gap-1.5"><Icon name="route" size={14} className="text-cyanx-300" /> {best.trainChanges + best.seatChanges} changes</span>
               <span className="inline-flex items-center gap-1.5"><Icon name="train" size={14} className="text-cyanx-300" /> {minTo12(best.departAbs)} → {minTo12(best.arriveAbs)}</span>
             </div>
@@ -2489,7 +2537,7 @@ const RAILSAATHI_CONFIG = {
     const b = this.baseUrl;
     return b || (window.location && window.location.origin) || "same-origin /api";
   },
-  timeoutMs: 45000,
+  timeoutMs: 65000,
 };
 
 async function apiSearchJourneys(query, options = {}) {
@@ -2703,13 +2751,14 @@ function adaptUnifiedJourney(j, isUnverified = false, isLiveProvider = false) {
     if (sArriveAbs < sDepartAbs) sArriveAbs += 1440;
 
     const sDur = Math.max(0, sArriveAbs - sDepartAbs);
-    const dist = Math.round(s.distance_km_at_to_station || 0);
+    const dist = s.segment_distance_km != null ? Math.round(s.segment_distance_km) : null;
 
     const isAvailable = s.status === "CONFIRMED_AVAILABLE";
     const availText = s.availability_text || (isAvailable ? "AVAILABLE" : s.status);
 
     const fromCode = s.from_station ? (s.from_station.code || s.from_station.station_code) : "";
     const toCode = s.to_station ? (s.to_station.code || s.to_station.station_code) : "";
+    const segFare = s.fare != null ? s.fare : (s.total_fare != null ? s.total_fare : null);
 
     segments.push({
       trainNumber: s.train_number,
@@ -2717,15 +2766,15 @@ function adaptUnifiedJourney(j, isUnverified = false, isLiveProvider = false) {
       trainType: (s.train_name && s.train_name.includes("SF")) ? "Superfast" : "Express",
       from: fromCode,
       to: toCode,
-      fromPlatform: (s.from_station && s.from_station.platform) || "1",
-      toPlatform: (s.to_station && s.to_station.platform) || "2",
+      fromPlatform: (s.from_station && s.from_station.platform) || null,
+      toPlatform: (s.to_station && s.to_station.platform) || null,
       departAbs: sDepartAbs,
       arriveAbs: sArriveAbs,
       duration: sDur,
       dist: dist,
-      fare: s.fare != null ? s.fare : 0,
+      fare: segFare,
       coach: s.coach || (s.travel_class || "Coach"),
-      seat: s.seat || (s.available_count != null ? `Seat (${s.available_count} avail)` : (availText.replace("AVAILABLE ", "") || "Confirmed")),
+      seat: s.seat || (s.available_count != null ? `Seat (${s.available_count} avail)` : (isAvailable ? (availText.replace("AVAILABLE ", "") || "Confirmed") : (availText || s.status || "Unverified"))),
       boundary: boundary,
       legIndex: currentLegIndex,
       status: isAvailable ? "available" : "unverified",
@@ -2783,6 +2832,7 @@ function adaptUnifiedJourney(j, isUnverified = false, isLiveProvider = false) {
     const legSegs = segments.filter(s => s.trainNumber === trainNo);
     const first = legSegs[0] || {};
     const last = legSegs[legSegs.length - 1] || {};
+    const legDistsKnown = legSegs.length > 0 && legSegs.every(s => s.dist != null);
     return {
       train: {
         number: trainNo,
@@ -2793,13 +2843,15 @@ function adaptUnifiedJourney(j, isUnverified = false, isLiveProvider = false) {
       departAbs: first.departAbs || departAbs,
       arriveAbs: last.arriveAbs || arriveAbs,
       duration: Math.max(0, (last.arriveAbs || arriveAbs) - (first.departAbs || departAbs)),
-      dist: legSegs.reduce((sum, s) => sum + (s.dist || 0), 0),
+      dist: legDistsKnown ? legSegs.reduce((sum, s) => sum + s.dist, 0) : null,
       seatChanges: Math.max(0, legSegs.length - 1),
     };
   });
 
-  const totalFare = j.total_fare != null ? j.total_fare : segments.reduce((sum, s) => sum + (s.fare || 0), 0);
-  const totalDist = segments.reduce((sum, s) => sum + (s.dist || 0), 0);
+  const allFaresKnown = segments.length > 0 && segments.every(s => s.fare != null);
+  const totalFare = j.total_fare != null ? j.total_fare : (allFaresKnown ? segments.reduce((sum, s) => sum + s.fare, 0) : null);
+  const allDistsKnown = segments.length > 0 && segments.every(s => s.dist != null);
+  const totalDist = j.total_distance_km != null ? Math.round(j.total_distance_km) : (allDistsKnown ? segments.reduce((sum, s) => sum + s.dist, 0) : null);
 
   const score = aiScore({
     totalDuration,
@@ -2915,8 +2967,11 @@ function AppProvider({ children }) {
     });
   }, []);
 
+  const searchingRef = useRef(false);
+
   const runSearch = useCallback(async (q, opts = {}) => {
     const mode = opts.mode || "live";
+    if (mode !== "demo" && searchingRef.current) return;
     setSearch(q);
     setSearchError(null);
     setRecent((prev) => {
@@ -2945,6 +3000,7 @@ function AppProvider({ children }) {
     }
 
     // Live backend search
+    searchingRef.current = true;
     setIsSearching(true);
     setSearchMode("live");
     navigate("/discover");
@@ -2985,6 +3041,7 @@ function AppProvider({ children }) {
         retry: () => runSearch(q, { mode: "live" }),
       });
     } finally {
+      searchingRef.current = false;
       setIsSearching(false);
     }
   }, []);
@@ -3068,8 +3125,8 @@ function JourneyDetailsPage() {
 
   const stats = [
     { icon: "clock", label: "Total duration", value: durStr(j.totalDuration) },
-    { icon: "wallet", label: "Total fare", value: "₹" + j.totalFare },
-    { icon: "route", label: "Total distance", value: j.totalDist + " km" },
+    { icon: "wallet", label: "Total fare", value: fmtFare(j.totalFare) },
+    { icon: "route", label: "Total distance", value: fmtDist(j.totalDist) },
     { icon: "shuffle", label: "Changes", value: (j.trainChanges + j.seatChanges) + ` (${j.trainChanges} train · ${j.seatChanges} seat)` },
     { icon: j.overnight ? "moon" : "sunrise", label: "Overnight", value: j.overnight ? "Yes" : "No" },
     { icon: "shield", label: "Verification", value: j.isUnverified ? "Unverified candidate" : (j.isDemo ? "Demo data (simulated)" : (j.isLiveProviderVerified ? "Live provider verified" : "Backend engine verified")) },
@@ -3096,9 +3153,9 @@ function JourneyDetailsPage() {
               </Badge>
             </div>
             <div className="flex items-center gap-4 md:gap-6">
-              <div><div className="font-display text-3xl font-extrabold text-navy-900">{minTo12(j.departAbs)}</div><div className="text-sm text-navy-500 font-semibold">{from.city}</div><div className="text-xs text-navy-400">{from.code} · Pl {j.segments[0].fromPlatform}</div></div>
-              <div className="flex-1 flex flex-col items-center"><div className="text-xs font-semibold text-navy-400">{durStr(j.totalDuration)}</div><div className="w-full flex items-center my-1"><span className="w-2 h-2 rounded-full bg-electric" /><span className="flex-1 h-0.5 bg-gradient-to-r from-electric to-cyanx-500 mx-1" /><Icon name="train" size={16} className="text-cyanx-500" /><span className="flex-1 h-0.5 bg-gradient-to-r from-cyanx-500 to-emerald-500 mx-1" /><span className="w-2 h-2 rounded-full bg-emerald-500" /></div><div className="text-[11px] text-navy-500">{j.totalDist} km</div></div>
-              <div className="text-right"><div className="font-display text-3xl font-extrabold text-navy-900">{minTo12(j.arriveAbs)}<span className="text-xs align-top text-violet-500">{dayOffsetLabel(j.arriveAbs)}</span></div><div className="text-sm text-navy-500 font-semibold">{to.city}</div><div className="text-xs text-navy-400">{to.code} · Pl {j.segments[j.segments.length - 1].toPlatform}</div></div>
+              <div><div className="font-display text-3xl font-extrabold text-navy-900">{minTo12(j.departAbs)}</div><div className="text-sm text-navy-500 font-semibold">{from.city}</div><div className="text-xs text-navy-400">{from.code}{j.segments[0].fromPlatform ? ` · Pl ${j.segments[0].fromPlatform}` : ""}</div></div>
+              <div className="flex-1 flex flex-col items-center"><div className="text-xs font-semibold text-navy-400">{durStr(j.totalDuration)}</div><div className="w-full flex items-center my-1"><span className="w-2 h-2 rounded-full bg-electric" /><span className="flex-1 h-0.5 bg-gradient-to-r from-electric to-cyanx-500 mx-1" /><Icon name="train" size={16} className="text-cyanx-500" /><span className="flex-1 h-0.5 bg-gradient-to-r from-cyanx-500 to-emerald-500 mx-1" /><span className="w-2 h-2 rounded-full bg-emerald-500" /></div><div className="text-[11px] text-navy-500">{fmtDist(j.totalDist)}</div></div>
+              <div className="text-right"><div className="font-display text-3xl font-extrabold text-navy-900">{minTo12(j.arriveAbs)}<span className="text-xs align-top text-violet-500">{dayOffsetLabel(j.arriveAbs)}</span></div><div className="text-sm text-navy-500 font-semibold">{to.city}</div><div className="text-xs text-navy-400">{to.code}{j.segments[j.segments.length - 1].toPlatform ? ` · Pl ${j.segments[j.segments.length - 1].toPlatform}` : ""}</div></div>
             </div>
             <div className="mt-4 pt-4 border-t border-navy-100 grid grid-cols-2 md:grid-cols-3 gap-3">
               {stats.map((s) => <div key={s.label} className="flex items-center gap-2.5"><span className="grid place-items-center w-9 h-9 rounded-lg bg-navy-50 text-electric"><Icon name={s.icon} size={16} /></span><div><div className="text-xs text-navy-400 font-semibold uppercase">{s.label}</div><div className="text-sm font-bold text-navy-900">{s.value}</div></div></div>)}
@@ -3137,14 +3194,14 @@ function JourneyDetailsPage() {
                     <div className="rounded-xl border border-navy-100 p-4">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="font-semibold text-navy-900">{sf.city} <Icon name="arrowRight" size={13} className="inline text-electric" /> {st.city}</div>
-                        <div className="text-xs text-navy-400">{s.dist} km · {durStr(s.duration)}</div>
+                        <div className="text-xs text-navy-400">{s.dist != null ? `${s.dist} km · ` : ""}{durStr(s.duration)}</div>
                       </div>
                       <div className="mt-2 grid sm:grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
                         <div className="text-navy-600"><span className="text-navy-400">Train:</span> <span className="font-semibold text-navy-900">{s.trainName}</span> <span className="text-navy-400">#{s.trainNumber} · {s.trainType}</span></div>
-                        <div className="text-navy-600"><span className="text-navy-400">Depart:</span> <span className="font-semibold text-navy-900">{minTo12(s.departAbs)}{dayOffsetLabel(s.departAbs)}</span> <span className="text-navy-400">· Pl {s.fromPlatform}</span></div>
-                        <div className="text-navy-600"><span className="text-navy-400">Arrive:</span> <span className="font-semibold text-navy-900">{minTo12(s.arriveAbs)}{dayOffsetLabel(s.arriveAbs)}</span> <span className="text-navy-400">· Pl {s.toPlatform}</span></div>
-                        <div className="text-navy-600"><span className="text-navy-400">Seat:</span> <span className="font-semibold text-emerald-700 inline-flex items-center gap-1"><Icon name="checkCircle" size={13} /> {s.coach}-{s.seat}</span></div>
-                        <div className="text-navy-600"><span className="text-navy-400">Fare:</span> <span className="font-semibold text-navy-900">₹{s.fare}</span></div>
+                        <div className="text-navy-600"><span className="text-navy-400">Depart:</span> <span className="font-semibold text-navy-900">{minTo12(s.departAbs)}{dayOffsetLabel(s.departAbs)}</span>{s.fromPlatform && <span className="text-navy-400"> · Pl {s.fromPlatform}</span>}</div>
+                        <div className="text-navy-600"><span className="text-navy-400">Arrive:</span> <span className="font-semibold text-navy-900">{minTo12(s.arriveAbs)}{dayOffsetLabel(s.arriveAbs)}</span>{s.toPlatform && <span className="text-navy-400"> · Pl {s.toPlatform}</span>}</div>
+                        <div className="text-navy-600"><span className="text-navy-400">Seat:</span> {s.status === "available" ? <span className="font-semibold text-emerald-700 inline-flex items-center gap-1"><Icon name="checkCircle" size={13} /> {s.coach}-{s.seat}</span> : <span className="font-semibold text-amber-700 inline-flex items-center gap-1"><Icon name="alert" size={13} /> {s.availability_text || s.rawStatus || "Unverified"}</span>}</div>
+                        <div className="text-navy-600"><span className="text-navy-400">Fare:</span> <span className="font-semibold text-navy-900">{fmtFare(s.fare)}</span></div>
                       </div>
                     </div>
                   </li>
@@ -3169,10 +3226,10 @@ function JourneyDetailsPage() {
               {j.segments.map((s, i) => (
                 <div key={i} className="flex items-center justify-between text-sm">
                   <span className="text-navy-600">{getStation(s.from).city} → {getStation(s.to).city}</span>
-                  <span className="font-semibold text-navy-900">₹{s.fare}</span>
+                  <span className="font-semibold text-navy-900">{fmtFare(s.fare)}</span>
                 </div>
               ))}
-              <div className="border-t border-navy-100 pt-2 flex items-center justify-between"><span className="font-bold text-navy-900">Total</span><span className="font-display font-extrabold text-electric text-lg">₹{j.totalFare}</span></div>
+              <div className="border-t border-navy-100 pt-2 flex items-center justify-between"><span className="font-bold text-navy-900">Total</span><span className="font-display font-extrabold text-electric text-lg">{fmtFare(j.totalFare)}</span></div>
             </div>
             <Button variant="primary" size="md" className="w-full mt-4" onClick={() => downloadText(`RailRouteAI-Journey-${rank}.txt`, buildItineraryText(j, search || { from: from.code, to: to.code, date: todayISO(), passengers: 1, travelClass: "SL" }))}><Icon name="download" size={15}/> Download itinerary</Button>
           </Card>
@@ -3205,9 +3262,14 @@ function AIPage() {
   const ranked = applySort(journeys, "best");
   const metrics = ["totalDuration", "totalFare", "chg", "totalWait"];
   const labels = { totalDuration: "Travel time", totalFare: "Fare", chg: "Changes", totalWait: "Waiting" };
-  const vals = (j) => ({ totalDuration: j.totalDuration, totalFare: j.totalFare, chg: j.trainChanges + j.seatChanges, totalWait: j.totalWait });
+  const vals = (j) => ({ totalDuration: j.totalDuration, totalFare: j.totalFare != null ? j.totalFare : 0, chg: j.trainChanges + j.seatChanges, totalWait: j.totalWait });
   const maxes = metrics.reduce((a, m) => ({ ...a, [m]: Math.max(...journeys.map((j) => vals(j)[m])) }), {});
-  const mins = metrics.reduce((a, m) => ({ ...a, [m]: Math.min(...journeys.map((j) => vals(j)[m])) }), {});
+  const mins = metrics.reduce((a, m) => ({
+    ...a,
+    [m]: m === "totalFare"
+      ? (() => { const fs = journeys.map((j) => j.totalFare).filter((f) => f != null); return fs.length ? Math.min(...fs) : null; })()
+      : Math.min(...journeys.map((j) => vals(j)[m])),
+  }), {});
   const reason = best ? recommendReason(best.best, best) : "";
   return (
     <PageShell title="AI Recommendations" breadcrumb={[{ label: "Results", action: () => navigate("/discover") }]}>
@@ -3219,7 +3281,7 @@ function AIPage() {
             <div className="flex-1">
               <h3 className="font-display text-lg font-extrabold">Best recommendation</h3>
               <p className="mt-1 text-sm text-navy-100 max-w-2xl">{reason}</p>
-              {best && <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm"><span className="inline-flex items-center gap-1.5"><Icon name="clock" size={14} className="text-cyanx-300" /> {durStr(best.best.totalDuration)}</span><span className="inline-flex items-center gap-1.5"><Icon name="wallet" size={14} className="text-cyanx-300" /> ₹{best.best.totalFare}</span><span className="inline-flex items-center gap-1.5"><Icon name="route" size={14} className="text-cyanx-300" /> {best.best.trainChanges + best.best.seatChanges} changes</span></div>}
+              {best && <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm"><span className="inline-flex items-center gap-1.5"><Icon name="clock" size={14} className="text-cyanx-300" /> {durStr(best.best.totalDuration)}</span><span className="inline-flex items-center gap-1.5"><Icon name="wallet" size={14} className="text-cyanx-300" /> {fmtFare(best.best.totalFare)}</span><span className="inline-flex items-center gap-1.5"><Icon name="route" size={14} className="text-cyanx-300" /> {best.best.trainChanges + best.best.seatChanges} changes</span></div>}
               <div className="mt-4 flex gap-2"><Button variant="white" size="sm" onClick={() => navigate(`/journey/${journeyRef(best.best, journeys.indexOf(best.best) + 1)}`)}>View journey</Button><Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/10" onClick={() => toggleCompare(best.best)}><Icon name="compare" size={14}/> Add to compare</Button></div>
             </div>
           </div>
@@ -3249,8 +3311,8 @@ function AIPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     {metrics.map((m) => {
-                      const val = v[m]; const isMin = val === mins[m]; const pct = Math.round((val / (maxes[m] || 1)) * 100);
-                      const display = m === "totalFare" ? "₹" + val : m === "totalDuration" || m === "totalWait" ? durStr(val) : val;
+                      const val = v[m]; const isMin = m === "totalFare" ? (j.totalFare != null && mins[m] != null && j.totalFare === mins[m]) : (val === mins[m]); const pct = Math.round((val / (maxes[m] || 1)) * 100);
+                      const display = m === "totalFare" ? fmtFare(j.totalFare) : m === "totalDuration" || m === "totalWait" ? durStr(val) : val;
                       return (
                         <div key={m}>
                           <div className="flex items-center justify-between text-xs"><span className="text-navy-400">{labels[m]}</span><span className={cx("font-bold", isMin ? "text-emerald-600" : "text-navy-900")}>{display}</span></div>
@@ -3291,7 +3353,8 @@ function ComparePage() {
   }
   const items = compareList;
   const minDur = Math.min(...items.map((c) => c.journey.totalDuration));
-  const minFare = Math.min(...items.map((c) => c.journey.totalFare));
+  const knownCompareFares = items.map((c) => c.journey.totalFare).filter((f) => f != null);
+  const minFare = knownCompareFares.length ? Math.min(...knownCompareFares) : null;
   const minChg = Math.min(...items.map((c) => c.journey.trainChanges + c.journey.seatChanges));
   const Metric = ({ label, value, best, sub }) => (
     <div className="flex items-center justify-between py-2.5 border-b border-navy-100 last:border-0">
@@ -3317,11 +3380,11 @@ function ComparePage() {
                 <div><div className="font-display text-xl font-extrabold text-navy-900">{minTo12(j.arriveAbs)}<span className="text-xs text-violet-500">{dayOffsetLabel(j.arriveAbs)}</span></div><div className="text-xs text-navy-400">Arrive</div></div>
               </div>
               <Metric label="Duration" value={durStr(j.totalDuration)} best={j.totalDuration === minDur} />
-              <Metric label="Total fare" value={"₹" + j.totalFare} best={j.totalFare === minFare} />
+              <Metric label="Total fare" value={fmtFare(j.totalFare)} best={j.totalFare != null && minFare != null && j.totalFare === minFare} />
               <Metric label="Changes" value={j.trainChanges + j.seatChanges} sub={`${j.trainChanges}T/${j.seatChanges}S`} best={(j.trainChanges + j.seatChanges) === minChg} />
-              <Metric label="Distance" value={j.totalDist + " km"} />
+              <Metric label="Distance" value={fmtDist(j.totalDist)} />
               <Metric label="Overnight" value={j.overnight ? "Yes" : "No"} />
-              <Metric label="Verification" value="Confirmed" />
+              <Metric label="Verification" value={j.isUnverified ? "Unverified" : "Confirmed"} />
               <div className="mt-3"><Button variant="soft" size="sm" className="w-full" onClick={() => navigate(`/journey/${journeyRef(c.journey, c.rank)}`)}>View details <Icon name="arrowRight" size={13}/></Button></div>
             </Card>
           );
@@ -3400,7 +3463,7 @@ function DashboardPage() {
                   <div key={j.key} className="rounded-xl border border-navy-100 p-3.5">
                     <div className="flex items-center justify-between"><Badge color={changeStyle(j.changeType).color}>{changeStyle(j.changeType).label}</Badge><button onClick={() => toggleSave(j)} className="text-rose-400 hover:text-rose-600"><Icon name="heart" size={14} /></button></div>
                     <div className="mt-2 text-sm font-semibold text-navy-900">{f.city} → {t.city}</div>
-                    <div className="text-xs text-navy-500 mt-0.5">{minTo12(j.departAbs)} → {minTo12(j.arriveAbs)} · {durStr(j.totalDuration)} · ₹{j.totalFare}</div>
+                    <div className="text-xs text-navy-500 mt-0.5">{minTo12(j.departAbs)} → {minTo12(j.arriveAbs)} · {durStr(j.totalDuration)} · {fmtFare(j.totalFare)}</div>
                   </div>
                 ); })}
               </div>
@@ -3566,19 +3629,20 @@ function ConversationalAssistant() {
       status: "GREETING",
       timestamp: Date.now(),
       suggestedActions: [
-        "Find trains from Mysuru to Belagavi tomorrow",
-        "Trains from Mysore to Dharwad day after tomorrow in 3A",
-        "Bangalore to Belagavi",
+        "Find trains from Bengaluru to Chennai tomorrow",
+        "Trains from Pune to Mumbai day after tomorrow in 3A",
+        "New Delhi to Mumbai CSMT tomorrow",
       ],
     }
   ];
   });
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [activeSlots, setActiveSlots] = useState(null);
+  const [activeSlots, setActiveSlots] = useState(() => readSessionJSON("railsaathi_chat_slots"));
   const [lastError, setLastError] = useState(null);
   const chatEndRef = useRef(null);
   const textareaRef = useRef(null);
+  const loadingRef = useRef(false);
 
   useEffect(() => {
     if (sessionId) {
@@ -3587,6 +3651,14 @@ function ConversationalAssistant() {
       try { sessionStorage.removeItem("railsaathi_chat_session"); } catch (e) {}
     }
   }, [sessionId]);
+
+  useEffect(() => {
+    if (activeSlots) {
+      writeSessionJSON("railsaathi_chat_slots", activeSlots);
+    } else {
+      try { sessionStorage.removeItem("railsaathi_chat_slots"); } catch (e) {}
+    }
+  }, [activeSlots]);
 
   // Persist the transcript (last 30 messages) so navigating between the
   // stepper pages does not wipe the conversation.
@@ -3617,7 +3689,8 @@ function ConversationalAssistant() {
 
   const handleSend = async (messageText) => {
     const textToSend = (messageText || input).trim();
-    if (!textToSend || loading) return;
+    if (!textToSend || loading || loadingRef.current) return;
+    loadingRef.current = true;
 
     setInput("");
     setLastError(null);
@@ -3723,6 +3796,7 @@ function ConversationalAssistant() {
       };
       setMessages((prev) => [...prev, errorMsg]);
     } finally {
+      loadingRef.current = false;
       setLoading(false);
       setTimeout(() => textareaRef.current && textareaRef.current.focus(), 50);
     }
@@ -3734,6 +3808,7 @@ function ConversationalAssistant() {
     setLastError(null);
     try { sessionStorage.removeItem("railsaathi_chat_session"); } catch (e) {}
     try { sessionStorage.removeItem("railsaathi_chat_messages"); } catch (e) {}
+    try { sessionStorage.removeItem("railsaathi_chat_slots"); } catch (e) {}
     setMessages([
       {
         id: "welcome_" + Date.now(),
@@ -3742,9 +3817,9 @@ function ConversationalAssistant() {
         status: "GREETING",
         timestamp: Date.now(),
         suggestedActions: [
-          "Find trains from Mysuru to Belagavi tomorrow",
-          "Trains from Mysore to Dharwad day after tomorrow in 3A",
-          "Bangalore to Belagavi",
+          "Find trains from Bengaluru to Chennai tomorrow",
+          "Trains from Pune to Mumbai day after tomorrow in 3A",
+          "New Delhi to Mumbai CSMT tomorrow",
         ],
       }
     ]);
@@ -3968,7 +4043,7 @@ function ConversationalAssistant() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="Type your journey inquiry (e.g. Find trains from Mysuru to Belagavi tomorrow)..."
+            placeholder="Type your journey inquiry (e.g. Find trains from Bengaluru to Chennai tomorrow)..."
             className="flex-1 bg-transparent border-0 px-2 py-1.5 text-sm text-navy-900 placeholder:text-navy-400 focus:outline-none resize-none max-h-28 overflow-y-auto"
             disabled={loading}
           />
@@ -4000,7 +4075,7 @@ function ConversationalAssistant() {
 }
 
 function SearchPage() {
-  const { runSearch } = useApp();
+  const { runSearch, searchMode } = useApp();
   const [activeTab, setActiveTab] = useState("ai");
 
   return (
@@ -4076,7 +4151,7 @@ function SearchPage() {
               </div>
             </div>
             <p className="mt-6 text-center text-xs text-navy-400 flex items-center justify-center gap-1.5">
-              <Icon name="info" size={13}/> {AVAILABILITY_SOURCE} — only confirmed-availability journeys are shown.
+              <Icon name="info" size={13}/> {searchMode === "demo" ? AVAILABILITY_SOURCE : "Live FastAPI + RailCore verification"} — only confirmed-availability journeys are shown.
             </p>
           </>
         )}
@@ -4580,7 +4655,7 @@ function SavedJourneysPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {savedJourneys.map((j) => { const f = getStation(j.segments[0].from), t = getStation(j.segments[j.segments.length - 1].to); const cs = changeStyle(j.changeType); return (
-            <Card key={j.key} className="p-4"><div className="flex items-center justify-between"><Badge color={cs.color} icon="route">{cs.label}</Badge><Icon name="heart" size={16} className="text-rose-500 fill-rose-500"/></div><h4 className="font-display font-bold text-navy-900 mt-2">{f.city} → {t.city}</h4><p className="text-xs text-navy-400 mt-1">{[...new Set(j.segments.map(s => s.trainNumber))].length} train{[...new Set(j.segments.map(s => s.trainNumber))].length !== 1 ? "s" : ""} · {j.totalDist} km · {durStr(j.totalDuration)}</p><Button variant="outline" size="sm" className="mt-3" onClick={() => navigate("/discover")}>View results</Button></Card>
+            <Card key={j.key} className="p-4"><div className="flex items-center justify-between"><Badge color={cs.color} icon="route">{cs.label}</Badge><Icon name="heart" size={16} className="text-rose-500 fill-rose-500"/></div><h4 className="font-display font-bold text-navy-900 mt-2">{f.city} → {t.city}</h4><p className="text-xs text-navy-400 mt-1">{[...new Set(j.segments.map(s => s.trainNumber))].length} train{[...new Set(j.segments.map(s => s.trainNumber))].length !== 1 ? "s" : ""} · {fmtDist(j.totalDist)} · {durStr(j.totalDuration)}</p><Button variant="outline" size="sm" className="mt-3" onClick={() => navigate("/discover")}>View results</Button></Card>
           );})}
         </div>
       )}
@@ -4866,7 +4941,7 @@ function BookingPage() {
   const from = getStation(j.segments[0].from), to = getStation(j.segments[j.segments.length - 1].to);
   const cs = changeStyle(j.changeType);
   const n = pax ? pax.length : (search && search.passengers) || 1;
-  const grandTotal = j.totalFare * n;
+  const grandTotal = j.totalFare != null ? j.totalFare * n : null;
   const classLabel = CLASSES.find((c) => c.code === (j.travelClass || (search && search.travelClass))) || CLASSES[0];
 
   if (confirmed) {
@@ -4887,14 +4962,14 @@ function BookingPage() {
             <h3 className="font-display font-bold text-navy-900 mb-3 flex items-center gap-2"><Icon name="route" size={18} className="text-electric" /> Itinerary</h3>
             <div className="flex items-center gap-4">
               <div><div className="font-display text-xl font-extrabold text-navy-900">{minTo12(j.departAbs)}</div><div className="text-sm text-navy-500">{from.city} <span className="text-xs text-navy-400 font-mono">{from.code}</span></div></div>
-              <div className="flex-1 flex flex-col items-center"><div className="text-xs text-navy-400">{durStr(j.totalDuration)}</div><div className="w-full flex items-center my-1"><span className="w-2 h-2 rounded-full bg-electric" /><span className="flex-1 h-0.5 bg-gradient-to-r from-electric to-cyanx-500 mx-1" /><Icon name="train" size={16} className="text-cyanx-500" /><span className="flex-1 h-0.5 bg-gradient-to-r from-cyanx-500 to-emerald-500 mx-1" /><span className="w-2 h-2 rounded-full bg-emerald-500" /></div><div className="text-[11px] text-navy-500">{j.totalDist} km</div></div>
+              <div className="flex-1 flex flex-col items-center"><div className="text-xs text-navy-400">{durStr(j.totalDuration)}</div><div className="w-full flex items-center my-1"><span className="w-2 h-2 rounded-full bg-electric" /><span className="flex-1 h-0.5 bg-gradient-to-r from-electric to-cyanx-500 mx-1" /><Icon name="train" size={16} className="text-cyanx-500" /><span className="flex-1 h-0.5 bg-gradient-to-r from-cyanx-500 to-emerald-500 mx-1" /><span className="w-2 h-2 rounded-full bg-emerald-500" /></div><div className="text-[11px] text-navy-500">{fmtDist(j.totalDist)}</div></div>
               <div className="text-right"><div className="font-display text-xl font-extrabold text-navy-900">{minTo12(j.arriveAbs)}<span className="text-xs align-top text-violet-500">{dayOffsetLabel(j.arriveAbs)}</span></div><div className="text-sm text-navy-500">{to.city} <span className="text-xs text-navy-400 font-mono">{to.code}</span></div></div>
             </div>
             <div className="mt-4 pt-4 border-t border-navy-100 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
               <div><div className="text-xs text-navy-400 uppercase font-semibold">Class</div><div className="font-bold text-navy-900">{classLabel.label}</div></div>
               <div><div className="text-xs text-navy-400 uppercase font-semibold">Passengers</div><div className="font-bold text-navy-900">{n}</div></div>
               <div><div className="text-xs text-navy-400 uppercase font-semibold">Changes</div><div className="font-bold text-navy-900">{j.trainChanges + j.seatChanges}</div></div>
-              <div><div className="text-xs text-navy-400 uppercase font-semibold">Total paid</div><div className="font-bold text-navy-900">₹{grandTotal}</div></div>
+              <div><div className="text-xs text-navy-400 uppercase font-semibold">Total paid</div><div className="font-bold text-navy-900">{fmtFare(grandTotal)}</div></div>
             </div>
           </Card>
           <Card className="p-5">
@@ -4920,10 +4995,24 @@ function BookingPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         <div className="space-y-5">
           <Card className="p-5">
-            <div className="flex flex-wrap items-center gap-2 mb-3"><Badge color={cs.color} icon="route">{cs.label}</Badge>{j.overnight && <Badge color="violet" icon="moon">Overnight</Badge>}<Badge color="emerald" icon="shield">All confirmed</Badge></div>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <Badge color={cs.color} icon="route">{cs.label}</Badge>
+              {j.overnight && <Badge color="violet" icon="moon">Overnight</Badge>}
+              {j.isUnverified ? (
+                <Badge color="amber" icon="alert">Unverified — Not Confirmed</Badge>
+              ) : (
+                <Badge color="emerald" icon="shield">All confirmed</Badge>
+              )}
+            </div>
+            {j.isUnverified && (
+              <div className="mb-3 rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800 flex items-start gap-2">
+                <Icon name="alert" size={15} className="text-amber-600 shrink-0 mt-0.5" />
+                <span>One or more segments could not be confirmed available by the railway provider. Booking confirmation is disabled for unverified candidates.</span>
+              </div>
+            )}
             <div className="flex items-center gap-4">
               <div><div className="font-display text-2xl font-extrabold text-navy-900">{minTo12(j.departAbs)}</div><div className="text-sm text-navy-500">{from.city}</div></div>
-              <div className="flex-1 flex flex-col items-center"><div className="text-xs text-navy-400">{durStr(j.totalDuration)}</div><div className="w-full flex items-center my-1"><span className="w-2 h-2 rounded-full bg-electric" /><span className="flex-1 h-0.5 bg-gradient-to-r from-electric to-cyanx-500 mx-1" /><Icon name="train" size={16} className="text-cyanx-500" /><span className="flex-1 h-0.5 bg-gradient-to-r from-cyanx-500 to-emerald-500 mx-1" /><span className="w-2 h-2 rounded-full bg-emerald-500" /></div><div className="text-[11px] text-navy-500">{j.totalDist} km</div></div>
+              <div className="flex-1 flex flex-col items-center"><div className="text-xs text-navy-400">{durStr(j.totalDuration)}</div><div className="w-full flex items-center my-1"><span className="w-2 h-2 rounded-full bg-electric" /><span className="flex-1 h-0.5 bg-gradient-to-r from-electric to-cyanx-500 mx-1" /><Icon name="train" size={16} className="text-cyanx-500" /><span className="flex-1 h-0.5 bg-gradient-to-r from-cyanx-500 to-emerald-500 mx-1" /><span className="w-2 h-2 rounded-full bg-emerald-500" /></div><div className="text-[11px] text-navy-500">{fmtDist(j.totalDist)}</div></div>
               <div className="text-right"><div className="font-display text-2xl font-extrabold text-navy-900">{minTo12(j.arriveAbs)}<span className="text-xs align-top text-violet-500">{dayOffsetLabel(j.arriveAbs)}</span></div><div className="text-sm text-navy-500">{to.city}</div></div>
             </div>
           </Card>
@@ -4965,9 +5054,9 @@ function BookingPage() {
                 <thead><tr className="text-left text-xs uppercase text-navy-400 border-b border-navy-100"><th className="py-2 px-2">Segment</th><th className="py-2 px-2">Train</th><th className="py-2 px-2">Seat</th><th className="py-2 px-2 text-right">Fare</th></tr></thead>
                 <tbody>
                   {j.segments.map((s, i) => { const sf = getStation(s.from), stt = getStation(s.to); return (
-                    <tr key={i} className="border-b border-navy-50"><td className="py-2 px-2 text-navy-700">{sf.city} → {stt.city}</td><td className="py-2 px-2 text-navy-600">{s.trainName}</td><td className="py-2 px-2 font-mono text-navy-600">{s.coach && s.seat ? `${s.coach}-${s.seat}` : "—"}</td><td className="py-2 px-2 text-right font-mono font-bold text-navy-900">₹{s.fare}</td></tr>
+                    <tr key={i} className="border-b border-navy-50"><td className="py-2 px-2 text-navy-700">{sf.city} → {stt.city}</td><td className="py-2 px-2 text-navy-600">{s.trainName}</td><td className="py-2 px-2 font-mono text-navy-600">{s.coach && s.seat ? `${s.coach}-${s.seat}` : "—"}</td><td className="py-2 px-2 text-right font-mono font-bold text-navy-900">{fmtFare(s.fare)}</td></tr>
                   ); })}
-                  <tr className="font-bold"><td colSpan={3} className="py-2 px-2 text-right text-navy-700">Per passenger</td><td className="py-2 px-2 text-right font-mono text-navy-900">₹{j.totalFare}</td></tr>
+                  <tr className="font-bold"><td colSpan={3} className="py-2 px-2 text-right text-navy-700">Per passenger</td><td className="py-2 px-2 text-right font-mono text-navy-900">{fmtFare(j.totalFare)}</td></tr>
                 </tbody>
               </table>
             </div>
@@ -4982,13 +5071,13 @@ function BookingPage() {
               <div className="flex justify-between"><dt className="text-navy-500">Date</dt><dd className="font-semibold text-navy-900">{search ? prettyDate(search.date) : todayISO()}</dd></div>
               <div className="flex justify-between"><dt className="text-navy-500">Class</dt><dd className="font-semibold text-navy-900">{classLabel.label}</dd></div>
               <div className="flex justify-between"><dt className="text-navy-500">Passengers</dt><dd className="font-semibold text-navy-900">{n}</dd></div>
-              <div className="flex justify-between"><dt className="text-navy-500">Per passenger</dt><dd className="font-mono font-semibold text-navy-900">₹{j.totalFare}</dd></div>
+              <div className="flex justify-between"><dt className="text-navy-500">Per passenger</dt><dd className="font-mono font-semibold text-navy-900">{fmtFare(j.totalFare)}</dd></div>
             </dl>
             <div className="mt-4 pt-4 border-t border-navy-100 flex items-end justify-between">
               <span className="text-sm text-navy-500 font-semibold">Total</span>
-              <span className="font-display text-2xl font-extrabold text-electric">₹{grandTotal}</span>
+              <span className="font-display text-2xl font-extrabold text-electric">{fmtFare(grandTotal)}</span>
             </div>
-            <Button variant="primary" size="md" className="w-full mt-4" onClick={() => { const pnr = "RR" + Math.random().toString(36).slice(2, 8).toUpperCase(); setConfirmed({ pnr }); window.scrollTo({ top: 0 }); }}><Icon name="check" size={15} /> Confirm booking</Button>
+            <Button variant="primary" size="md" disabled={j.isUnverified} className="w-full mt-4" onClick={() => { if (j.isUnverified) return; const pnr = "RR" + Math.random().toString(36).slice(2, 8).toUpperCase(); setConfirmed({ pnr }); window.scrollTo({ top: 0 }); }}><Icon name="check" size={15} /> {j.isUnverified ? "Unavailable (Unverified)" : "Confirm booking"}</Button>
             <p className="text-xs text-navy-400 mt-3 text-center">Demo only — no payment is processed.</p>
           </Card>
         </aside>

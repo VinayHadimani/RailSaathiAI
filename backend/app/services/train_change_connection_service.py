@@ -202,6 +202,7 @@ class _Leg:
     arrival_dt: datetime
     halt_minutes: int | None
     distance_km: float | None
+    segment_distance_km: float | None = None
 
     @property
     def query_key(self) -> tuple[str, str, str, str]:
@@ -773,6 +774,13 @@ class TrainChangeConnectionService:
                                     arrival_dt=arrival_dt,
                                     halt_minutes=to_stop.halt_minutes,
                                     distance_km=to_stop.distance_km,
+                                    segment_distance_km=(
+                                        round(to_stop.distance_km - stop.distance_km, 2)
+                                        if stop.distance_km is not None
+                                        and to_stop.distance_km is not None
+                                        and to_stop.distance_km >= stop.distance_km
+                                        else None
+                                    ),
                                 )
                             )
                     boarding += timedelta(days=1)
@@ -1025,6 +1033,7 @@ class TrainChangeConnectionService:
                     arrival_datetime=leg.arrival_dt.isoformat(),
                     halt_minutes_at_to_station=leg.halt_minutes,
                     distance_km_at_to_station=leg.distance_km,
+                    segment_distance_km=leg.segment_distance_km,
                     travel_class=request.travel_class,
                     quota=request.quota,
                     boarding_query_date=leg.boarding_date,
