@@ -374,6 +374,13 @@ class RailCoreClient:
                 http_status=429,
                 details={"path": path, "retry_after_seconds": round(min_cd, 1)},
             )
+        if 0.0 < min_cd <= MAX_INLINE_RETRY_AFTER_SECONDS:
+            logger.info(
+                "All RailCore keys in short cooldown; waiting %.2fs for earliest key recovery...",
+                min_cd + 0.05,
+            )
+            time.sleep(min_cd + 0.05)
+            candidates = self._key_pool.get_candidates()
 
         query = urlencode({k: v for k, v in (params or {}).items() if v is not None})
         url = f"{self._base_url}{path}" + (f"?{query}" if query else "")
@@ -397,6 +404,12 @@ class RailCoreClient:
 
             key_error: RailwayProviderError | None = None
             for attempt in range(1, attempts_allowed + 1):
+                if self._owns_client and attempt == 1:
+                    # Gentle per-key pacing for live HTTP pools (10 req/min/key free tier):
+                    # spreads bursts across healthy keys without slowing mock unit tests.
+                    healthy = self._key_pool.available_count()
+                    per_key_gap = 3.0 if healthy >= 4 else (2.0 if healthy >= 2 else 0.5)
+                    self._key_pool.wait_for_key_gap(current_key, per_key_gap)
                 started = time.monotonic()
                 response: httpx.Response | None = None
                 try:

@@ -347,4 +347,20 @@ def test_railcore_credits_exhausted_failover_and_long_bench():
     assert seen_keys == ["empty-key", "funded-key", "funded-key"]
 
 
+def test_key_pool_wait_for_key_gap_enforces_minimum_spacing():
+    """Verify wait_for_key_gap records usage and spaces consecutive calls on the same key."""
+    pool = APIKeyPool(["k1", "k2"], name="TestSpacing")
+    t0 = time.monotonic()
+    pool.wait_for_key_gap("k1", 0.05)
+    pool.wait_for_key_gap("k2", 0.05)  # different key -> no wait
+    elapsed_different = time.monotonic() - t0
+    assert elapsed_different < 0.04
+
+    t1 = time.monotonic()
+    pool.wait_for_key_gap("k1", 0.06)  # same key -> spaces cleanly
+    elapsed_same = time.monotonic() - t1
+    assert elapsed_same >= 0.03
+
+
+
 

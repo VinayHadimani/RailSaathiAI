@@ -84,6 +84,8 @@ class APIKeyPool:
         self._index = 0
         # Maps key -> monotonic timestamp when cooldown expires
         self._cooldowns: dict[str, float] = {}
+        # Maps key -> monotonic timestamp of last request dispatch
+        self._last_used: dict[str, float] = {}
 
     @property
     def name(self) -> str:
@@ -158,6 +160,23 @@ class APIKeyPool:
         with self._lock:
             if self._keys:
                 self._index = (self._index + 1) % len(self._keys)
+
+    def wait_for_key_gap(self, key: str, min_gap_seconds: float) -> None:
+        """Ensure at least ``min_gap_seconds`` between consecutive calls on ``key``."""
+        if min_gap_seconds <= 0:
+            return
+        with self._lock:
+            last = self._last_used.get(key)
+            now = time.monotonic()
+            wait = (last + min_gap_seconds - now) if last is not None else 0.0
+        if wait > 0:
+            time.sleep(wait)
+        with self._lock:
+            self._last_used[key] = time.monotonic()
+
+    def record_use(self, key: str) -> None:
+        with self._lock:
+            self._last_used[key] = time.monotonic()
 
     def mark_rate_limited(
         self,
