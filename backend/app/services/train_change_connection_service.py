@@ -262,6 +262,9 @@ class _RunState:
         self.station_reports: dict[str, dict[str, Any]] = {}
         self.seed_pair_done: set[str] = set()
         self.seed_no_through_trains = False
+        self.seed_trains: set[str] = set()
+        self.seed_corridor: set[str] = set()
+        self.hubs_to_dest: dict[str, int] | None = None
 
     # ---------------------------------------------------------------- helpers
 
@@ -340,11 +343,8 @@ class TrainChangeConnectionService:
         self._seed_pair_pass(state, deadline)
         self._fetch_schedules(state, deadline)
 
-        # ---- Step 4: first legs ---------------------------------------------
-        self._push_first_legs(state, horizon_end, deadline)
-
-        # ---- Step 5: chronological BFS --------------------------------------
-        self._explore(state, horizon_end, deadline)
+        # ---- Steps 4-5: staged first legs + chronological BFS --------------
+        self._push_and_explore(state, horizon_end, deadline)
         if state.horizon_truncated:
             state.add_reason(REASON_HORIZON)
 
@@ -414,6 +414,7 @@ class TrainChangeConnectionService:
         report["pairs"].append(pair)
         seen_direct: set[str] = {entry.train_number for entry in state.direct_trains}
         for train in result.trains:
+            state.seed_trains.add(train.train_number)
             if train.train_number not in seen_direct:  # duplicate candidate trains
                 seen_direct.add(train.train_number)
                 state.direct_trains.append(
@@ -451,7 +452,18 @@ class TrainChangeConnectionService:
                 )
             )
             return
-        state.pending_schedules.append(number)
+        is_known_class = bool(train.classes and state.request.travel_class in train.classes)
+        is_special = str(number).startswith("0")
+        if is_known_class and not is_special:
+            # Place trains known to carry the requested class ahead of unknown-class/special entries.
+            insert_at = len(state.pending_schedules)
+            for idx, existing_no in enumerate(state.pending_schedules):
+                if existing_no not in state.seed_trains and str(existing_no).startswith("0"):
+                    insert_at = idx
+                    break
+            state.pending_schedules.insert(insert_at, number)
+        else:
+            state.pending_schedules.append(number)
         state.pending_set.add(number)
 
     def _seed_pair_pass(self, state: _RunState, deadline: float) -> None:
@@ -664,9 +676,16 @@ class TrainChangeConnectionService:
 
     def _learn_schedule(self, state: _RunState, schedule: TrainSchedule) -> None:
         """Learn station universe + partial order from one fetched schedule."""
+        is_seed = schedule.train_number in state.seed_trains
+        seen_dest_in_seed = False
         for stop in schedule.stops:
             code = stop.station_code.strip().upper()
             state.known.add(code)
+            if is_seed and not seen_dest_in_seed:
+                if code == state.request.to_station:
+                    seen_dest_in_seed = True
+                elif code != state.request.from_station:
+                    state.seed_corridor.add(code)
             if stop.station_name and code not in state.station_names:
                 state.station_names[code] = stop.station_name
         # Partial ordering with first-occurrence dedupe (circular routes).
@@ -729,6 +748,11 @@ class TrainChangeConnectionService:
                         boarding += timedelta(days=1)
                         continue
                     dep_dt = datetime.combine(boarding, dep_time, tzinfo=IST)
+                    if getattr(self.client, "_owns_client", False):
+                        now_ist = datetime.now(tz=IST)
+                        if dep_dt < now_ist - timedelta(minutes=5):
+                            boarding += timedelta(days=1)
+                            continue
                     if window_start <= dep_dt <= window_end:
                         for to_stop in schedule.stops[index + 1:]:
                             if to_stop.station_code == station or to_stop.is_stop is False:
@@ -738,6 +762,8 @@ class TrainChangeConnectionService:
                                 continue
                             if first_leg and to_code == destination:
                                 continue  # direct train: reported in direct_trains, not a result
+                            if to_code != destination and self._beyond_destination(state, to_code, destination):
+                                continue
                             arr_time_str = to_stop.arrival_time or to_stop.departure_time
                             arr_time = _hhmm_to_time(arr_time_str)
                             if arr_time is None:
@@ -812,54 +838,298 @@ class TrainChangeConnectionService:
             return {}
 
         request = state.request
-        groups: dict[tuple[str, str], list[_Leg]] = {}
-        for leg in legs:
-            groups.setdefault((leg.train_number, leg.boarding_date), []).append(leg)
+        items = [leg.query_key for leg in legs]
+        raw_outcomes, stop_reason = self.planner.query_items(
+            items=items,
+            travel_class=request.travel_class,
+            quota=request.quota,
+            deadline=deadline,
+        )
+        if stop_reason:
+            state.add_reason(PLANNER_STOP_MAP.get(stop_reason, stop_reason))
 
         outcomes: dict[tuple[str, str, str, str], SegmentQueryOutcome] = {}
-        for (train_number, boarding_date), group in sorted(groups.items()):
-            if time.monotonic() > deadline:
-                state.add_reason(REASON_TIME)
-                break
-            segments: list[tuple[str, str, str]] = []
-            seen_pairs: set[tuple[str, str]] = set()
-            for leg in group:
-                if (leg.from_code, leg.to_code) in seen_pairs:
-                    continue
-                seen_pairs.add((leg.from_code, leg.to_code))
-                segments.append((leg.from_code, leg.to_code, leg.boarding_date))
-            pair_outcomes, stop_reason = self.planner.query_segments(
-                train_number=train_number,
-                segments=segments,
-                travel_class=request.travel_class,
-                quota=request.quota,
-                deadline=deadline,
-            )
-            if stop_reason:
-                state.add_reason(PLANNER_STOP_MAP.get(stop_reason, stop_reason))
-            for leg in group:
-                outcome = pair_outcomes.get((leg.from_code, leg.to_code))
-                if outcome is not None:
-                    outcomes[leg.query_key] = outcome
-                else:
-                    state.unqueried_legs += 1
+        for leg in legs:
+            outcome = raw_outcomes.get(leg.query_key)
+            if outcome is not None:
+                outcomes[leg.query_key] = outcome
+            else:
+                state.unqueried_legs += 1
         return outcomes
+
+    def _keys_rate_limited(self) -> bool:
+        pool = getattr(self.client, "key_pool", None)
+        return pool is not None and pool.min_cooldown_remaining() > 5.0
 
     # ----------------------------------------------------------------- search
 
-    def _push_first_legs(self, state: _RunState, horizon_end: datetime, deadline: float) -> None:
-        """Discover nothing new: evaluate every pool leg leaving the source
-        on the journey date and seed the event heap."""
+    def _ensure_hubs_to_dest(self, state: _RunState) -> None:
+        """Cache {station_code: onward_train_count} reaching destination (0 credits)."""
+        if state.hubs_to_dest is not None:
+            return
+        store = getattr(self.planner, "_timetable_store", None)
+        if store is not None:
+            state.hubs_to_dest = store.get_stations_reaching(
+                state.request.to_station,
+                travel_class=state.request.travel_class,
+            )
+        else:
+            state.hubs_to_dest = {}
+
+    def _prioritize_first_legs(self, state: _RunState, legs: list[_Leg]) -> list[_Leg]:
+        """Rank first legs so major destination-reaching hubs & diverse corridor stations go first."""
+        if len(legs) <= state.budgets.batch_size:
+            return legs
+        self._ensure_hubs_to_dest(state)
+        hubs = state.hubs_to_dest or {}
+        via = set(state.request.via_stations)
+        cls = state.request.travel_class
+
+        def _tier(leg: _Leg) -> int:
+            if leg.to_code in via:
+                return 0
+            if leg.to_code in hubs and leg.to_code in state.seed_corridor:
+                return 1
+            if leg.to_code in hubs:
+                return 2
+            if leg.to_code in state.seed_corridor:
+                return 3
+            return 4
+
+        def _class_penalty(leg: _Leg) -> int:
+            sched = state.pool.get(leg.train_number)
+            if sched and sched.classes and cls in sched.classes:
+                return 0
+            return 1
+
+        prelim = sorted(
+            legs,
+            key=lambda lg: (
+                _tier(lg),
+                _class_penalty(lg),
+                -hubs.get(lg.to_code, 0),
+                lg.arrival_dt,
+                lg.train_number,
+            ),
+        )
+        per_station_counts: dict[str, int] = {}
+        ranked: list[tuple[int, int, int, int, datetime, str, _Leg]] = []
+        for lg in prelim:
+            occ = per_station_counts.get(lg.to_code, 0)
+            per_station_counts[lg.to_code] = occ + 1
+            ranked.append(
+                (
+                    _tier(lg),
+                    occ,
+                    _class_penalty(lg),
+                    -hubs.get(lg.to_code, 0),
+                    lg.arrival_dt,
+                    lg.train_number,
+                    lg,
+                )
+            )
+        ranked.sort(key=lambda item: item[:6])
+        return [item[6] for item in ranked]
+
+    def _select_explore_legs(self, state: _RunState, legs: list[_Leg]) -> list[_Leg]:
+        """Order candidate onward legs so destination-finishing legs always run first."""
+        if len(legs) <= state.budgets.batch_size:
+            return legs
+        self._ensure_hubs_to_dest(state)
+        hubs = state.hubs_to_dest or {}
+        via = set(state.request.via_stations)
+        destination = state.request.to_station
+        cls = state.request.travel_class
+
+        def _score(lg: _Leg):
+            if lg.to_code == destination:
+                tier = 0
+            elif lg.to_code in via:
+                tier = 1
+            elif lg.to_code in hubs:
+                tier = 2
+            else:
+                tier = 3
+            sched = state.pool.get(lg.train_number)
+            cls_pen = 0 if (sched and sched.classes and cls in sched.classes) else 1
+            return (tier, cls_pen, -hubs.get(lg.to_code, 0), lg.arrival_dt, lg.train_number)
+
+        ordered = sorted(legs, key=_score)
+        return ordered[: state.budgets.batch_size]
+
+    def _complete_two_leg_journeys(
+        self, state: _RunState, horizon_end: datetime, deadline: float
+    ) -> None:
+        """Directly check (hub -> destination) completion legs for reached depth-1 hubs
+        before _explore() spends credits expanding multi-hop detours.
+        """
+        if not state.events:
+            return
+        self._ensure_hubs_to_dest(state)
+        destination = state.request.to_station
+        budgets = state.budgets
+        buffer_delta = timedelta(minutes=budgets.min_transfer_buffer_minutes)
+        wait_delta = timedelta(minutes=budgets.max_transfer_wait_minutes)
+
+        # Group depth-1 paths in the event heap by arrival station.
+        by_station: list[tuple[datetime, _Path]] = []
+        for arr_dt, _, path in sorted(state.events, key=lambda e: (e[0], e[1])):
+            st = path.legs[-1].to_code
+            if st == destination or len(path.legs) != 1:
+                continue
+            by_station.append((arr_dt, path))
+
+        if not by_station:
+            return
+
+        # Discover (hub -> destination) pairs for reached hubs and fetch their schedules.
+        cand_items: list[tuple[_Path, _Leg]] = []
+        seen_station_window: set[tuple[str, str, str]] = set()
+        for arr_dt, path in by_station:
+            if time.monotonic() > deadline:
+                state.add_reason(REASON_TIME)
+                break
+            station = path.legs[-1].to_code
+            window_start = arr_dt + buffer_delta
+            window_end = arr_dt + wait_delta
+            win_key = (station, window_start.date().isoformat(), window_end.date().isoformat())
+            if win_key not in seen_station_window:
+                seen_station_window.add(win_key)
+                day = window_start.date()
+                while day <= window_end.date():
+                    iso_d = day.isoformat()
+                    if (station, destination, iso_d) not in state.pair_done:
+                        if state.pairs_used >= budgets.max_discovery_pairs:
+                            state.add_reason(REASON_PAIR_LIMIT)
+                            break
+                        if not self.planner.requests_available() or not self.planner.credits_available(1):
+                            break
+                        self._discover_pair(state, station, destination, iso_d)
+                    day += timedelta(days=1)
+                self._fetch_schedules(state, deadline)
+
+            legs = self._generate_legs(
+                state,
+                station=station,
+                visited=set(path.visited),
+                last_train=path.legs[-1].train_number,
+                window_start=window_start,
+                window_end=window_end,
+                first_leg=False,
+                horizon_end=horizon_end,
+            )
+            for leg in legs:
+                if leg.to_code == destination:
+                    cand_items.append((path, leg))
+
+        if not cand_items:
+            return
+
+        # Prioritize SL-confirmed, fastest-arriving completion legs up to one batch (or 25).
+        cls = state.request.travel_class
+        cand_items.sort(
+            key=lambda item: (
+                0 if (state.pool.get(item[1].train_number) and state.pool[item[1].train_number].classes and cls in state.pool[item[1].train_number].classes) else 1,
+                1 if item[0].unverified_legs else 0,
+                item[1].arrival_dt,
+                item[1].train_number,
+            )
+        )
+        # Deduplicate leg query_keys while keeping diverse hubs.
+        selected_legs: list[_Leg] = []
+        seen_keys: set[tuple[str, str, str, str]] = set()
+        for _, lg in cand_items:
+            if lg.query_key not in seen_keys:
+                seen_keys.add(lg.query_key)
+                selected_legs.append(lg)
+                if len(selected_legs) >= budgets.batch_size:
+                    break
+
+        outcomes = self._query_legs(state, selected_legs, deadline)
+        seen_signatures: set[tuple] = {
+            tuple((lg.train_number, lg.from_seq, lg.to_seq, lg.boarding_date) for lg in p.legs)
+            for p in state.journeys + state.candidates
+        }
+        for path, leg in cand_items:
+            outcome = outcomes.get(leg.query_key)
+            if outcome is None:
+                continue
+            status = outcome.status
+            if status == InternalAvailabilityStatus.CONFIRMED_AVAILABLE:
+                extended = path.extended(leg, outcome, False)
+            elif status in (InternalAvailabilityStatus.PROVIDER_ERROR, InternalAvailabilityStatus.UNKNOWN):
+                extended = path.extended(leg, outcome, True)
+            else:
+                continue
+            sig = tuple((lg.train_number, lg.from_seq, lg.to_seq, lg.boarding_date) for lg in extended.legs)
+            if sig in seen_signatures:
+                continue
+            seen_signatures.add(sig)
+            if extended.unverified_legs:
+                state.candidates.append(extended)
+            else:
+                state.journeys.append(extended)
+
+    def _push_and_explore(self, state: _RunState, horizon_end: datetime, deadline: float) -> None:
+        """Evaluate first legs and run chronological BFS, staging large leg sets in waves."""
         request = state.request
         source = request.from_station
         report = state.station_report(source)
         window_start = datetime.combine(request.journey_date, time_cls(0, 0), tzinfo=IST)
         window_end = datetime.combine(request.journey_date, time_cls(23, 59, 59), tzinfo=IST)
-        legs = self._generate_legs(
+        all_legs = self._generate_legs(
             state, station=source, visited={source}, last_train=None,
             window_start=window_start, window_end=window_end,
             first_leg=True, horizon_end=horizon_end,
         )
+        all_legs = self._prioritize_first_legs(state, all_legs)
+
+        if len(all_legs) <= state.budgets.batch_size:
+            self._evaluate_first_leg_batch(state, all_legs, deadline, report)
+            self._explore(state, horizon_end, deadline)
+            return
+
+        idx = 0
+        batch_limit = state.budgets.batch_size
+        while idx < len(all_legs):
+            if time.monotonic() > deadline:
+                state.add_reason(REASON_TIME)
+                break
+            if not self.planner.requests_available():
+                state.add_reason(REASON_BUDGET_REQUESTS)
+                break
+            credits_left = max(0, self.planner.budgets.max_credits - self.planner.stats["estimated_credits"])
+            if credits_left <= 0:
+                state.add_reason(REASON_BUDGET_CREDITS)
+                break
+            # Always reserve at least ~50% of remaining credits for 2-leg destination completion.
+            wave_cap = min(batch_limit, max(4, credits_left // 2))
+            wave = all_legs[idx : idx + wave_cap]
+            idx += len(wave)
+            self._evaluate_first_leg_batch(state, wave, deadline, report)
+            if self._keys_rate_limited():
+                break
+            # Check all direct (hub -> destination) 2-leg completions first!
+            self._complete_two_leg_journeys(state, horizon_end, deadline)
+            if state.journeys or self._keys_rate_limited():
+                if idx < len(all_legs) and not self._keys_rate_limited():
+                    state.add_reason(REASON_TRAIN_LIMIT)
+                break
+            # Only fall back to deeper multi-hop BFS if 2-leg completions found 0 journeys.
+            self._explore(state, horizon_end, deadline)
+            if state.journeys or self._keys_rate_limited():
+                if idx < len(all_legs) and not self._keys_rate_limited():
+                    state.add_reason(REASON_TRAIN_LIMIT)
+                break
+
+    def _evaluate_first_leg_batch(
+        self,
+        state: _RunState,
+        legs: list[_Leg],
+        deadline: float,
+        report: dict[str, Any],
+    ) -> None:
+        source = state.request.from_station
         outcomes = self._query_legs(state, legs, deadline, report)
         for leg in legs:
             outcome = outcomes.get(leg.query_key)
@@ -880,6 +1150,21 @@ class TrainChangeConnectionService:
                 heapq.heappush(state.events, (leg.arrival_dt, next(state.event_counter), seed))
             else:
                 report["legs_rejected"] += 1
+
+    def _push_first_legs(self, state: _RunState, horizon_end: datetime, deadline: float) -> None:
+        """Discover nothing new: evaluate every pool leg leaving the source
+        on the journey date and seed the event heap."""
+        request = state.request
+        source = request.from_station
+        report = state.station_report(source)
+        window_start = datetime.combine(request.journey_date, time_cls(0, 0), tzinfo=IST)
+        window_end = datetime.combine(request.journey_date, time_cls(23, 59, 59), tzinfo=IST)
+        legs = self._generate_legs(
+            state, station=source, visited={source}, last_train=None,
+            window_start=window_start, window_end=window_end,
+            first_leg=True, horizon_end=horizon_end,
+        )
+        self._evaluate_first_leg_batch(state, legs, deadline, report)
 
     def _explore(self, state: _RunState, horizon_end: datetime, deadline: float) -> None:
         """Chronological earliest-arrival expansion (time-dependent BFS)."""
@@ -911,6 +1196,9 @@ class TrainChangeConnectionService:
                 if state.events:
                     state.add_reason(REASON_TIME)
                 break
+            if self._keys_rate_limited():
+                state.add_reason(REASON_PROVIDER)
+                break
             state.states_expanded += 1
             report = state.station_report(station)
             report["events_expanded"] += 1
@@ -928,6 +1216,7 @@ class TrainChangeConnectionService:
                 window_start=window_start, window_end=window_end,
                 first_leg=False, horizon_end=horizon_end,
             )
+            legs = self._select_explore_legs(state, legs)
             outcomes = self._query_legs(state, legs, deadline, report)
             for leg in legs:
                 outcome = outcomes.get(leg.query_key)

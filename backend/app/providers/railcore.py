@@ -408,7 +408,7 @@ class RailCoreClient:
                     # Gentle per-key pacing for live HTTP pools (10 req/min/key free tier):
                     # spreads bursts across healthy keys without slowing mock unit tests.
                     healthy = self._key_pool.available_count()
-                    per_key_gap = 3.0 if healthy >= 4 else (2.0 if healthy >= 2 else 0.5)
+                    per_key_gap = 2.5 if healthy >= 5 else (4.0 if healthy == 4 else (5.5 if healthy >= 2 else 3.0))
                     self._key_pool.wait_for_key_gap(current_key, per_key_gap)
                 started = time.monotonic()
                 response: httpx.Response | None = None

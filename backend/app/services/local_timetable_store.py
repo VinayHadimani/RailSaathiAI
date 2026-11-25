@@ -321,6 +321,59 @@ class LocalTimetableStore:
             provider="local_timetable",
         )
 
+    def get_stations_reaching(
+        self, to_station: str, *, travel_class: str | None = None
+    ) -> dict[str, int]:
+        """Return {station_code: train_count} for stations with direct trains to `to_station`."""
+        to = str(to_station).strip().upper()
+        if not to:
+            return {}
+        cls_norm = str(travel_class).strip().upper() if travel_class else None
+        conns = self._read_connections()
+        if not conns:
+            return {}
+        counts: dict[str, int] = {}
+        try:
+            for conn in conns:
+                if cls_norm:
+                    rows = conn.execute(
+                        """
+                        SELECT a.station_code, COUNT(DISTINCT a.train_number) AS cnt
+                        FROM station_stops a
+                        JOIN station_stops b
+                            ON a.train_number = b.train_number AND a.seq < b.seq
+                        JOIN trains t
+                            ON t.train_number = a.train_number
+                        WHERE b.station_code = ?
+                          AND t.classes_json LIKE ?
+                        GROUP BY a.station_code
+                        """,
+                        (to, f'%"{cls_norm}"%'),
+                    ).fetchall()
+                else:
+                    rows = []
+                if not rows:
+                    rows = conn.execute(
+                        """
+                        SELECT a.station_code, COUNT(DISTINCT a.train_number) AS cnt
+                        FROM station_stops a
+                        JOIN station_stops b
+                            ON a.train_number = b.train_number AND a.seq < b.seq
+                        WHERE b.station_code = ?
+                        GROUP BY a.station_code
+                        """,
+                        (to,),
+                    ).fetchall()
+                for row in rows:
+                    code = row["station_code"]
+                    if code:
+                        key = str(code).upper()
+                        counts[key] = max(counts.get(key, 0), int(row["cnt"] or 0))
+        finally:
+            for conn in conns:
+                conn.close()
+        return counts
+
     def upsert_schedule(self, schedule: TrainSchedule, *, source: str = "railcore") -> None:
         """Persist a live-fetched schedule into the writable local/overlay SQLite DB."""
         target = self._overlay_path if self._overlay_path is not None else self._db_path

@@ -258,43 +258,43 @@ class SegmentQueryPlanner:
 
     # ------------------------------------------------------- availability
 
-    def query_segments(
+    def query_items(
         self,
         *,
-        train_number: str,
-        segments: list[tuple[str, str, str]],
+        items: list[tuple[str, str, str, str]],
         travel_class: str,
         quota: str,
         deadline: float | None = None,
-    ) -> tuple[dict[tuple[str, str], SegmentQueryOutcome], str | None]:
-        """Check availability for segment queries, deduplicated and batched.
+    ) -> tuple[dict[tuple[str, str, str, str], SegmentQueryOutcome], str | None]:
+        """Check availability for mixed-train segment items, deduplicated and batched.
 
         Args:
-            segments: (from_station, to_station, boarding_query_date) tuples.
-                Multiple tuples may share a station pair (deduplicated).
+            items: (train_number, from_station, to_station, boarding_query_date) tuples.
+                Duplicate (train, from, to, date) items and memoized items are skipped.
             travel_class: single class for every item (1 credit per item).
             quota: reservation quota for every item.
             deadline: monotonic timestamp after which querying must stop.
 
         Returns:
-            (outcomes by (from, to) station pair, stop_reason or None).
-            Stop reasons are budget/time/provider failures - the engine
-            must treat unqueried segments as UNVERIFIED, never unavailable.
+            (outcomes by (train_number, from, to, query_date), stop_reason or None).
         """
-        outcomes: dict[tuple[str, str], SegmentQueryOutcome] = {}
-        pending: list[tuple[str, str, str]] = []
-        seen_pairs: set[tuple[str, str]] = set()
+        outcomes: dict[tuple[str, str, str, str], SegmentQueryOutcome] = {}
+        pending: list[tuple[str, str, str, str]] = []
+        seen_batch_keys: set[tuple[str, str, str, str]] = set()
 
-        for frm, to, query_date in segments:
-            key = (train_number, frm, to, query_date, travel_class, quota)
-            memoized = self._memo.get(key)
+        for train_number, frm, to, query_date in items:
+            item_key = (train_number, frm, to, query_date)
+            memo_key = (train_number, frm, to, query_date, travel_class, quota)
+            memoized = self._memo.get(memo_key)
             if memoized is not None:
-                outcomes[(frm, to)] = memoized
+                outcomes[item_key] = memoized
+                self.stats["deduplicated_queries"] += 1
                 continue
-            if (frm, to) in seen_pairs:
-                continue  # same pair with a different date: first wins (documented)
-            seen_pairs.add((frm, to))
-            pending.append((frm, to, query_date))
+            if item_key in seen_batch_keys:
+                self.stats["deduplicated_queries"] += 1
+                continue
+            seen_batch_keys.add(item_key)
+            pending.append(item_key)
 
         if not pending:
             return outcomes, None
@@ -316,31 +316,33 @@ class SegmentQueryPlanner:
             size = min(self.budgets.batch_size, credits_room)
             chunk, pending = pending[:size], pending[size:]
 
-            items = [
+            payload_items = [
                 {
-                    "train_number": train_number,
+                    "train_number": tno,
                     "from": frm,
                     "to": to,
                     "date": query_date,
                     "classes": [travel_class],
                     "quota": quota,
                 }
-                for frm, to, query_date in chunk
+                for tno, frm, to, query_date in chunk
             ]
             self._respect_rate_limit()
             try:
-                batch = self.client.get_batch_availability(items)
+                batch = self.client.get_batch_availability(payload_items)
             except ProviderNotConfiguredError:
                 raise
             except RailwayProviderError as exc:
                 error_dict = exc.to_dict()
                 self.provider_errors.append(error_dict)
                 logger.warning(
-                    "batch_availability_failed train=%s items=%d code=%s",
-                    train_number, len(chunk), error_dict.get("code"),
+                    "batch_availability_failed items=%d trains=%d code=%s",
+                    len(chunk),
+                    len({tno for tno, _, _, _ in chunk}),
+                    error_dict.get("code"),
                 )
                 checked_at = _utc_now_iso()
-                for frm, to, query_date in chunk:
+                for tno, frm, to, query_date in chunk:
                     outcome = SegmentQueryOutcome(
                         from_station=frm,
                         to_station=to,
@@ -349,9 +351,9 @@ class SegmentQueryPlanner:
                         error=error_dict,
                         checked_at=checked_at,
                     )
-                    memo_key = (train_number, frm, to, query_date, travel_class, quota)
+                    memo_key = (tno, frm, to, query_date, travel_class, quota)
                     self._memo[memo_key] = outcome
-                    outcomes[(frm, to)] = outcome
+                    outcomes[(tno, frm, to, query_date)] = outcome
                 stop_reason = STOP_PROVIDER_ERROR
                 break
 
@@ -364,51 +366,60 @@ class SegmentQueryPlanner:
             self.stats["availability_items_sent"] += len(chunk)
             self.stats["estimated_credits"] += len(chunk)
 
-            by_pair: dict[tuple[str, str], SegmentAvailability] = {}
+            by_exact: dict[tuple[str, str, str, str], SegmentAvailability] = {}
+            by_triplet: dict[tuple[str, str, str], SegmentAvailability] = {}
             for item in batch.items:
-                by_pair[(item.from_station, item.to_station)] = item
-            failed_by_pair: dict[tuple[str, str], dict[str, Any]] = {}
-            for failed in batch.failed_items:
-                pair = (
-                    str(failed.get("from_station_code") or ""),
-                    str(failed.get("to_station_code") or ""),
-                )
-                failed_by_pair[pair] = failed
+                by_exact[(item.train_number, item.from_station, item.to_station, item.journey_date)] = item
+                by_triplet.setdefault((item.train_number, item.from_station, item.to_station), item)
 
-            for frm, to, query_date in chunk:
-                memo_key = (train_number, frm, to, query_date, travel_class, quota)
-                availability = by_pair.get((frm, to))
+            failed_by_exact: dict[tuple[str, str, str, str], dict[str, Any]] = {}
+            failed_by_triplet: dict[tuple[str, str, str], dict[str, Any]] = {}
+            for failed in batch.failed_items:
+                f_tno = str(failed.get("train_number") or "")
+                f_frm = str(failed.get("from_station_code") or "")
+                f_to = str(failed.get("to_station_code") or "")
+                f_date = str(failed.get("journey_date") or "")
+                failed_by_exact[(f_tno, f_frm, f_to, f_date)] = failed
+                if f_tno:
+                    failed_by_triplet.setdefault((f_tno, f_frm, f_to), failed)
+
+            for tno, frm, to, query_date in chunk:
+                memo_key = (tno, frm, to, query_date, travel_class, quota)
+                availability = by_exact.get((tno, frm, to, query_date)) or by_triplet.get((tno, frm, to))
                 if availability is not None:
                     status = availability.status
                     error = None
-                elif (frm, to) in failed_by_pair:
-                    # In-place item failure (e.g. BOOKING_NOT_OPEN): carries
-                    # NO availability information whatsoever. Surfaced as an
-                    # error so the response never hides it.
-                    failed = failed_by_pair[(frm, to)]
-                    status = InternalAvailabilityStatus.UNKNOWN
-                    error = {
-                        "code": str(failed.get("error") or "ITEM_FAILED"),
-                        "category": "PROVIDER_ITEM",
-                        "message": str(failed.get("message") or "The provider could not answer this item."),
-                        "retryable": True,
-                        "details": {
-                            "train_number": train_number,
-                            "from_station": frm,
-                            "to_station": to,
-                            "journey_date": query_date,
-                        },
-                    }
-                    self.provider_errors.append(error)
                 else:
-                    status = InternalAvailabilityStatus.UNKNOWN
-                    error = {
-                        "code": "MISSING_BATCH_RESULT",
-                        "category": "PROTOCOL",
-                        "message": "The batch response did not contain a result for this item.",
-                        "retryable": True,
-                        "details": {"train_number": train_number, "from_station": frm, "to_station": to},
-                    }
+                    failed = (
+                        failed_by_exact.get((tno, frm, to, query_date))
+                        or failed_by_triplet.get((tno, frm, to))
+                        or failed_by_exact.get(("", frm, to, query_date))
+                        or failed_by_exact.get(("", frm, to, ""))
+                    )
+                    if failed is not None:
+                        status = InternalAvailabilityStatus.UNKNOWN
+                        error = {
+                            "code": str(failed.get("error") or "ITEM_FAILED"),
+                            "category": "PROVIDER_ITEM",
+                            "message": str(failed.get("message") or "The provider could not answer this item."),
+                            "retryable": True,
+                            "details": {
+                                "train_number": tno,
+                                "from_station": frm,
+                                "to_station": to,
+                                "journey_date": query_date,
+                            },
+                        }
+                        self.provider_errors.append(error)
+                    else:
+                        status = InternalAvailabilityStatus.UNKNOWN
+                        error = {
+                            "code": "MISSING_BATCH_RESULT",
+                            "category": "PROTOCOL",
+                            "message": "The batch response did not contain a result for this item.",
+                            "retryable": True,
+                            "details": {"train_number": tno, "from_station": frm, "to_station": to},
+                        }
                 outcome = SegmentQueryOutcome(
                     from_station=frm,
                     to_station=to,
@@ -419,11 +430,41 @@ class SegmentQueryPlanner:
                     checked_at=batch.checked_at,
                 )
                 self._memo[memo_key] = outcome
-                outcomes[(frm, to)] = outcome
+                outcomes[(tno, frm, to, query_date)] = outcome
 
-        self.stats["deduplicated_queries"] += (
-            self.stats["distinct_availability_queries"] - self.stats["availability_items_sent"]
+        return outcomes, stop_reason
+
+    def query_segments(
+        self,
+        *,
+        train_number: str,
+        segments: list[tuple[str, str, str]],
+        travel_class: str,
+        quota: str,
+        deadline: float | None = None,
+    ) -> tuple[dict[tuple[str, str], SegmentQueryOutcome], str | None]:
+        """Check availability for segment queries on one train, deduplicated and batched."""
+        seen_pairs: set[tuple[str, str]] = set()
+        items: list[tuple[str, str, str, str]] = []
+        pair_to_date: dict[tuple[str, str], str] = {}
+        for frm, to, query_date in segments:
+            if (frm, to) in seen_pairs:
+                continue  # same pair with a different date: first wins (documented)
+            seen_pairs.add((frm, to))
+            pair_to_date[(frm, to)] = query_date
+            items.append((train_number, frm, to, query_date))
+
+        raw_outcomes, stop_reason = self.query_items(
+            items=items,
+            travel_class=travel_class,
+            quota=quota,
+            deadline=deadline,
         )
+        outcomes: dict[tuple[str, str], SegmentQueryOutcome] = {}
+        for (frm, to), qdate in pair_to_date.items():
+            outcome = raw_outcomes.get((train_number, frm, to, qdate))
+            if outcome is not None:
+                outcomes[(frm, to)] = outcome
         return outcomes, stop_reason
 
 

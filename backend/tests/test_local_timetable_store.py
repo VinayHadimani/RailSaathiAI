@@ -305,3 +305,62 @@ def test_planner_uses_local_store_with_zero_credits_and_falls_back_to_railcore(
         isolated_planner.get_trains_between(
             from_station="PUNE", to_station="CSMT", journey_date="2026-12-02", quota="GN"
         )
+
+
+def test_store_stations_reaching_and_multi_train_query_items(tmp_path: Path) -> None:
+    db_path = tmp_path / "trains.db"
+    store = _seed_store(db_path, [(_make_schedule("12702"), "ntes")])
+
+    # HYB and PUNE both precede CSMT on 12702; CSMT itself does not.
+    assert set(store.get_stations_reaching("CSMT", travel_class="SL").keys()) == {"HYB", "PUNE"}
+    assert store.get_stations_reaching("HYB") == {}
+
+    batch_calls: list[list[dict]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/availability/seats/batch"):
+            payload = json.loads(request.read().decode("utf-8"))
+            batch_calls.append(payload["items"])
+            results = [
+                {
+                    "train_number": item["train_number"],
+                    "from_station_code": item["from"],
+                    "to_station_code": item["to"],
+                    "journey_date": item["date"],
+                    "quota": item.get("quota", "GN"),
+                    "classes": [
+                        {
+                            "class_code": "SL",
+                            "status": "AVAILABLE",
+                            "availability_text": "AVAILABLE-25",
+                            "available_count": 25,
+                            "fare": 350,
+                            "total_fare": 350,
+                        }
+                    ],
+                }
+                for item in payload["items"]
+            ]
+            return httpx.Response(200, json={"success": True, "data": {"results": results}})
+        return httpx.Response(404, json={"success": False})
+
+    client = RailCoreClient(
+        api_key="rk_test",
+        base_url="https://api.example.test",
+        http_client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+    planner = SegmentQueryPlanner(client, SearchBudgets(), timetable_store=store)
+    outcomes, stop_reason = planner.query_items(
+        items=[
+            ("12702", "HYB", "PUNE", "2026-12-01"),
+            ("12123", "PUNE", "CSMT", "2026-12-01"),
+            ("12702", "HYB", "PUNE", "2026-12-01"),  # duplicate
+        ],
+        travel_class="SL",
+        quota="GN",
+    )
+    assert stop_reason is None
+    assert len(batch_calls) == 1, "cross-train legs must pack into one single batch HTTP call"
+    assert len(batch_calls[0]) == 2
+    assert outcomes[("12702", "HYB", "PUNE", "2026-12-01")].status.value == "CONFIRMED_AVAILABLE"
+    assert outcomes[("12123", "PUNE", "CSMT", "2026-12-01")].status.value == "CONFIRMED_AVAILABLE"

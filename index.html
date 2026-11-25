@@ -615,6 +615,8 @@ const dayOffsetLabel = (absMin) => { const d = Math.floor(absMin / 1440); return
 const durStr = (min) => { if (min == null || min < 0) return "--"; const h = Math.floor(min / 60), m = Math.round(min % 60); return `${h}h ${String(m).padStart(2, "0")}m`; };
 const chgStr = (n) => `${n} ${n === 1 ? "change" : "changes"}`;
 const todayISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const shiftISO = (iso, days = 1) => { const d = new Date((iso || todayISO()) + "T00:00:00"); d.setDate(d.getDate() + days); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const tomorrowISO = () => shiftISO(todayISO(), 1);
 const prettyDate = (iso) => { if (!iso) return ""; const d = new Date(iso + "T00:00:00"); return d.toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short", year: "numeric" }); };
 
 // Build all confirmed single-train rides for a class.
@@ -1460,7 +1462,7 @@ function HeroIntro() {
 
 function PopularRoutes() {
   const { runSearch } = useApp();
-  const go = (r) => runSearch({ from: r.from, to: r.to, date: todayISO(), passengers: 1, travelClass: "SL" });
+  const go = (r) => runSearch({ from: r.from, to: r.to, date: tomorrowISO(), passengers: 1, travelClass: "SL" });
   return (
     <section className="py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -1491,7 +1493,7 @@ function PopularRoutes() {
                 <div className="flex items-center gap-2 text-electric mb-2"><Icon name="sparkles" size={16}/><span className="text-xs font-bold uppercase tracking-wide">Example {i + 1}</span></div>
                 <h4 className="font-display font-bold text-navy-900">{e.title}</h4>
                 <p className="text-sm text-navy-500 mt-1.5 leading-relaxed">{e.desc}</p>
-                <button onClick={() => runSearch({ from: e.from, to: e.to, date: todayISO(), passengers: 1, travelClass: "SL" })} className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-electric hover:gap-2.5 transition-all">
+                <button onClick={() => runSearch({ from: e.from, to: e.to, date: tomorrowISO(), passengers: 1, travelClass: "SL" })} className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-electric hover:gap-2.5 transition-all">
                   Try {f.city} → {t.city} <Icon name="arrowRight" size={14}/>
                 </button>
               </Card>
@@ -2439,7 +2441,10 @@ function ResultsPage() {
               {searchMeta?.message || "No complete journeys with confirmed seat availability were found for this route, date and travel class."}
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-3">
-              <Button variant="primary" size="md" onClick={() => navigate("/search")}>
+              <Button variant="primary" size="md" onClick={() => runSearch({ ...search, date: shiftISO(search?.date || todayISO(), 1) }, { mode: "live" })}>
+                <Icon name="calendar" size={15}/> Try {prettyDate(shiftISO(search?.date || todayISO(), 1))}
+              </Button>
+              <Button variant="outline" size="md" onClick={() => navigate("/search")}>
                 <Icon name="search" size={15}/> Search Another Date/Class
               </Button>
               <Button variant="outline" size="md" onClick={() => runSearch(search, { mode: "demo" })}>
@@ -2447,6 +2452,51 @@ function ResultsPage() {
               </Button>
             </div>
           </Card>
+        )}
+
+        {/* Direct Through Trains Reference */}
+        {(searchMeta?.directTrains?.length > 0) && (
+          <div className="mt-8">
+            <Card className="p-5">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div className="flex items-center gap-2">
+                  <Icon name="train" size={18} className="text-electric" />
+                  <h4 className="font-display font-bold text-navy-900 text-sm">
+                    Direct Trains on This Route ({searchMeta.directTrains.length})
+                  </h4>
+                </div>
+                <span className="text-[11px] text-navy-500">
+                  Timetable reference only · Combination search checks split-seat and connecting options
+                </span>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {searchMeta.directTrains.slice(0, 9).map((dt) => (
+                  <div key={dt.train_number} className="rounded-xl border border-navy-100 bg-navy-50/40 p-3 flex flex-col justify-between gap-2">
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold text-electric">#{dt.train_number}</span>
+                        {dt.classes && dt.classes.length > 0 && (
+                          <span className="text-[10px] font-semibold text-navy-500">{dt.classes.join(" · ")}</span>
+                        )}
+                      </div>
+                      <div className="text-sm font-semibold text-navy-900 truncate mt-0.5">{dt.train_name || ("Train #" + dt.train_number)}</div>
+                      <div className="text-xs text-navy-600 mt-1">
+                        {dt.from_station_code} {dt.departure_time || "--:--"} → {dt.to_station_code} {dt.arrival_time || "--:--"}
+                      </div>
+                    </div>
+                    <a
+                      href={`https://www.irctc.co.in/nget/booking/train-list?trainNo=${dt.train_number}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-semibold text-electric hover:underline inline-flex items-center gap-1"
+                    >
+                      Check direct availability on IRCTC <Icon name="externalLink" size={12} />
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
         )}
 
         {/* Unverified Candidates Section */}
@@ -3046,6 +3096,7 @@ function AppProvider({ children }) {
         searchCompleteness: adapted.searchCompleteness,
         deduplication: adapted.deduplication,
         perEngine: adapted.perEngine,
+        directTrains: adapted.directTrains || [],
         at: Date.now(),
         isLiveProvider: adapted.isLiveProvider,
         isDemo: false,

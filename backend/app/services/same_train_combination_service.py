@@ -41,7 +41,7 @@ from __future__ import annotations
 
 import logging
 import time
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 
 from ..core.config import get_settings
 from ..models.schedule import ScheduleStop, TrainSchedule
@@ -204,6 +204,12 @@ class SameTrainCombinationService:
         # Class filter is safe before the schedule fetch (train-level fact).
         # Running-day checks happen precisely AFTER the schedule is fetched
         # (day offsets are needed to know the run's origin departure date).
+        ist = timezone(timedelta(hours=5, minutes=30))
+        now_ist = datetime.now(tz=ist)
+        is_live_today = (
+            getattr(self.client, "_owns_client", False)
+            and request.journey_date == now_ist.date()
+        )
         eligible = []
         reports: list[TrainSearchReportOut] = []
         for train in route.trains:
@@ -221,7 +227,33 @@ class SameTrainCombinationService:
                     )
                 )
                 continue
+            if is_live_today and train.departure_time:
+                dep_mins = _hhmm_to_minutes(train.departure_time)
+                now_mins = now_ist.hour * 60 + now_ist.minute
+                if dep_mins is not None and dep_mins < now_mins - 5:
+                    reports.append(
+                        TrainSearchReportOut(
+                            train_number=train.train_number,
+                            train_name=train.train_name,
+                            processed=False,
+                            skip_reason="TRAIN_ALREADY_DEPARTED",
+                            skip_detail=(
+                                f"Train departed {request.from_station} at {train.departure_time} "
+                                "before the current time."
+                            ),
+                        )
+                    )
+                    continue
             eligible.append(train)
+
+        # Prefer trains that explicitly advertise the requested travel class
+        # over trains with unknown classes (e.g. legacy DataMeet/special entries).
+        eligible.sort(
+            key=lambda t: (
+                0 if (t.classes and request.travel_class in t.classes) else 1,
+                1 if str(t.train_number).startswith("0") else 0,
+            )
+        )
 
         train_limit_hit = len(eligible) > self.budgets.max_trains
         selected = eligible[: self.budgets.max_trains]
@@ -452,10 +484,57 @@ class SameTrainCombinationService:
         stop_reason: str | None = None
         distinct_checked = 0
 
+        def _run_segments(segs: list[tuple[str, str, str]], p2idx: dict[tuple[str, str], list[tuple[int, int]]]) -> str | None:
+            nonlocal distinct_checked
+            outcomes, s_reason = self.planner.query_segments(
+                train_number=train_number,
+                segments=segs,
+                travel_class=request.travel_class,
+                quota=request.quota,
+                deadline=deadline,
+            )
+            distinct_checked += len(outcomes)
+            for pair, outcome in outcomes.items():
+                for a, b in p2idx.get(pair, []):
+                    confirmed[(a, b)] = outcome
+            for (a, b), outcome in confirmed.items():
+                if outcome.status == InternalAvailabilityStatus.CONFIRMED_AVAILABLE:
+                    reachable.add(b)
+            return s_reason
+
         while True:
             to_process = sorted(c for c in reachable if c < n - 1 and c not in processed)
             if not to_process:
                 break
+
+            # For longer real-world routes (n > 8), query (a, n-1) finishing
+            # legs FIRST after Round 0 so 2-segment splits are confirmed in 1 batch
+            # instead of blasting O(n^2) intermediate pairs across 5 batches.
+            if n > 8 and 0 not in to_process:
+                tail_segments: list[tuple[str, str, str]] = []
+                tail_p2idx: dict[tuple[str, str], list[tuple[int, int]]] = {}
+                for a in to_process:
+                    if (a, n - 1) in confirmed:
+                        continue
+                    frm, to = window[a].station_code, window[n - 1].station_code
+                    tail_segments.append((frm, to, self._boarding_date(window, a, request.journey_date)))
+                    tail_p2idx.setdefault((frm, to), []).append((a, n - 1))
+                if tail_segments:
+                    stop_reason = _run_segments(tail_segments, tail_p2idx)
+                    if stop_reason is not None:
+                        break
+                has_two_seg = any(
+                    confirmed.get((0, a)) is not None
+                    and confirmed[(0, a)].status == InternalAvailabilityStatus.CONFIRMED_AVAILABLE
+                    and confirmed.get((a, n - 1)) is not None
+                    and confirmed[(a, n - 1)].status == InternalAvailabilityStatus.CONFIRMED_AVAILABLE
+                    for a in range(1, n - 1)
+                )
+                if has_two_seg:
+                    # Already confirmed 1-seat-change splits on this train; avoid
+                    # spending 100+ credits on 3+ segment intermediate pairs.
+                    break
+
             segments: list[tuple[str, str, str]] = []
             pair_to_indices: dict[tuple[str, str], list[tuple[int, int]]] = {}
             for a in to_process:
@@ -468,24 +547,16 @@ class SameTrainCombinationService:
             if not segments:
                 break
 
-            outcomes, stop_reason = self.planner.query_segments(
-                train_number=train_number,
-                segments=segments,
-                travel_class=request.travel_class,
-                quota=request.quota,
-                deadline=deadline,
-            )
-            distinct_checked += len(outcomes)
-            for pair, outcome in outcomes.items():
-                for a, b in pair_to_indices.get(pair, []):
-                    confirmed[(a, b)] = outcome
-            for (a, b), outcome in confirmed.items():
-                if outcome.status == InternalAvailabilityStatus.CONFIRMED_AVAILABLE:
-                    reachable.add(b)
+            # For real-world long routes (n > 8) beyond Round 0, bound intermediate
+            # fan-out to one batch so one train cannot exhaust the whole unified budget.
+            if n > 8 and 0 not in to_process and len(segments) > self.planner.budgets.batch_size:
+                segments = segments[: self.planner.budgets.batch_size]
+
+            stop_reason = _run_segments(segments, pair_to_indices)
             for a in to_process:
                 if all((a, b) in confirmed for b in range(a + 1, n)):
                     processed.add(a)
-            if stop_reason is not None:
+            if stop_reason is not None or (n > 8 and 0 not in to_process and len(segments) >= self.planner.budgets.batch_size):
                 break
 
         return confirmed, reachable, stop_reason, distinct_checked

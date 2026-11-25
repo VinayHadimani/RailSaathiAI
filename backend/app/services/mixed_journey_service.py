@@ -197,11 +197,8 @@ class MixedJourneyCombinationService(TrainChangeConnectionService):
         self._seed_pair_pass(state, deadline)
         self._fetch_schedules(state, deadline)
 
-        # ---- Step 4: first legs (inherited; direct legs excluded) -----------
-        self._push_first_legs(state, horizon_end, deadline)
-
-        # ---- Step 5: chronological mixed expansion --------------------------
-        self._explore(state, horizon_end, deadline)
+        # ---- Steps 4-5: staged first legs + chronological mixed expansion ---
+        self._push_and_explore(state, horizon_end, deadline)
         if state.horizon_truncated:
             state.add_reason(REASON_HORIZON)
 
@@ -250,6 +247,9 @@ class MixedJourneyCombinationService(TrainChangeConnectionService):
                 if state.events:
                     state.add_reason(REASON_TIME)
                 break
+            if self._keys_rate_limited():
+                state.add_reason(REASON_PROVIDER)
+                break
             state.states_expanded += 1
             report = state.station_report(station)
             report["events_expanded"] += 1
@@ -275,6 +275,7 @@ class MixedJourneyCombinationService(TrainChangeConnectionService):
             # Same-run continuation legs: seat changes while staying onboard
             # (no transfer window applies).
             legs = legs + self._same_run_continuation_legs(state, path, horizon_end)
+            legs = self._select_explore_legs(state, legs)
             outcomes = self._query_legs(state, legs, deadline, report)
             for leg in legs:
                 outcome = outcomes.get(leg.query_key)
