@@ -613,6 +613,7 @@ const minTo12 = (min) => { if (min == null) return "--:--"; const m = ((min % 14
 const minTo24 = (min) => { if (min == null) return "--:--"; const m = ((min % 1440) + 1440) % 1440; return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`; };
 const dayOffsetLabel = (absMin) => { const d = Math.floor(absMin / 1440); return d === 0 ? "" : d === 1 ? " +1" : ` +${d}`; };
 const durStr = (min) => { if (min == null || min < 0) return "--"; const h = Math.floor(min / 60), m = Math.round(min % 60); return `${h}h ${String(m).padStart(2, "0")}m`; };
+const chgStr = (n) => `${n} ${n === 1 ? "change" : "changes"}`;
 const todayISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const prettyDate = (iso) => { if (!iso) return ""; const d = new Date(iso + "T00:00:00"); return d.toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short", year: "numeric" }); };
 
@@ -2111,8 +2112,18 @@ function JourneyCard({ journey, rank, best, reason, onSave, onCompare, saved, co
               <div className="flex items-center gap-1.5 text-[11px] text-navy-500">
                 <Icon name="route" size={12} /> {fmtDist(journey.totalDist)}
                 <span className="text-navy-300">·</span>
-                <Icon name="shuffle" size={12} /> {journey.trainChanges + journey.seatChanges} changes
+                <Icon name="shuffle" size={12} /> {chgStr(journey.trainChanges + journey.seatChanges)}
               </div>
+              {journey.legs && journey.legs.length > 0 && (
+                <div className="mt-1.5 flex flex-wrap justify-center gap-1.5">
+                  {journey.legs.map((lg, lIdx) => (
+                    <span key={lIdx} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-navy-50 border border-navy-100 text-[11px] font-medium text-navy-700 max-w-[200px] truncate">
+                      <span className="font-mono font-bold text-electric">#{lg.train.number}</span>
+                      <span className="truncate">{lg.train.name}</span>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="text-center min-w-[78px]">
               <div className="font-display text-2xl font-extrabold text-navy-900">{minTo12(journey.arriveAbs)}<span className="text-xs align-top text-violet-500">{dayOffsetLabel(journey.arriveAbs)}</span></div>
@@ -2151,7 +2162,7 @@ function JourneyCard({ journey, rank, best, reason, onSave, onCompare, saved, co
           <button onClick={() => onCompare(journey)} disabled={disabled && !compared} className={cx("inline-flex items-center gap-1.5 text-sm font-semibold px-2.5 py-1 rounded-lg", compared ? "text-electric bg-navy-50" : "text-navy-600 hover:bg-navy-50", disabled && !compared && "opacity-40 cursor-not-allowed")}>
             <Icon name="compare" size={15} /> {compared ? "Comparing" : "Compare"}
           </button>
-          <button onClick={() => downloadText(`RailRouteAI-Journey-${rank}.txt`, buildItineraryText(journey, useApp().search))} className="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-600 hover:bg-navy-50 px-2.5 py-1 rounded-lg">
+          <button onClick={() => downloadText(`RailRouteAI-Journey-${rank}.txt`, buildItineraryText(journey, search))} className="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-600 hover:bg-navy-50 px-2.5 py-1 rounded-lg">
             <Icon name="download" size={15} /> Itinerary
           </button>
           {journey.bookingUrl && (
@@ -2206,7 +2217,7 @@ function AIRecommendBanner({ best, reason, count, onPick, onView }) {
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm">
               <span className="inline-flex items-center gap-1.5"><Icon name="clock" size={14} className="text-cyanx-300" /> {durStr(best.totalDuration)}</span>
               <span className="inline-flex items-center gap-1.5"><Icon name="wallet" size={14} className="text-cyanx-300" /> {fmtFare(best.totalFare)}</span>
-              <span className="inline-flex items-center gap-1.5"><Icon name="route" size={14} className="text-cyanx-300" /> {best.trainChanges + best.seatChanges} changes</span>
+              <span className="inline-flex items-center gap-1.5"><Icon name="route" size={14} className="text-cyanx-300" /> {chgStr(best.trainChanges + best.seatChanges)}</span>
               <span className="inline-flex items-center gap-1.5"><Icon name="train" size={14} className="text-cyanx-300" /> {minTo12(best.departAbs)} → {minTo12(best.arriveAbs)}</span>
             </div>
           </div>
@@ -2223,19 +2234,21 @@ function AIRecommendBanner({ best, reason, count, onPick, onView }) {
 function CompareTray({ items, onRemove, onClear, onCompare }) {
   if (!items.length) return null;
   return (
-    <div className="fixed bottom-0 inset-x-0 z-40 px-4 pb-4">
-      <div className="max-w-5xl mx-auto glass border border-navy-100 rounded-2xl shadow-cardlg px-4 py-3 flex items-center gap-3">
+    <div className="fixed bottom-0 inset-x-0 z-40 px-3 sm:px-4 pb-3 sm:pb-4 pointer-events-none">
+      <div className="max-w-5xl mx-auto glass border border-navy-100 rounded-2xl shadow-cardlg px-3 sm:px-4 py-2.5 sm:py-3 flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 pointer-events-auto">
         <Icon name="compare" size={18} className="text-electric shrink-0" />
-        <div className="flex-1 flex items-center gap-2 overflow-x-auto no-scrollbar">
+        <div className="flex-1 min-w-0 flex items-center gap-2 overflow-x-auto no-scrollbar">
           {items.map((j, i) => (
-            <span key={j.key} className="inline-flex items-center gap-1.5 bg-white border border-navy-100 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-navy-800 shrink-0">
+            <span key={j.key} className="inline-flex items-center gap-1.5 bg-white border border-navy-100 rounded-lg px-2.5 py-1 text-xs font-semibold text-navy-800 shrink-0">
               Journey #{j.rank} <button onClick={() => onRemove(j)} className="text-navy-300 hover:text-rose-500"><Icon name="x" size={12} /></button>
             </span>
           ))}
         </div>
-        <span className="text-xs text-navy-400 hidden sm:block">{items.length}/3</span>
-        <Button variant="ghost" size="sm" onClick={onClear}>Clear</Button>
-        <Button variant="primary" size="sm" onClick={onCompare} disabled={items.length < 2}><Icon name="arrowRight" size={14}/> Compare</Button>
+        <span className="text-xs text-navy-400 hidden sm:block shrink-0">{items.length}/3</span>
+        <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+          <Button variant="ghost" size="sm" onClick={onClear}>Clear</Button>
+          <Button variant="primary" size="sm" onClick={onCompare} disabled={items.length < 2}><Icon name="arrowRight" size={14}/> Compare</Button>
+        </div>
       </div>
     </div>
   );
@@ -2385,13 +2398,8 @@ function ResultsPage() {
           <div className="mt-4 rounded-xl bg-amber-50 border border-amber-200 p-3.5 flex items-start gap-2.5 text-xs text-amber-800">
             <Icon name="alert" size={16} className="text-amber-600 mt-0.5 shrink-0" />
             <div>
-              <span className="font-semibold">Partial search completed: </span>
-              {searchMeta.searchCompleteness.incomplete_reasons?.join("; ") || "Search scope was limited by the shared request/credit budget."}
-              {searchMeta.searchCompleteness.engines_reporting_incomplete?.length > 0 && (
-                <span className="ml-1 text-amber-700">
-                  (Engines reporting incomplete: {searchMeta.searchCompleteness.engines_reporting_incomplete.join(", ")})
-                </span>
-              )}
+              <span className="font-semibold">Partial search shown: </span>
+              Showing the best matches found within the live seat-availability lookup quota; additional train combinations were skipped to preserve API limits.
             </div>
           </div>
         )}
@@ -2704,17 +2712,19 @@ function adaptUnifiedJourney(j, isUnverified = false, isLiveProvider = false) {
 
   const depTimeStr = j.departure?.time || j.departure?.departure_time || "00:00";
   const depDay = j.departure?.day || j.departure?.departure_day || 1;
-  const departAbs = (depDay - 1) * 1440 + (timeToMin(depTimeStr) || 0);
+  // Normalize journey timeline so the user's boarding day is Day 0 (0..1439 mins),
+  // avoiding bogus "+1" badges when boarding an en-route train on train-run Day 2+.
+  const departAbs = timeToMin(depTimeStr) || 0;
 
   const arrTimeStr = j.arrival?.time || j.arrival?.arrival_time || "00:00";
   const arrDay = j.arrival?.day || j.arrival?.arrival_day || depDay;
-  let arriveAbs = (arrDay - 1) * 1440 + (timeToMin(arrTimeStr) || 0);
+  let arriveAbs = (arrDay - depDay) * 1440 + (timeToMin(arrTimeStr) || 0);
 
   const totalDuration = j.total_duration_minutes != null
     ? j.total_duration_minutes
     : Math.max(0, arriveAbs - departAbs);
 
-  if (arriveAbs <= departAbs && totalDuration > 0) {
+  if (totalDuration > 0 && (arriveAbs <= departAbs || Math.abs((arriveAbs - departAbs) - totalDuration) > 720)) {
     arriveAbs = departAbs + totalDuration;
   }
 
@@ -2725,6 +2735,7 @@ function adaptUnifiedJourney(j, isUnverified = false, isLiveProvider = false) {
 
   let currentLegIndex = 0;
   let prevTrainNo = null;
+  let cursorAbs = departAbs;
 
   rawSegments.forEach((s, idx) => {
     registerStation(s.from_station);
@@ -2745,13 +2756,22 @@ function adaptUnifiedJourney(j, isUnverified = false, isLiveProvider = false) {
     }
 
     const sDepTimeStr = s.departure_time || "00:00";
-    const sDepDay = s.departure_day || 1;
-    const sDepartAbs = (sDepDay - 1) * 1440 + (timeToMin(sDepTimeStr) || 0);
+    const sDepMin = timeToMin(sDepTimeStr) || 0;
+    const sDepDay = s.departure_day || depDay;
+    let sDepartAbs = idx === 0
+      ? departAbs
+      : Math.floor(cursorAbs / 1440) * 1440 + sDepMin;
+    while (idx > 0 && sDepartAbs < cursorAbs) {
+      sDepartAbs += 1440;
+    }
 
     const sArrTimeStr = s.arrival_time || "00:00";
+    const sArrMin = timeToMin(sArrTimeStr) || 0;
     const sArrDay = s.arrival_day || sDepDay;
-    let sArriveAbs = (sArrDay - 1) * 1440 + (timeToMin(sArrTimeStr) || 0);
+    const daySpan = Math.max(0, sArrDay - sDepDay);
+    let sArriveAbs = sDepartAbs + (sArrMin - sDepMin) + daySpan * 1440;
     if (sArriveAbs < sDepartAbs) sArriveAbs += 1440;
+    cursorAbs = sArriveAbs;
 
     const sDur = Math.max(0, sArriveAbs - sDepartAbs);
     const dist = s.segment_distance_km != null ? Math.round(s.segment_distance_km) : null;
@@ -2977,6 +2997,7 @@ function AppProvider({ children }) {
     if (mode !== "demo" && searchingRef.current) return;
     setSearch(q);
     setSearchError(null);
+    setCompare([]);
     setRecent((prev) => {
       const key = q.from + "-" + q.to + "-" + q.travelClass;
       return [{ ...q, key, at: Date.now() }, ...prev.filter((p) => p.key !== key)].slice(0, 8);
@@ -3055,6 +3076,7 @@ function AppProvider({ children }) {
   const applyChatSearch = useCallback((q, results, unverified, meta) => {
     setSearch(q);
     setSearchError(null);
+    setCompare([]);
     setSearchMode("live");
     setRecent((prev) => {
       const key = q.from + "-" + q.to + "-" + q.travelClass;
@@ -3284,7 +3306,7 @@ function AIPage() {
             <div className="flex-1">
               <h3 className="font-display text-lg font-extrabold">Best recommendation</h3>
               <p className="mt-1 text-sm text-navy-100 max-w-2xl">{reason}</p>
-              {best && <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm"><span className="inline-flex items-center gap-1.5"><Icon name="clock" size={14} className="text-cyanx-300" /> {durStr(best.best.totalDuration)}</span><span className="inline-flex items-center gap-1.5"><Icon name="wallet" size={14} className="text-cyanx-300" /> {fmtFare(best.best.totalFare)}</span><span className="inline-flex items-center gap-1.5"><Icon name="route" size={14} className="text-cyanx-300" /> {best.best.trainChanges + best.best.seatChanges} changes</span></div>}
+              {best && <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm"><span className="inline-flex items-center gap-1.5"><Icon name="clock" size={14} className="text-cyanx-300" /> {durStr(best.best.totalDuration)}</span><span className="inline-flex items-center gap-1.5"><Icon name="wallet" size={14} className="text-cyanx-300" /> {fmtFare(best.best.totalFare)}</span><span className="inline-flex items-center gap-1.5"><Icon name="route" size={14} className="text-cyanx-300" /> {chgStr(best.best.trainChanges + best.best.seatChanges)}</span></div>}
               <div className="mt-4 flex gap-2"><Button variant="white" size="sm" onClick={() => navigate(`/journey/${journeyRef(best.best, journeys.indexOf(best.best) + 1)}`)}>View journey</Button><Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/10" onClick={() => toggleCompare(best.best)}><Icon name="compare" size={14}/> Add to compare</Button></div>
             </div>
           </div>
@@ -3610,7 +3632,7 @@ function StepIndicator({ current }) {
 }
 
 function ConversationalAssistant() {
-  const { toggleSave, isSaved, toggleCompare, compareList, applyChatSearch } = useApp();
+  const { toggleSave, isSaved, toggleCompare, clearCompare, compareList, applyChatSearch } = useApp();
   const [sessionId, setSessionId] = useState(() => {
     try { return sessionStorage.getItem("railsaathi_chat_session") || null; } catch (e) { return null; }
   });
@@ -3644,6 +3666,7 @@ function ConversationalAssistant() {
   const [activeSlots, setActiveSlots] = useState(() => readSessionJSON("railsaathi_chat_slots"));
   const [lastError, setLastError] = useState(null);
   const chatEndRef = useRef(null);
+  const latestAssistantRef = useRef(null);
   const textareaRef = useRef(null);
   const loadingRef = useRef(false);
 
@@ -3680,14 +3703,17 @@ function ConversationalAssistant() {
     }
   }, [messages]);
 
-  const scrollToBottom = () => {
+  useEffect(() => {
+    const lastMsg = messages[messages.length - 1];
+    if (!loading && lastMsg && lastMsg.role === "assistant" && (lastMsg.confirmedResults?.length || lastMsg.unverifiedResults?.length)) {
+      if (latestAssistantRef.current) {
+        latestAssistantRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      return;
+    }
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  };
-
-  useEffect(() => {
-    scrollToBottom();
   }, [messages, loading]);
 
   const handleSend = async (messageText) => {
@@ -3809,6 +3835,7 @@ function ConversationalAssistant() {
     setSessionId(null);
     setActiveSlots(null);
     setLastError(null);
+    clearCompare();
     try { sessionStorage.removeItem("railsaathi_chat_session"); } catch (e) {}
     try { sessionStorage.removeItem("railsaathi_chat_messages"); } catch (e) {}
     try { sessionStorage.removeItem("railsaathi_chat_slots"); } catch (e) {}
@@ -3894,7 +3921,7 @@ function ConversationalAssistant() {
 
       {/* Message Thread */}
       <div className="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-4 my-2 scrollbar-thin">
-        {messages.map((m) => {
+        {messages.map((m, mIdx) => {
           if (m.role === "user") {
             return (
               <div key={m.id} className="flex justify-end animate-fadeUp">
@@ -3905,8 +3932,9 @@ function ConversationalAssistant() {
             );
           }
 
+          const isLastAssistant = mIdx === messages.length - 1;
           return (
-            <div key={m.id} className="flex gap-2.5 sm:gap-3 items-start animate-fadeUp">
+            <div key={m.id} ref={isLastAssistant ? latestAssistantRef : null} className="flex gap-2.5 sm:gap-3 items-start animate-fadeUp scroll-mt-2">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-electric/20 to-cyanx-500/20 text-electric grid place-items-center shrink-0 mt-0.5">
                 <Icon name="sparkles" size={15} />
               </div>
@@ -4042,12 +4070,12 @@ function ConversationalAssistant() {
         <div className="flex items-end gap-2 bg-navy-50/70 border border-navy-200 rounded-2xl p-2 focus-within:border-electric focus-within:ring-2 focus-within:ring-electric/20 transition-all">
           <textarea
             ref={textareaRef}
-            rows={1}
+            rows={2}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder="Type your journey inquiry (e.g. Find trains from Bengaluru to Chennai tomorrow)..."
-            className="flex-1 bg-transparent border-0 px-2 py-1.5 text-sm text-navy-900 placeholder:text-navy-400 focus:outline-none resize-none max-h-28 overflow-y-auto"
+            className="flex-1 bg-transparent border-0 px-2 py-1.5 text-sm text-navy-900 placeholder:text-navy-400 focus:outline-none resize-none min-h-[44px] max-h-28 overflow-y-auto leading-snug"
             disabled={loading}
           />
           <button
@@ -5042,10 +5070,21 @@ function BookingPage() {
             <div className="flex flex-wrap gap-2">
               {prefs.map(([v, l]) => <button key={v} onClick={() => setSeatPref(v)} className={cx("px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors", seatPref === v ? "bg-electric text-white shadow-glow" : "bg-white border border-navy-100 text-navy-600 hover:border-electric")}>{l}</button>)}
             </div>
-            {seatSegs.length > 0 && (
+            {(j.seatChanges > 0 || j.trainChanges > 0) && (
               <div className="mt-4 rounded-xl bg-amber-50 border border-amber-200 p-4">
-                <div className="flex items-center gap-2 text-amber-800 font-semibold text-sm"><Icon name="shuffle" size={15} /> This journey involves a seat change</div>
-                <p className="text-xs text-amber-700 mt-1">You'll keep your preference where available; the confirmed coach and seat for each segment appear in the fare breakdown below.</p>
+                <div className="flex items-center gap-2 text-amber-800 font-semibold text-sm">
+                  <Icon name="shuffle" size={15} />
+                  {j.seatChanges > 0 && j.trainChanges > 0
+                    ? "This journey involves both a seat change and a train change"
+                    : j.seatChanges > 0
+                    ? "This journey involves a seat change"
+                    : "This journey involves switching trains at a transfer station"}
+                </div>
+                <p className="text-xs text-amber-700 mt-1">
+                  {j.seatChanges > 0
+                    ? "You'll keep your preference where available; the confirmed coach and seat for each segment appear in the fare breakdown below."
+                    : "Check transfer wait durations in your itinerary and allow enough buffer between trains."}
+                </p>
               </div>
             )}
           </Card>
