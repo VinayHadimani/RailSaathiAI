@@ -529,6 +529,7 @@ class TrainChangeConnectionService:
             result = self.planner.get_trains_between(
                 from_station=from_code, to_station=to_code, journey_date=iso_date,
                 quota=state.request.quota,
+                local_only_if_store=True,
             )
         except ProviderClientError as exc:
             if exc.code == "NO_TRAINS_FOUND":

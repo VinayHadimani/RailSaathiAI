@@ -519,6 +519,10 @@ class SameTrainCombinationService:
                     frm, to = window[a].station_code, window[n - 1].station_code
                     tail_segments.append((frm, to, self._boarding_date(window, a, request.journey_date)))
                     tail_p2idx.setdefault((frm, to), []).append((a, n - 1))
+                if len(tail_segments) > self.planner.budgets.batch_size:
+                    # Sample evenly across the corridor so long trains use 1 batch.
+                    step = max(1, len(tail_segments) // self.planner.budgets.batch_size)
+                    tail_segments = tail_segments[::step][: self.planner.budgets.batch_size]
                 if tail_segments:
                     stop_reason = _run_segments(tail_segments, tail_p2idx)
                     if stop_reason is not None:
@@ -546,6 +550,15 @@ class SameTrainCombinationService:
                     pair_to_indices.setdefault((frm, to), []).append((a, b))
             if not segments:
                 break
+
+            # For very long real-world routes (e.g. 50-60 stops in Round 0), keep
+            # the direct endpoint (0, n-1) plus evenly spaced major stops in 1 batch.
+            if n > 26 and 0 in to_process and len(segments) > self.planner.budgets.batch_size:
+                direct_seg = segments[-1]
+                interior = segments[:-1]
+                cap = self.planner.budgets.batch_size - 1
+                step = max(1, len(interior) // cap)
+                segments = interior[::step][:cap] + [direct_seg]
 
             # For real-world long routes (n > 8) beyond Round 0, bound intermediate
             # fan-out to one batch so one train cannot exhaust the whole unified budget.

@@ -196,14 +196,22 @@ class SegmentQueryPlanner:
             raise
 
     def get_trains_between(
-        self, *, from_station: str, to_station: str, journey_date: str, quota: str
+        self,
+        *,
+        from_station: str,
+        to_station: str,
+        journey_date: str,
+        quota: str,
+        local_only_if_store: bool = False,
     ) -> RouteTrainsResult:
         """Discover trains serving the route (or reuse a fresh cached/local result).
 
         Checks the in-memory cache first, then fresh local NTES/RailCore
         timetables (zero API credits), and falls back to RailCore if no fresh
-        local trains are found. If RailCore fails or budget is exhausted,
-        falls back to any baseline DataMeet route matches if present.
+        local trains are found. When `local_only_if_store=True` and the local
+        timetable store is active (used for secondary corridor pair discovery),
+        DataMeet/local schedules or empty local results are used directly so
+        hundreds of RailCore 404 calls are avoided.
         Raises RailwayProviderError on failure - never an invented train list.
         """
         cache_key = (from_station, to_station, journey_date, quota)
@@ -224,6 +232,34 @@ class SegmentQueryPlanner:
                 self.stats["local_discovery_hits"] += 1
                 self._shared_discovery_cache[cache_key] = (time.monotonic(), local_res)
                 return local_res
+            if local_only_if_store:
+                fallback_res = self._timetable_store.get_trains_between(
+                    from_station=from_station,
+                    to_station=to_station,
+                    journey_date=journey_date,
+                    quota=quota,
+                    require_fresh_source=False,
+                )
+                if fallback_res is not None and fallback_res.trains:
+                    self.stats["discovery_cache_hits"] += 1
+                    self.stats["local_discovery_hits"] += 1
+                    self._shared_discovery_cache[cache_key] = (time.monotonic(), fallback_res)
+                    return fallback_res
+                if (
+                    self._timetable_store.has_station(from_station) is not None
+                    and self._timetable_store.has_station(to_station) is not None
+                ):
+                    empty_res = RouteTrainsResult(
+                        from_station_code=from_station,
+                        to_station_code=to_station,
+                        journey_date=journey_date,
+                        quota=quota,
+                        matched_by="local_timetable",
+                        trains=[],
+                        provider="local_timetable",
+                    )
+                    self._shared_discovery_cache[cache_key] = (time.monotonic(), empty_res)
+                    return empty_res
         try:
             if not self.requests_available():
                 raise _BudgetExhaustedError(STOP_BUDGET_REQUESTS)

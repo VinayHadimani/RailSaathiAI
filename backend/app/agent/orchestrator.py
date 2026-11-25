@@ -293,17 +293,40 @@ class AgentOrchestrator:
         last_req = session.last_search_request
         last_resp = session.last_search_response
 
+        # If user asks "in any other class" / "try another class" after getting 0 results,
+        # automatically pick the next plausible class on that route instead of returning stale cache.
+        if last_req and last_req == current_request_spec:
+            msg_l = message.lower()
+            asked_other_class = any(
+                phrase in msg_l
+                for phrase in ("other class", "another class", "any class", "different class", "next class")
+            )
+            if asked_other_class:
+                prev_cls = (slots.travel_class or "SL").upper()
+                fallback_order = ["3A", "2A", "3E", "CC", "2S", "1A", "SL"]
+                next_cls = next((c for c in fallback_order if c != prev_cls), "3A")
+                slots.travel_class = next_cls
+                self._session_store.update_slots(sid, slots)
+                current_request_spec["travel_class"] = next_cls
+
         if last_req and last_resp:
             # A) Exact Duplicate Request
             if last_req == current_request_spec:
                 results = last_resp.get("results") or []
                 unverified = last_resp.get("unverified_candidates") or []
                 completeness = last_resp.get("search_completeness")
-                reply = (
-                    f"Showing confirmed journey options from {slots.from_station} to {slots.to_station} "
-                    f"on {slots.journey_date} in {slots.travel_class} class ({slots.quota} quota). "
-                    f"(Retrieved from active session)."
-                )
+                if results:
+                    reply = (
+                        f"Showing confirmed journey options from {slots.from_station} to {slots.to_station} "
+                        f"on {slots.journey_date} in {slots.travel_class} class ({slots.quota} quota). "
+                        f"(Retrieved from active session)."
+                    )
+                else:
+                    reply = (
+                        f"No confirmed trains or combination routes were found from {slots.from_station} to {slots.to_station} "
+                        f"on {slots.journey_date} in {slots.travel_class} class ({slots.quota} quota). "
+                        f"Say e.g. \"in 3A\" or \"in 2A\" to check another class."
+                    )
                 self._session_store.add_message(sid, "assistant", reply)
                 return AgentChatResponse(
                     session_id=sid,

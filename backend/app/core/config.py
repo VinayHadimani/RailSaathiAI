@@ -74,7 +74,7 @@ class Settings(BaseSettings):
     train_change_max_transfer_wait_minutes: int = 720
     # Journeys must reach the destination by the end of
     # journey_date + train_change_search_horizon_days.
-    train_change_search_horizon_days: int = 2
+    train_change_search_horizon_days: int = 4
     # Computational safeguards (NOT train-change limits): the engine
     # explores connections of ANY depth within these budgets and reports
     # truncation honestly.
@@ -93,7 +93,7 @@ class Settings(BaseSettings):
     # continuations (no transfer window applies while staying onboard).
     mixed_min_transfer_buffer_minutes: int = 30
     mixed_max_transfer_wait_minutes: int = 720
-    mixed_search_horizon_days: int = 2
+    mixed_search_horizon_days: int = 4
     # Computational safeguards (NOT seat-change or train-change limits):
     # journeys with ANY number of changes are explored within these budgets
     # and truncation is reported honestly.

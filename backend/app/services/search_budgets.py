@@ -77,7 +77,7 @@ class TrainChangeBudgets:
     # Transfer validation scope (also overridable per request).
     min_transfer_buffer_minutes: int = 30
     max_transfer_wait_minutes: int = 720
-    search_horizon_days: int = 2
+    search_horizon_days: int = 4
 
     # Discovery / pool safeguards.
     max_discovery_pairs: int = 20  # (station-pair, date) queries per search
